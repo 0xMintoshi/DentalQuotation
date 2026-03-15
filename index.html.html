@@ -340,7 +340,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </div>
 
 <div style="font-size:10px;color:var(--text-ter);line-height:1.7;border-top:0.5px solid var(--border-lt);padding-top:12px;margin-top:16px" class="no-print">
-  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit · SF812T = $350 surgical + $300 misc = $650/tooth · SF813T = $950 surgical + $300 misc = $1,250/tooth<br>
+  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit · SF812T = $420 surgical + $830 misc = $1,250/tooth · SF813T = $1,120 surgical + $830 misc = $1,950/tooth · Socket Preservation = not Medisave-claimable<br>
   <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged. GST (if toggled) on cash component only.<br>
   Subject to CPF/MOH approval. All amounts in SGD.
 </div>
@@ -357,16 +357,18 @@ const SURG = [
     crowns:[{label:"PFM Crown",cash:0},{label:"Zirconia Crown",cash:550}] },
   { code:"SB816M_IO", name:"Dental Implant ONLY", tosp:"Table 2C",
     surgical:1120, misc:830, unit:"per implant", implantMode:true, implantOnly:true },
-  { code:"SF812T", name:"Surgical Tooth Removal — bone removal, no tooth division", tosp:"Table 1B",
-    medisave:650, breakdown:"$350 surgical + $300 misc", unit:"per tooth" },
-  { code:"SF813T", name:"Surgical Tooth Removal — bone removal + tooth division", tosp:"Table 2C",
-    medisave:1250, breakdown:"$950 surgical + $300 misc", unit:"per tooth" },
-  { code:"SB803M", name:"Simple Bone Graft / GBR", tosp:"Table 2C",
+  { code:"SB803M", name:"GBR", tosp:"Table 2C",
     medisave:1950, breakdown:"$1,120+$830 misc", unit:"per procedure" },
+  { code:"SB802M", name:"Complex Sinus Lift", tosp:"Table 3A",
+    medisave:2220, breakdown:"$1,390+$830 misc", unit:"per procedure" },
   { code:"SB813M", name:"Alveolectomy", tosp:"Table 2C",
     medisave:1950, breakdown:"$1,120+$830 misc", unit:"per quadrant" },
-  { code:"SB802M", name:"Complex Sinus Lift (Lateral Window / Ridge Augmentation)", tosp:"Table 3A",
-    medisave:2220, breakdown:"$1,390+$830 misc", unit:"per procedure" },
+  { code:"SF812T", name:"Surgical Tooth Removal — bone removal, no tooth division", tosp:"Table 1B",
+    medisave:1250, breakdown:"$420 surgical + $830 misc", unit:"per tooth" },
+  { code:"SF813T", name:"Surgical Tooth Removal — bone removal + tooth division", tosp:"Table 2C",
+    medisave:1950, breakdown:"$1,120 surgical + $830 misc", unit:"per tooth" },
+  { code:"SOCKPRES", name:"Socket Preservation", tosp:"Non-Medisave",
+    feeOnly:true, unit:"per socket" },
 ]
 
 // CHAS subsidy per tier: [Orange, Blue, MG, PG]
@@ -421,6 +423,10 @@ function getChasSubsidy(p){
 
 function getSurgLine(p){
   const s = surgState[p.code], qty = s.qty, g = gst() ? 1.09 : 1.0
+  if(p.feeOnly){
+    const cb = (parseFloat(s.cashTopup)||0) * qty
+    return { qty, mv:0, cashTotal:cb*g, cashBefore:cb, total:cb*g, extraMisc:0 }
+  }
   if(p.implantMode){
     if(p.implantOnly){
       // Misc $830 claimed once per session regardless of qty, no cash top-up ever
@@ -532,7 +538,9 @@ function renderSurg(){
     const div = document.createElement("div")
     div.className = "card"+(s.on?" active":"")
 
-    let meta = p.implantMode
+    let meta = p.feeOnly
+      ? `<span style="color:var(--text-ter)">No Medisave · Cash only · ${p.unit}</span>`
+      : p.implantMode
       ? `Medisave: $1,120 surgical + $830 misc per session &nbsp;·&nbsp; ${p.unit}`
       : `Medisave: <span class="mv">${fmt(p.medisave)}</span> (${p.breakdown}) &nbsp;·&nbsp; ${p.unit}`
         + ((parseFloat(surgState[p.code].cashTopup)||0) > 0
@@ -605,7 +613,13 @@ function renderSurg(){
           <input type="number" min="1" max="20" value="${s.qty}" onchange="surgState['${p.code}'].qty=Math.max(1,parseInt(this.value)||1);render()">
         </div>`:""}
       </div>${apptHtml}${crownHtml}
-      ${s.on && !p.implantMode ? `
+      ${s.on && p.feeOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Fee ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">per unit</span>
+      </div>` : ""}
+      ${s.on && !p.implantMode && !p.feeOnly ? `
       <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cash top-up ($)</span>
         <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
@@ -704,7 +718,9 @@ function updateSurgSummary(){
     gMv+=l.mv; gCash+=l.cashTotal; gTotal+=l.total
     let label = p.code === "SB816M_IO" ? "SB816M" : p.code
     let sub = ""
-    if(p.implantMode && !p.implantOnly){
+    if(p.feeOnly){
+      // no extra label changes needed
+    } else if(p.implantMode && !p.implantOnly){
       label += ` — ${p.crowns[s.crown].label}, ${s.apptMode==="same"?"same appt":"diff. appts"}`
       if(s.qty > 1 && s.apptMode === "same")
         sub = `<div style="font-size:10px;color:var(--text-ter);margin-top:2px">Extra misc: ${fmt(l.extraMisc)} → cash</div>`
@@ -714,9 +730,10 @@ function updateSurgSummary(){
         sub = `<div style="font-size:10px;color:var(--text-ter);margin-top:2px">$1,120 × ${s.qty} + $830 misc once = ${fmt(l.mv)} · no cash</div>`
     }
     const gn=gst()?"*":"", cashStr=l.cashTotal>0?`<span class="cv">${fmtD(l.cashTotal)}${gn}</span>`:`<span style="color:var(--text-ter)">—</span>`
+    const mvStr=p.feeOnly?`<span style="color:var(--text-ter)">—</span>`:`<span class="mv" style="font-weight:600">${fmt(l.mv)}</span>`
     const tr=document.createElement("tr")
     tr.innerHTML=`<td><div style="font-weight:600">${label}</div><div style="font-size:10px;color:var(--text-ter)">${p.unit}</div>${sub}</td>
-      <td>${l.qty}</td><td class="mv" style="font-weight:600">${fmt(l.mv)}</td>
+      <td>${l.qty}</td><td>${mvStr}</td>
       <td>${cashStr}</td><td style="font-weight:600">${fmtD(l.total)}</td>`
     tbody.appendChild(tr)
   })
@@ -797,12 +814,14 @@ function updateGrand(surg, ns, pro){
     if(p.implantMode && !p.implantOnly) label += ` — ${p.crowns[s.crown].label}`
     if(p.implantMode && !p.implantOnly && s.apptMode==="diff") label += " (diff. appts)"
     const cashStr = l.cashTotal>0 ? `<span class="cv">${fmtD(l.cashTotal)}${gn}</span>` : `<span style="color:var(--text-ter)">—</span>`
+    const mvStr = p.feeOnly ? `<span style="color:var(--text-ter)">—</span>` : `<span class="mv" style="font-weight:500">${fmt(l.mv)}</span>`
+    const feeTd = p.feeOnly ? fmtD(l.cashTotal) : fmtD(l.total)
     const tr = document.createElement("tr")
     tr.innerHTML = `
       <td><div style="font-weight:500">${label}</div><div style="font-size:10px;color:var(--text-ter)">${p.tosp} · ${p.unit}</div></td>
       <td>${l.qty}</td>
-      <td>${fmtD(l.total)}</td>
-      <td class="mv" style="font-weight:500">${fmt(l.mv)}</td>
+      <td>${feeTd}</td>
+      <td>${mvStr}</td>
       <td style="color:var(--text-ter)">—</td>
       <td>${cashStr}</td>`
     surgRows.push(tr)
