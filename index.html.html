@@ -256,14 +256,77 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   </div>
 </div>
 
-<!-- Grand total band -->
-<div id="grand-band" style="display:none;background:var(--bg-surface);border:1px solid var(--border-md);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:1.25rem">
-  <div style="font-size:11px;color:var(--text-sec);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Grand Total — <span id="grand-label">All Sections</span></div>
-  <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:14px">
-    <span><span style="color:var(--text-sec)">Medisave: </span><span class="mv" id="gt-mv" style="font-weight:700"></span></span>
-    <span><span style="color:var(--text-sec)">CHAS: </span><span class="sv" id="gt-chas" style="font-weight:700"></span></span>
-    <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" id="gt-cash" style="font-weight:700"></span></span>
-    <span style="margin-left:auto"><span style="color:var(--text-sec)">Total: </span><span id="gt-total" style="font-weight:700;font-size:16px"></span></span>
+<!-- ═══ COMBINED SUMMARY ═══ -->
+<div id="combined-summary" style="display:none">
+  <hr class="divider">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+    <span style="font-size:15px;font-weight:600;color:var(--text-pri)">Combined Summary</span>
+    <span style="font-size:11px;color:var(--text-sec)">All selected treatments</span>
+  </div>
+
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:34%;text-align:left">Treatment</th>
+          <th style="width:6%">Qty</th>
+          <th style="width:15%">Total Fee</th>
+          <th style="width:15%">Medisave</th>
+          <th style="width:13%">CHAS</th>
+          <th style="width:17%">Cash payable</th>
+        </tr>
+      </thead>
+      <tbody id="combined-tbody"></tbody>
+      <tfoot>
+        <tr id="combined-tfoot-surg" style="display:none">
+          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Surgical subtotal</td>
+          <td id="cs-fee-surg"></td>
+          <td id="cs-mv-surg" class="mv"></td>
+          <td style="color:var(--text-ter)">—</td>
+          <td id="cs-cash-surg" class="cv"></td>
+        </tr>
+        <tr id="combined-tfoot-ns" style="display:none">
+          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Non-surgical subtotal</td>
+          <td id="cs-fee-ns"></td>
+          <td style="color:var(--text-ter)">—</td>
+          <td id="cs-chas-ns" class="sv"></td>
+          <td id="cs-cash-ns" class="cv"></td>
+        </tr>
+        <tr id="combined-tfoot-pro" style="display:none">
+          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Additional prosthesis subtotal</td>
+          <td id="cs-fee-pro"></td>
+          <td style="color:var(--text-ter)">—</td>
+          <td style="color:var(--text-ter)">—</td>
+          <td id="cs-cash-pro" class="cv"></td>
+        </tr>
+        <tr style="border-top:2px solid var(--border-md)">
+          <td colspan="2" style="font-size:13px"><strong>Grand total</strong></td>
+          <td id="cs-fee-total" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-mv-total" class="mv" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-chas-total" class="sv" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-cash-total" class="cv" style="font-size:13px;font-weight:600"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Grand metric cards -->
+  <div class="mgrid">
+    <div class="metric"><div class="mlabel">Grand total fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">before GST</div></div>
+    <div class="metric" style="border:1px solid var(--border-lt)">
+      <div class="mlabel">Patient pays cash</div>
+      <div class="mval cv" id="gm-cash">$0</div>
+      <div class="msub" id="gm-cash-sub">after Medisave + CHAS</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Subsidies applied</div>
+      <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-top:3px">
+        <span class="mv" style="font-size:15px;font-weight:600" id="gm-mv">$0</span>
+        <span style="font-size:11px;color:var(--text-sec)">Medisave</span>
+        <span class="sv" style="font-size:15px;font-weight:600" id="gm-chas">$0</span>
+        <span style="font-size:11px;color:var(--text-sec)">CHAS</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -661,24 +724,127 @@ function updateNsSummary(){
 }
 
 function updateGrand(surg, ns, pro){
-  const band = document.getElementById("grand-band")
+  const sec     = document.getElementById("combined-summary")
   const btnExcel = document.getElementById("btn-excel")
   const btnPrint = document.getElementById("btn-print")
   const any = !!surg || !!ns || !!pro
   btnExcel.disabled = !any; btnPrint.disabled = !any
-  const sections = [surg, ns, pro].filter(Boolean)
-  if(sections.length < 2){ band.style.display="none"; return }
-  band.style.display="block"
-  const mv    = surg ? surg.mv    : 0
-  const chas  = ns   ? ns.sub     : 0
-  const cash  = (surg ? surg.cash  : 0) + (ns ? ns.cash  : 0) + (pro ? pro.cash  : 0)
-  const total = (surg ? surg.total : 0) + (ns ? ns.total  : 0) + (pro ? pro.total : 0)
-  const labelEl = document.getElementById("grand-label")
-  if(labelEl) labelEl.textContent = ["Surgical", ns?"Non-Surgical":null, pro?"Additional Prosthesis":null].filter(Boolean).join(" + ")
-  document.getElementById("gt-mv").textContent    = fmt(mv)
-  document.getElementById("gt-chas").textContent  = fmtD(chas)
-  document.getElementById("gt-cash").textContent  = fmtD(cash) + (gst() ? " (incl. GST)" : "")
-  document.getElementById("gt-total").textContent = fmtD(total)
+  if(!any){ sec.style.display="none"; return }
+  sec.style.display="block"
+
+  const tbody = document.getElementById("combined-tbody")
+  tbody.innerHTML = ""
+  const gn = gst() ? "*" : ""
+
+  const addSection = (label, rows) => {
+    if(!rows.length) return
+    // section header row
+    const hdr = document.createElement("tr")
+    hdr.innerHTML = `<td colspan="6" style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-ter);background:var(--bg-surface);padding:6px 10px">${label}</td>`
+    tbody.appendChild(hdr)
+    rows.forEach(r => tbody.appendChild(r))
+  }
+
+  // ── Surgical rows ──
+  const surgRows = []
+  SURG.filter(p=>surgState[p.code].on).forEach(p=>{
+    const s=surgState[p.code], l=getSurgLine(p)
+    let label = p.name
+    if(p.implantMode && !p.implantOnly) label += ` — ${p.crowns[s.crown].label}`
+    if(p.implantMode && !p.implantOnly && s.apptMode==="diff") label += " (diff. appts)"
+    const cashStr = l.cashTotal>0 ? `<span class="cv">${fmtD(l.cashTotal)}${gn}</span>` : `<span style="color:var(--text-ter)">—</span>`
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td><div style="font-weight:500">${label}</div><div style="font-size:10px;color:var(--text-ter)">${p.tosp} · ${p.unit}</div></td>
+      <td>${l.qty}</td>
+      <td>${fmtD(l.total)}</td>
+      <td class="mv" style="font-weight:500">${fmt(l.mv)}</td>
+      <td style="color:var(--text-ter)">—</td>
+      <td>${cashStr}</td>`
+    surgRows.push(tr)
+  })
+  addSection("Surgical Procedures", surgRows)
+
+  // ── Non-surgical rows ──
+  const nsRows = []
+  NS.filter(p=>nsState[p.id].on).forEach(p=>{
+    const s=nsState[p.id], l=getNsLine(p)
+    const mats = p.hasMaterials && s.materials.length ? ` · ${s.materials.join("/")}` : ""
+    const subStr = l.subsidyTotal>0 ? `<span class="sv">${fmtD(l.subsidyTotal)}</span>` : `<span style="color:var(--text-ter)">—</span>`
+    const cashStr = l.cashTotal>0 ? `<span class="cv">${fmtD(l.cashTotal)}${gn}</span>` : `<span style="color:var(--text-ter)">—</span>`
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td><div style="font-weight:500">${p.name}${mats}</div><div style="font-size:10px;color:var(--text-ter)">${p.unit}${l.subsidisedQty<l.qty?` · ${l.subsidisedQty}/${l.qty} subsidised`:""}</div></td>
+      <td>${l.qty}</td>
+      <td>${fmtD(l.totalFee)}</td>
+      <td style="color:var(--text-ter)">—</td>
+      <td>${subStr}</td>
+      <td>${cashStr}</td>`
+    nsRows.push(tr)
+  })
+  addSection("Non-Surgical Procedures", nsRows)
+
+  // ── Prostho rows ──
+  const proRows = []
+  const gMult = gst() ? 1.09 : 1.0
+  PROSTHO.forEach(p=>{
+    const s=prosthoState[p.id], fee=parseFloat(s.fee)||0
+    if(!fee) return
+    const total=fee*s.qty, cash=total*gMult
+    const mats = s.materials.length ? ` · ${s.materials.join("/")}` : ""
+    const remark = s.remark ? `<div style="font-size:10px;color:var(--text-ter);font-style:italic">${s.remark}</div>` : ""
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td><div style="font-weight:500">${p.name}${mats}</div>${remark}</td>
+      <td>${s.qty}</td>
+      <td>${fmtD(total)}</td>
+      <td style="color:var(--text-ter)">—</td>
+      <td style="color:var(--text-ter)">—</td>
+      <td><span class="cv">${fmtD(cash)}${gn}</span></td>`
+    proRows.push(tr)
+  })
+  addSection("Additional Prosthesis", proRows)
+
+  // ── Subtotal footer rows ──
+  const showFtr = (id, show) => { const el=document.getElementById(id); if(el) el.style.display=show?"table-row":"none" }
+  if(surg){
+    showFtr("combined-tfoot-surg", true)
+    document.getElementById("cs-fee-surg").textContent  = fmtD(surg.total)
+    document.getElementById("cs-mv-surg").textContent   = fmt(surg.mv)
+    document.getElementById("cs-cash-surg").textContent = fmtD(surg.cash)
+  } else showFtr("combined-tfoot-surg", false)
+
+  if(ns){
+    showFtr("combined-tfoot-ns", true)
+    document.getElementById("cs-fee-ns").textContent   = fmtD(ns.total)
+    document.getElementById("cs-chas-ns").textContent  = fmtD(ns.sub)
+    document.getElementById("cs-cash-ns").textContent  = fmtD(ns.cash)
+  } else showFtr("combined-tfoot-ns", false)
+
+  if(pro){
+    showFtr("combined-tfoot-pro", true)
+    document.getElementById("cs-fee-pro").textContent  = fmtD(pro.fee)
+    document.getElementById("cs-cash-pro").textContent = fmtD(pro.cash)
+  } else showFtr("combined-tfoot-pro", false)
+
+  // ── Grand totals ──
+  const gFee   = (surg?surg.total:0) + (ns?ns.total:0) + (pro?pro.fee:0)
+  const gMv    = surg ? surg.mv  : 0
+  const gChas  = ns   ? ns.sub   : 0
+  const gCash  = (surg?surg.cash:0) + (ns?ns.cash:0) + (pro?pro.cash:0)
+  const gTotal = (surg?surg.total:0) + (ns?ns.total:0) + (pro?pro.total:0)
+
+  document.getElementById("cs-fee-total").textContent  = fmtD(gFee)
+  document.getElementById("cs-mv-total").textContent   = gMv   > 0 ? fmt(gMv)    : "—"
+  document.getElementById("cs-chas-total").textContent = gChas > 0 ? fmtD(gChas) : "—"
+  document.getElementById("cs-cash-total").innerHTML   = `${fmtD(gCash)}${gst()?" <span style='font-size:10px'>(incl. GST)</span>":""}`
+
+  document.getElementById("gm-total").textContent    = fmtD(gTotal)
+  document.getElementById("gm-cash").textContent     = fmtD(gCash)
+  document.getElementById("gm-mv").textContent       = fmt(gMv)
+  document.getElementById("gm-chas").textContent     = fmtD(gChas)
+  document.getElementById("gm-total-sub").textContent = gst() ? "incl. GST on cash" : "before GST"
+  document.getElementById("gm-cash-sub").textContent  = gst() ? "incl. 9% GST" : "after Medisave + CHAS"
 }
 
 // ── MATERIAL TOGGLE ──────────────────────────────────────────────────────────
