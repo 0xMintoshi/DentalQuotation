@@ -123,6 +123,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('surg')">
   <span class="section-tag tag-surgical">Surgical Procedures</span>
   <span style="font-size:12px;color:var(--text-sec)">Medisave-claimable · CPF Apr 2025 limits</span>
+  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('surg')">Clear all</button>
   <button class="collapse-btn" id="surg-chevron" tabindex="-1">▾</button>
 </div>
 <div id="surg-collapsible" class="collapsible no-print">
@@ -165,6 +166,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('nonsurg')">
   <span class="section-tag tag-nonsurg">Non-Surgical Procedures</span>
   <span style="font-size:12px;color:var(--text-sec)">CHAS-subsidised · Oct 2025 rates</span>
+  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('nonsurg')">Clear all</button>
   <button class="collapse-btn" id="nonsurg-chevron" tabindex="-1">▾</button>
 </div>
 <div id="nonsurg-collapsible" class="collapsible no-print">
@@ -219,6 +221,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('prostho')">
   <span class="section-tag" style="background:var(--bg-surface);color:var(--text-sec);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Additional Prosthesis</span>
   <span style="font-size:12px;color:var(--text-sec)">Additional components · No CHAS · Cash only</span>
+  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
   <button class="collapse-btn" id="prostho-chevron" tabindex="-1">▾</button>
 </div>
 <div id="prostho-collapsible" class="collapsible no-print">
@@ -337,7 +340,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </div>
 
 <div style="font-size:10px;color:var(--text-ter);line-height:1.7;border-top:0.5px solid var(--border-lt);padding-top:12px;margin-top:16px" class="no-print">
-  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit<br>
+  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit · SF812T = $350 surgical + $300 misc = $650/tooth · SF813T = $950 surgical + $300 misc = $1,250/tooth<br>
   <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged. GST (if toggled) on cash component only.<br>
   Subject to CPF/MOH approval. All amounts in SGD.
 </div>
@@ -354,12 +357,16 @@ const SURG = [
     crowns:[{label:"PFM Crown",cash:0},{label:"Zirconia Crown",cash:550}] },
   { code:"SB816M_IO", name:"Dental Implant ONLY", tosp:"Table 2C",
     surgical:1120, misc:830, unit:"per implant", implantMode:true, implantOnly:true },
+  { code:"SF812T", name:"Surgical Tooth Removal — bone removal, no tooth division", tosp:"Table 1B",
+    medisave:650, breakdown:"$350 surgical + $300 misc", unit:"per tooth" },
+  { code:"SF813T", name:"Surgical Tooth Removal — bone removal + tooth division", tosp:"Table 2C",
+    medisave:1250, breakdown:"$950 surgical + $300 misc", unit:"per tooth" },
   { code:"SB803M", name:"Simple Bone Graft / GBR", tosp:"Table 2C",
-    medisave:1950, breakdown:"$1,120+$830 misc", cash:500, unit:"per procedure" },
+    medisave:1950, breakdown:"$1,120+$830 misc", unit:"per procedure" },
   { code:"SB813M", name:"Alveolectomy", tosp:"Table 2C",
-    medisave:1950, breakdown:"$1,120+$830 misc", cash:0, unit:"per quadrant" },
+    medisave:1950, breakdown:"$1,120+$830 misc", unit:"per quadrant" },
   { code:"SB802M", name:"Complex Sinus Lift (Lateral Window / Ridge Augmentation)", tosp:"Table 3A",
-    medisave:2220, breakdown:"$1,390+$830 misc", cash:500, unit:"per procedure" },
+    medisave:2220, breakdown:"$1,390+$830 misc", unit:"per procedure" },
 ]
 
 // CHAS subsidy per tier: [Orange, Blue, MG, PG]
@@ -375,7 +382,7 @@ const NS = [
   { id:"cd",     name:"Complete Denture (Upper or Lower)",    unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 upper + 1 lower per 3 calendar years",         subs:[272.50,408.50,413.50,418.50], hasMaterials:true },
 ]
 
-const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr"]
+const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
 
 // Prosthodontic extras — no CHAS, no checkbox toggle (always rendered), fee + qty + remark
 const PROSTHO = [
@@ -388,7 +395,7 @@ const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
 // ── STATE ────────────────────────────────────────────────────────────────────
 
 const surgState = {}
-SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same" } })
+SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0 } })
 
 const nsState = {}
 NS.forEach(p => { nsState[p.id] = { on:false, qty:1, fee:0, remaining:p.maxClaims, materials:[] } })
@@ -437,7 +444,7 @@ function getSurgLine(p){
       return { qty, mv, cashTotal:cashBefore*g, cashBefore, total:mv+cashBefore*g, extraMisc:0 }
     }
   } else {
-    const cb = (p.cash||0)*qty
+    const cb = (parseFloat(surgState[p.code].cashTopup)||0)*qty
     return { qty, mv:p.medisave*qty, cashTotal:cb*g, cashBefore:cb, total:p.medisave*qty+cb*g, extraMisc:0 }
   }
 }
@@ -487,6 +494,34 @@ function toggleSection(sec) {
   }
 }
 
+function clearSection(sec) {
+  if (sec === 'surg') {
+    SURG.forEach(p => {
+      surgState[p.code].on = false
+      surgState[p.code].qty = 1
+      surgState[p.code].crown = 0
+      surgState[p.code].apptMode = "same"
+      surgState[p.code].cashTopup = 0
+    })
+  } else if (sec === 'nonsurg') {
+    NS.forEach(p => {
+      nsState[p.id].on = false
+      nsState[p.id].qty = 1
+      nsState[p.id].fee = 0
+      nsState[p.id].remaining = p.maxClaims
+      nsState[p.id].materials = []
+    })
+  } else if (sec === 'prostho') {
+    PROSTHO.forEach(p => {
+      prosthoState[p.id].qty = 1
+      prosthoState[p.id].fee = 0
+      prosthoState[p.id].remark = ""
+      prosthoState[p.id].materials = []
+    })
+  }
+  render()
+}
+
 // ── RENDER SURGICAL ──────────────────────────────────────────────────────────
 
 function renderSurg(){
@@ -500,7 +535,9 @@ function renderSurg(){
     let meta = p.implantMode
       ? `Medisave: $1,120 surgical + $830 misc per session &nbsp;·&nbsp; ${p.unit}`
       : `Medisave: <span class="mv">${fmt(p.medisave)}</span> (${p.breakdown}) &nbsp;·&nbsp; ${p.unit}`
-        + ((p.cash||0)>0 ? ` &nbsp;·&nbsp; <span class="cv">Cash top-up: ${fmt(p.cash)}</span>` : ` &nbsp;·&nbsp; <span class="sv">No cash top-up</span>`)
+        + ((parseFloat(surgState[p.code].cashTopup)||0) > 0
+          ? ` &nbsp;·&nbsp; <span class="cv">Cash top-up: ${fmt(parseFloat(surgState[p.code].cashTopup))}/unit</span>`
+          : ` &nbsp;·&nbsp; <span class="sv">No cash top-up</span>`)
 
     let apptHtml = ""
     if(s.on && p.implantMode && !p.implantOnly){
@@ -557,7 +594,7 @@ function renderSurg(){
         <input type="checkbox" ${s.on?"checked":""} onchange="surgState['${p.code}'].on=!surgState['${p.code}'].on;render()">
         <div style="flex:1">
           <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-            <span class="badge">${p.code}</span>
+            <span class="badge">${p.code === "SB816M_IO" ? "SB816M" : p.code}</span>
             <span class="pname">${p.name}</span>
             <span class="tbadge">${p.tosp}</span>
           </div>
@@ -567,7 +604,14 @@ function renderSurg(){
           <span style="font-size:11px;color:var(--text-sec)">Qty</span>
           <input type="number" min="1" max="20" value="${s.qty}" onchange="surgState['${p.code}'].qty=Math.max(1,parseInt(this.value)||1);render()">
         </div>`:""}
-      </div>${apptHtml}${crownHtml}${lineTot}`
+      </div>${apptHtml}${crownHtml}
+      ${s.on && !p.implantMode ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cash top-up ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">per unit · enter 0 if none</span>
+      </div>` : ""}
+      ${lineTot}`
     list.appendChild(div)
   })
 }
