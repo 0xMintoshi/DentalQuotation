@@ -444,7 +444,8 @@ const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
 
 // Prosthodontic extras — no CHAS, no checkbox toggle (always rendered), fee + qty + remark
 const PROSTHO = [
-  { id:"dent_comp", name:"Denture Component", unit:"per unit" },
+  { id:"dent_comp",  name:"Denture",  unit:"per unit", materials:["Acrylic","Flexible","CoCr","Implant Overdenture"] },
+  { id:"crown_comp", name:"Crown",    unit:"per unit", materials:["Natural Tooth","Implant"] },
 ]
 
 const CHAS_TIERS = ["orange","blue","mg","pg"]
@@ -1084,7 +1085,7 @@ function renderProstho(){
       </div>
       <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--text-sec);font-weight:500">Material</span>
-        ${DENTURE_MATERIALS.map(m=>`
+        ${p.materials.map(m=>`
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
             <input type="checkbox" ${s.materials.includes(m)?"checked":""} onchange="toggleProsthoMaterial('${p.id}','${m}')">
             ${m}
