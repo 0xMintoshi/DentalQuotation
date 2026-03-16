@@ -287,27 +287,6 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
       </thead>
       <tbody id="combined-tbody"></tbody>
       <tfoot>
-        <tr id="combined-tfoot-surg" style="display:none">
-          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Surgical subtotal</td>
-          <td id="cs-fee-surg"></td>
-          <td id="cs-mv-surg" class="mv"></td>
-          <td style="color:var(--text-ter)">—</td>
-          <td id="cs-cash-surg" class="cv"></td>
-        </tr>
-        <tr id="combined-tfoot-ns" style="display:none">
-          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Non-surgical subtotal</td>
-          <td id="cs-fee-ns"></td>
-          <td style="color:var(--text-ter)">—</td>
-          <td id="cs-chas-ns" class="sv"></td>
-          <td id="cs-cash-ns" class="cv"></td>
-        </tr>
-        <tr id="combined-tfoot-pro" style="display:none">
-          <td colspan="2" style="font-style:italic;color:var(--text-sec)">Additional prosthesis subtotal</td>
-          <td id="cs-fee-pro"></td>
-          <td style="color:var(--text-ter)">—</td>
-          <td style="color:var(--text-ter)">—</td>
-          <td id="cs-cash-pro" class="cv"></td>
-        </tr>
         <tr style="border-top:2px solid var(--border-md)">
           <td colspan="2" style="font-size:13px"><strong>Grand total</strong></td>
           <td id="cs-fee-total" style="font-size:13px;font-weight:600"></td>
@@ -488,16 +467,24 @@ function getSurgLine(p){
   }
   if(p.implantMode){
     if(p.implantOnly){
-      if(s.apptMode === "same"){
-        const mv = p.surgical*qty + p.misc
-        const gstOnMv = hasGst ? mv * 0.09 : 0
-        // No cash top-up at all, GST on Medisave must be paid upfront, not instalment-eligible
-        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0 }
-      } else {
-        const mv = (p.surgical+p.misc)*qty
+      const costPer = parseFloat(s.cashTopup)||0   // cashTopup field reused as costPerImplant
+      const totalFee = costPer * qty
+      // Medisave is always same-session logic (no appt toggle): 1120×qty + 830 once
+      const mv = p.surgical*qty + p.misc
+      if(costPer === 0){
+        // No cost entered — show Medisave only, $0 cash
         const gstOnMv = hasGst ? mv * 0.09 : 0
         return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0 }
       }
+      // Total fee incl GST = costPer × qty × (1+GST)
+      const totalFeeWithGst = hasGst ? totalFee * 1.09 : totalFee
+      // Cash = total fee (incl GST) - Medisave (Medisave is fixed, no GST deducted from it)
+      const cashTotal = Math.max(0, totalFeeWithGst - mv)
+      // GST on Medisave = portion of overall GST attributable to Medisave amount
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      // instEligible = cash - gstOnMv (cash top-up portion only)
+      const instEligible = Math.max(0, cashTotal - gstOnMv)
+      return { qty, mv, gstOnMv, cashBefore:Math.max(0,totalFee-mv), cashTotal, total:hasGst?totalFeeWithGst:totalFee, extraMisc:0, instEligible }
     }
     const ccp = p.crowns[s.crown].cash
     if(s.apptMode === "same"){
@@ -638,9 +625,18 @@ function renderSurg(){
         </div>
         <div class="info-box">${info}</div>`
     } else if(s.on && p.implantOnly){
-      const info = s.qty===1
-        ? `Single implant: Medisave = $1,120 + $830 misc = <strong>$1,950</strong>. No cash top-up.`
-        : `${s.qty} implants: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>. No cash top-up.`
+      const costPer = parseFloat(s.cashTopup)||0
+      let info = ""
+      if(costPer === 0){
+        info = s.qty===1
+          ? `Single implant: Medisave = $1,120 + $830 misc = <strong>$1,950</strong>. Enter cost/implant below to calculate cash payable.`
+          : `${s.qty} implants: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>. Enter cost/implant to calculate cash payable.`
+      } else {
+        const totalFee = costPer * s.qty
+        info = s.qty===1
+          ? `Cost: ${fmt(costPer)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
+          : `Cost: ${fmt(costPer)} × ${s.qty} = ${fmt(totalFee)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
+      }
       apptHtml = `<div class="info-box" style="margin-top:8px">${info}</div>`
     }
 
@@ -690,6 +686,12 @@ function renderSurg(){
         <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Fee ($)</span>
         <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
         <span style="font-size:11px;color:var(--text-ter)">per unit</span>
+      </div>` : ""}
+      ${s.on && p.implantOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cost / implant ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||""}" placeholder="optional" style="width:110px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">cash = (cost × qty) − Medisave</span>
       </div>` : ""}
       ${s.on && !p.implantMode && !p.feeOnly ? `
       <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -940,25 +942,7 @@ function updateGrand(surg, ns, pro){
   })
   addSection("Additional Prosthesis", proRows)
 
-  // ── Subtotal footer rows ──
-  const showFtr = (id, show) => { const el=document.getElementById(id); if(el) el.style.display=show?"table-row":"none" }
-  if(surg){
-    showFtr("combined-tfoot-surg", true)
-    document.getElementById("cs-fee-surg").textContent  = fmtD(surg.total)
-    document.getElementById("cs-mv-surg").textContent   = fmt(surg.mv)
-    document.getElementById("cs-cash-surg").textContent = fmtD(surg.cash)
-  } else showFtr("combined-tfoot-surg", false)
-  if(ns){
-    showFtr("combined-tfoot-ns", true)
-    document.getElementById("cs-fee-ns").textContent   = fmtD(ns.total)
-    document.getElementById("cs-chas-ns").textContent  = fmtD(ns.sub)
-    document.getElementById("cs-cash-ns").textContent  = fmtD(ns.cash)
-  } else showFtr("combined-tfoot-ns", false)
-  if(pro){
-    showFtr("combined-tfoot-pro", true)
-    document.getElementById("cs-fee-pro").textContent  = fmtD(pro.fee)
-    document.getElementById("cs-cash-pro").textContent = fmtD(pro.cash)
-  } else showFtr("combined-tfoot-pro", false)
+  // ── Subtotal footer rows removed — grand total only ──
 
   // ── Grand totals ──
   const gMv    = surg ? surg.mv    : 0
@@ -1094,7 +1078,7 @@ function renderProstho(){
       <div class="sep">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remarks</span>
-          <input type="text" value="${s.remark}" placeholder="Enter remark (e.g. upper full denture, shade A2)…" style="flex:1;font-size:12px" oninput="prosthoState['${p.id}'].remark=this.value;render()">
+          <input type="text" value="${s.remark}" placeholder="Enter remark (e.g. upper full denture, shade A2)…" style="flex:1;font-size:12px" oninput="prosthoState['${p.id}'].remark=this.value" onblur="render()">
         </div>
       </div>
       ${fee > 0 ? `<div class="sep line-tot">
