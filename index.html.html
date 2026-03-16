@@ -123,8 +123,10 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('surg')">
   <span class="section-tag tag-surgical">Surgical Procedures</span>
   <span style="font-size:12px;color:var(--text-sec)">Medisave-claimable · CPF Apr 2025 limits</span>
-  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('surg')">Clear all</button>
-  <button class="collapse-btn" id="surg-chevron" tabindex="-1">▾</button>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('surg')">Clear all</button>
+    <button class="collapse-btn" id="surg-chevron" tabindex="-1">▾</button>
+  </div>
 </div>
 <div id="surg-collapsible" class="collapsible no-print">
 <div id="surg-list"></div>
@@ -166,8 +168,10 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('nonsurg')">
   <span class="section-tag tag-nonsurg">Non-Surgical Procedures</span>
   <span style="font-size:12px;color:var(--text-sec)">CHAS-subsidised · Oct 2025 rates</span>
-  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('nonsurg')">Clear all</button>
-  <button class="collapse-btn" id="nonsurg-chevron" tabindex="-1">▾</button>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('nonsurg')">Clear all</button>
+    <button class="collapse-btn" id="nonsurg-chevron" tabindex="-1">▾</button>
+  </div>
 </div>
 <div id="nonsurg-collapsible" class="collapsible no-print">
 <!-- CHAS tier selector -->
@@ -221,8 +225,10 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div class="section-header no-print" onclick="toggleSection('prostho')">
   <span class="section-tag" style="background:var(--bg-surface);color:var(--text-sec);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Additional Prosthesis</span>
   <span style="font-size:12px;color:var(--text-sec)">Additional components · No CHAS · Cash only</span>
-  <button class="btn" style="font-size:10px;padding:3px 10px;margin-left:auto;margin-right:6px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
-  <button class="collapse-btn" id="prostho-chevron" tabindex="-1">▾</button>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
+    <button class="collapse-btn" id="prostho-chevron" tabindex="-1">▾</button>
+  </div>
 </div>
 <div id="prostho-collapsible" class="collapsible no-print">
   <div id="prostho-list"></div>
@@ -315,7 +321,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 
   <!-- Grand metric cards -->
   <div class="mgrid">
-    <div class="metric"><div class="mlabel">Grand total fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">before GST</div></div>
+    <div class="metric"><div class="mlabel">Grand total fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">incl. GST</div></div>
     <div class="metric" style="border:1px solid var(--border-lt)">
       <div class="mlabel">Patient pays cash</div>
       <div class="mval cv" id="gm-cash">$0</div>
@@ -331,6 +337,53 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
       </div>
     </div>
   </div>
+
+  <!-- GST breakdown note (only when GST on) -->
+  <div id="gst-mv-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:9px 14px;margin-bottom:12px;line-height:1.7">
+    <span style="font-weight:600">GST breakdown: </span>
+    GST on Medisave (<span id="gn-mv-amt"></span>) = <span id="gn-mv-gst" class="cv"></span> added to cash ·
+    GST on cash top-up = <span id="gn-cash-gst" class="cv"></span> ·
+    Total cash payable = <span id="gn-cash-total" class="cv" style="font-weight:600"></span>
+  </div>
+
+  <!-- Instalment panel -->
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input type="checkbox" id="instalment-toggle" onchange="updateInstalmentPanel()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
+      <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show instalment plan</label>
+      <span style="font-size:11px;color:var(--text-ter)">(cash top-up + GST on cash top-up only)</span>
+    </div>
+    <div id="instalment-panel" style="display:none">
+      <div id="inst-upfront-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:8px 12px;margin-bottom:10px;line-height:1.6">
+        <span style="font-weight:600;color:var(--text-cash)">⚠ Pay upfront on day of appointment: </span>
+        GST on Medisave amount = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — this is not eligible for instalment.
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment period</span>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="3"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 3 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="6"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8" checked> 6 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="12" onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 12 months
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="metric" style="flex:1;min-width:140px">
+          <div class="mlabel">Instalment-eligible amount</div>
+          <div class="mval cv" id="inst-total">$0</div>
+          <div class="msub">cash top-up + GST on cash top-up</div>
+        </div>
+        <div class="metric" style="flex:1;min-width:140px;background:var(--bg-info)">
+          <div class="mlabel" style="color:var(--text-info)">Monthly instalment</div>
+          <div class="mval" style="color:var(--text-info)" id="inst-monthly">$0</div>
+          <div class="msub" id="inst-label">per month for 6 months</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Buttons -->
@@ -341,7 +394,8 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 
 <div style="font-size:10px;color:var(--text-ter);line-height:1.7;border-top:0.5px solid var(--border-lt);padding-top:12px;margin-top:16px" class="no-print">
   <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit · SF812T = $420 surgical + $830 misc = $1,250/tooth · SF813T = $1,120 surgical + $830 misc = $1,950/tooth · Socket Preservation = not Medisave-claimable<br>
-  <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged. GST (if toggled) on cash component only.<br>
+  <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged.<br>
+  <strong>GST (9%):</strong> Applied to the full fee including Medisave amount. GST on Medisave portion is added to patient's cash payable. GST on CHAS subsidy portion is not charged to patient.<br>
   Subject to CPF/MOH approval. All amounts in SGD.
 </div>
 
@@ -424,20 +478,24 @@ function getChasSubsidy(p){
 }
 
 function getSurgLine(p){
-  const s = surgState[p.code], qty = s.qty, g = gst() ? 1.09 : 1.0
+  const s = surgState[p.code], qty = s.qty, hasGst = gst()
   if(p.feeOnly){
     const cb = (parseFloat(s.cashTopup)||0) * qty
-    return { qty, mv:0, cashTotal:cb*g, cashBefore:cb, total:cb*g, extraMisc:0 }
+    const cashTotal = hasGst ? cb * 1.09 : cb
+    // No Medisave, so entire cash (incl. GST) is instalment-eligible
+    return { qty, mv:0, gstOnMv:0, cashBefore:cb, cashTotal, total:cashTotal, extraMisc:0, instEligible:cashTotal }
   }
   if(p.implantMode){
     if(p.implantOnly){
-      // Misc $830 claimed once per session regardless of qty, no cash top-up ever
       if(s.apptMode === "same"){
         const mv = p.surgical*qty + p.misc
-        return { qty, mv, cashTotal:0, cashBefore:0, total:mv, extraMisc:0 }
+        const gstOnMv = hasGst ? mv * 0.09 : 0
+        // No cash top-up at all, GST on Medisave must be paid upfront, not instalment-eligible
+        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0 }
       } else {
         const mv = (p.surgical+p.misc)*qty
-        return { qty, mv, cashTotal:0, cashBefore:0, total:mv, extraMisc:0 }
+        const gstOnMv = hasGst ? mv * 0.09 : 0
+        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0 }
       }
     }
     const ccp = p.crowns[s.crown].cash
@@ -445,15 +503,26 @@ function getSurgLine(p){
       const mv = p.surgical*qty + p.misc
       const extraMisc = p.misc*(qty-1)
       const cashBefore = extraMisc + ccp*qty
-      return { qty, mv, cashTotal:cashBefore*g, cashBefore, total:mv+cashBefore*g, extraMisc }
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      // Only cash top-up + its GST is instalment-eligible; gstOnMv is upfront
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst }
     } else {
       const mv = (p.surgical+p.misc)*qty
       const cashBefore = ccp*qty
-      return { qty, mv, cashTotal:cashBefore*g, cashBefore, total:mv+cashBefore*g, extraMisc:0 }
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst }
     }
   } else {
-    const cb = (parseFloat(surgState[p.code].cashTopup)||0)*qty
-    return { qty, mv:p.medisave*qty, cashTotal:cb*g, cashBefore:cb, total:p.medisave*qty+cb*g, extraMisc:0 }
+    const mv = p.medisave*qty
+    const cashBefore = (parseFloat(surgState[p.code].cashTopup)||0)*qty
+    const gstOnMv = hasGst ? mv * 0.09 : 0
+    const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+    const cashTotal = cashTopupWithGst + gstOnMv
+    return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst }
   }
 }
 
@@ -710,14 +779,14 @@ function renderNonSurg(){
 function updateSurgSummary(){
   const active = SURG.filter(p=>surgState[p.code].on)
   const sec = document.getElementById("summary-section")
-  if(!active.length){ sec.style.display="none"; return }
+  if(!active.length){ sec.style.display="none"; return null }
   sec.style.display="block"
-  let gMv=0, gCash=0, gTotal=0
+  let gMv=0, gCash=0, gTotal=0, gGstOnMv=0, gInstEligible=0
   const tbody = document.getElementById("surg-tbody")
   tbody.innerHTML=""
   active.forEach(p=>{
     const s=surgState[p.code], l=getSurgLine(p)
-    gMv+=l.mv; gCash+=l.cashTotal; gTotal+=l.total
+    gMv+=l.mv; gCash+=l.cashTotal; gTotal+=l.total; gGstOnMv+=(l.gstOnMv||0); gInstEligible+=(l.instEligible||0)
     let label = p.code === "SB816M_IO" ? "SB816M" : p.code
     let sub = ""
     if(p.feeOnly){
@@ -747,9 +816,9 @@ function updateSurgSummary(){
   document.getElementById("sm-mv").textContent=fmt(gMv)
   const ce=document.getElementById("sm-cash")
   ce.textContent=fmtD(gCash); ce.className="mval"+(gCash>0?" cv":"")
-  document.getElementById("sm-cash-sub").textContent=gst()&&gCash>0?"incl. 9% GST":"patient pays"
-  document.getElementById("sm-total-sub").textContent=gst()?"incl. GST on cash":"before GST"
-  return {mv:gMv, cash:gCash, total:gTotal}
+  document.getElementById("sm-cash-sub").textContent=gst()&&gCash>0?"incl. GST (on total)":"patient pays"
+  document.getElementById("sm-total-sub").textContent=gst()?"incl. GST":"before GST"
+  return {mv:gMv, cash:gCash, total:gTotal, gstOnMv:gGstOnMv, instEligible:gInstEligible}
 }
 
 function updateNsSummary(){
@@ -797,11 +866,11 @@ function updateGrand(surg, ns, pro){
 
   const tbody = document.getElementById("combined-tbody")
   tbody.innerHTML = ""
-  const gn = gst() ? "*" : ""
+  const hasGst = gst()
+  const gn = hasGst ? "*" : ""
 
   const addSection = (label, rows) => {
     if(!rows.length) return
-    // section header row
     const hdr = document.createElement("tr")
     hdr.innerHTML = `<td colspan="6" style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-ter);background:var(--bg-surface);padding:6px 10px">${label}</td>`
     tbody.appendChild(hdr)
@@ -851,7 +920,7 @@ function updateGrand(surg, ns, pro){
 
   // ── Prostho rows ──
   const proRows = []
-  const gMult = gst() ? 1.09 : 1.0
+  const gMult = hasGst ? 1.09 : 1.0
   PROSTHO.forEach(p=>{
     const s=prosthoState[p.id], fee=parseFloat(s.fee)||0
     if(!fee) return
@@ -878,14 +947,12 @@ function updateGrand(surg, ns, pro){
     document.getElementById("cs-mv-surg").textContent   = fmt(surg.mv)
     document.getElementById("cs-cash-surg").textContent = fmtD(surg.cash)
   } else showFtr("combined-tfoot-surg", false)
-
   if(ns){
     showFtr("combined-tfoot-ns", true)
     document.getElementById("cs-fee-ns").textContent   = fmtD(ns.total)
     document.getElementById("cs-chas-ns").textContent  = fmtD(ns.sub)
     document.getElementById("cs-cash-ns").textContent  = fmtD(ns.cash)
   } else showFtr("combined-tfoot-ns", false)
-
   if(pro){
     showFtr("combined-tfoot-pro", true)
     document.getElementById("cs-fee-pro").textContent  = fmtD(pro.fee)
@@ -893,23 +960,74 @@ function updateGrand(surg, ns, pro){
   } else showFtr("combined-tfoot-pro", false)
 
   // ── Grand totals ──
-  const gFee   = (surg?surg.total:0) + (ns?ns.total:0) + (pro?pro.fee:0)
-  const gMv    = surg ? surg.mv  : 0
-  const gChas  = ns   ? ns.sub   : 0
+  const gMv    = surg ? surg.mv    : 0
+  const gChas  = ns   ? ns.sub     : 0
   const gCash  = (surg?surg.cash:0) + (ns?ns.cash:0) + (pro?pro.cash:0)
   const gTotal = (surg?surg.total:0) + (ns?ns.total:0) + (pro?pro.total:0)
 
-  document.getElementById("cs-fee-total").textContent  = fmtD(gFee)
+  // GST on Medisave — must be paid upfront, NOT instalment-eligible
+  const upfrontGstOnMv = surg && hasGst ? surg.gstOnMv : 0
+  // Instalment-eligible = cash top-up (+ its GST) + all NS cash + all prostho cash
+  // For surg: instEligible is returned from updateSurgSummary
+  const surgInstEligible = surg ? surg.instEligible : 0
+  const nsInstEligible   = ns   ? ns.cash           : 0  // NS has no Medisave, all cash is eligible
+  const proInstEligible  = pro  ? pro.cash           : 0  // Prostho has no Medisave, all cash is eligible
+  const totalInstEligible = surgInstEligible + nsInstEligible + proInstEligible
+
+  document.getElementById("cs-fee-total").textContent  = fmtD(gTotal)
   document.getElementById("cs-mv-total").textContent   = gMv   > 0 ? fmt(gMv)    : "—"
   document.getElementById("cs-chas-total").textContent = gChas > 0 ? fmtD(gChas) : "—"
-  document.getElementById("cs-cash-total").innerHTML   = `${fmtD(gCash)}${gst()?" <span style='font-size:10px'>(incl. GST)</span>":""}`
+  document.getElementById("cs-cash-total").innerHTML   = `${fmtD(gCash)}${hasGst?" <span style='font-size:10px'>(incl. GST)</span>":""}`
 
   document.getElementById("gm-total").textContent    = fmtD(gTotal)
   document.getElementById("gm-cash").textContent     = fmtD(gCash)
   document.getElementById("gm-mv").textContent       = fmt(gMv)
   document.getElementById("gm-chas").textContent     = fmtD(gChas)
-  document.getElementById("gm-total-sub").textContent = gst() ? "incl. GST on cash" : "before GST"
-  document.getElementById("gm-cash-sub").textContent  = gst() ? "incl. 9% GST" : "after Medisave + CHAS"
+  document.getElementById("gm-total-sub").textContent = hasGst ? "incl. GST" : "before GST"
+  document.getElementById("gm-cash-sub").textContent  = hasGst ? "incl. 9% GST" : "after Medisave + CHAS"
+
+  // GST on Medisave note
+  const gstNote = document.getElementById("gst-mv-note")
+  if(hasGst && gMv > 0){
+    gstNote.style.display = "block"
+    const cashTopupGst = totalInstEligible - (totalInstEligible / 1.09)  // approximation for display
+    document.getElementById("gn-mv-amt").textContent   = fmt(gMv)
+    document.getElementById("gn-mv-gst").textContent   = fmtD(upfrontGstOnMv)
+    document.getElementById("gn-cash-gst").textContent = fmtD(Math.max(0, gCash - upfrontGstOnMv - (gCash - upfrontGstOnMv)/1.09))
+    document.getElementById("gn-cash-total").textContent = fmtD(gCash)
+  } else {
+    gstNote.style.display = "none"
+  }
+
+  // Store for instalment calc
+  window._instEligible    = totalInstEligible
+  window._upfrontGstOnMv  = upfrontGstOnMv
+  updateInstalmentPanel()
+}
+
+function updateInstalmentPanel(){
+  const tog = document.getElementById("instalment-toggle")
+  const panel = document.getElementById("instalment-panel")
+  if(!tog || !panel) return
+  if(!tog.checked){ panel.style.display="none"; return }
+  panel.style.display="block"
+  const months = parseInt(document.querySelector('input[name="inst-months"]:checked')?.value || 6)
+  const eligible  = window._instEligible   || 0
+  const upfront   = window._upfrontGstOnMv || 0
+  const monthly   = eligible / months
+  document.getElementById("inst-total").textContent   = fmtD(eligible)
+  document.getElementById("inst-monthly").textContent = fmtD(monthly)
+  document.getElementById("inst-label").textContent   = `per month for ${months} months`
+  // Show/hide upfront note
+  const note = document.getElementById("inst-upfront-note")
+  if(note){
+    if(upfront > 0){
+      note.style.display = "block"
+      document.getElementById("inst-upfront-amt").textContent = fmtD(upfront)
+    } else {
+      note.style.display = "none"
+    }
+  }
 }
 
 // ── MATERIAL TOGGLE ──────────────────────────────────────────────────────────
