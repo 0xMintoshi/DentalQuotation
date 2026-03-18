@@ -6,17 +6,17 @@
 <title>Dental Treatment Quotation</title>
 <style>
 :root {
-  --bg-page:#f5f5f2;--bg-card:#fff;--bg-surface:#f0ede6;--bg-info:#e6f1fb;--bg-success:#eaf3de;
+  --bg-page:#f5f5f2;--bg-card:#fff;--bg-surface:#f0ede6;--bg-info:#e6f1fb;--bg-success:#eaf3de;--bg-purple:#eeedfe;
   --text-pri:#1a1a18;--text-sec:#5f5e5a;--text-ter:#8a8880;
-  --text-info:#185fa5;--text-success:#2f6010;--text-cash:#b06000;--text-mv:#1479b8;
+  --text-info:#185fa5;--text-success:#2f6010;--text-cash:#b06000;--text-mv:#1479b8;--text-purple:#534ab7;
   --border-lt:rgba(0,0,0,.11);--border-md:rgba(0,0,0,.24);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg-page:#1a1a18;--bg-card:#242422;--bg-surface:#2c2c2a;--bg-info:#0c2a44;--bg-success:#172d06;
+    --bg-page:#1a1a18;--bg-card:#242422;--bg-surface:#2c2c2a;--bg-info:#0c2a44;--bg-success:#172d06;--bg-purple:#26215c;
     --text-pri:#f0ede6;--text-sec:#a8a49e;--text-ter:#706d68;
-    --text-info:#78bbf0;--text-success:#7aba3a;--text-cash:#e09030;--text-mv:#5ab0f0;
+    --text-info:#78bbf0;--text-success:#7aba3a;--text-cash:#e09030;--text-mv:#5ab0f0;--text-purple:#afa9ec;
     --border-lt:rgba(255,255,255,.09);--border-md:rgba(255,255,255,.21);
   }
 }
@@ -132,36 +132,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div id="surg-list"></div>
 </div>
 
-<!-- Surgical summary -->
-<div id="summary-section">
-  <div style="display:flex;align-items:center;gap:8px;margin:1.5rem 0 8px">
-    <span class="section-tag tag-surgical" style="font-size:10px">Surgical</span>
-    <span class="lbl" style="margin:0">Summary</span>
-  </div>
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);overflow:hidden;margin-bottom:10px">
-    <table>
-      <thead><tr>
-        <th style="width:38%;text-align:left">Procedure</th>
-        <th style="width:6%">Qty</th>
-        <th style="width:19%">Medisave</th>
-        <th style="width:17%">Cash</th>
-        <th style="width:20%">Total</th>
-      </tr></thead>
-      <tbody id="surg-tbody"></tbody>
-      <tfoot><tr>
-        <td colspan="2">Surgical total</td>
-        <td id="sft-mv" class="mv"></td>
-        <td id="sft-cash"></td>
-        <td id="sft-total" style="font-size:13px"></td>
-      </tr></tfoot>
-    </table>
-  </div>
-  <div class="mgrid">
-    <div class="metric"><div class="mlabel">Surgical total</div><div class="mval" id="sm-total">$0</div><div class="msub" id="sm-total-sub">before GST</div></div>
-    <div class="metric"><div class="mlabel">Medisave (max)</div><div class="mval mv" id="sm-mv">$0</div><div class="msub">from CPF</div></div>
-    <div class="metric"><div class="mlabel">Cash — surgical</div><div class="mval" id="sm-cash">$0</div><div class="msub" id="sm-cash-sub">patient pays</div></div>
-  </div>
-</div>
+<!-- Surgical summary removed — see combined Summary below -->
 
 <!-- ═══ NON-SURGICAL SECTION ═══ -->
 <hr class="divider">
@@ -187,43 +158,10 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div id="nonsurg-list"></div>
 </div>
 
-<!-- Non-surgical summary -->
-<div id="sum-nonsurg">
-  <div style="display:flex;align-items:center;gap:8px;margin:1.5rem 0 8px">
-    <span class="section-tag tag-nonsurg" style="font-size:10px">Non-Surgical</span>
-    <span class="lbl" style="margin:0">Summary</span>
-  </div>
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);overflow:hidden;margin-bottom:10px">
-    <table>
-      <thead><tr>
-        <th style="width:34%;text-align:left">Procedure</th>
-        <th style="width:6%">Qty</th>
-        <th style="width:14%">Total Fee</th>
-        <th style="width:19%">CHAS Subsidy</th>
-        <th style="width:13%">Cash</th>
-        <th style="width:14%">Line Total</th>
-      </tr></thead>
-      <tbody id="ns-tbody"></tbody>
-      <tfoot><tr>
-        <td colspan="2">Non-surgical total</td>
-        <td id="nft-fee"></td>
-        <td id="nft-sub" class="sv"></td>
-        <td id="nft-cash"></td>
-        <td id="nft-total" style="font-size:13px"></td>
-      </tr></tfoot>
-    </table>
-  </div>
-  <div class="mgrid">
-    <div class="metric"><div class="mlabel">Non-surgical total fee</div><div class="mval" id="nm-total">$0</div><div class="msub" id="nm-total-sub">before GST</div></div>
-    <div class="metric"><div class="mlabel">CHAS subsidy</div><div class="mval sv" id="nm-sub">$0</div><div class="msub">from CHAS</div></div>
-    <div class="metric"><div class="mlabel">Cash — non-surgical</div><div class="mval" id="nm-cash">$0</div><div class="msub" id="nm-cash-sub">patient pays</div></div>
-  </div>
-</div>
-
 <!-- ═══ PROSTHODONTIC SECTION ═══ -->
 <hr class="divider">
 <div class="section-header no-print" onclick="toggleSection('prostho')">
-  <span class="section-tag" style="background:var(--bg-surface);color:var(--text-sec);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Additional Prosthesis</span>
+  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Additional Prosthesis</span>
   <span style="font-size:12px;color:var(--text-sec)">Additional components · No CHAS · Cash only</span>
   <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
     <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
@@ -234,42 +172,11 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   <div id="prostho-list"></div>
 </div>
 
-<!-- Prosthodontic summary -->
-<div id="sum-prostho" style="display:none">
-  <div style="display:flex;align-items:center;gap:8px;margin:1.5rem 0 8px">
-    <span class="section-tag" style="background:var(--bg-surface);color:var(--text-sec);font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px">Additional Prosthesis</span>
-    <span class="lbl" style="margin:0">Summary</span>
-  </div>
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);overflow:hidden;margin-bottom:10px">
-    <table>
-      <thead><tr>
-        <th style="width:42%;text-align:left">Item</th>
-        <th style="width:6%">Qty</th>
-        <th style="width:18%">Total Fee</th>
-        <th style="width:18%">Cash</th>
-        <th style="width:16%">Line Total</th>
-      </tr></thead>
-      <tbody id="prostho-tbody"></tbody>
-      <tfoot><tr>
-        <td colspan="2">Additional Prosthesis total</td>
-        <td id="pft-fee"></td>
-        <td id="pft-cash"></td>
-        <td id="pft-total" style="font-size:13px"></td>
-      </tr></tfoot>
-    </table>
-  </div>
-  <div class="mgrid">
-    <div class="metric"><div class="mlabel">Additional Prosthesis total</div><div class="mval" id="pm-total">$0</div><div class="msub" id="pm-total-sub">before GST</div></div>
-    <div class="metric"><div class="mlabel">CHAS subsidy</div><div class="mval sv">—</div><div class="msub">not applicable</div></div>
-    <div class="metric"><div class="mlabel">Cash — additional prosthesis</div><div class="mval cv" id="pm-cash">$0</div><div class="msub" id="pm-cash-sub">patient pays</div></div>
-  </div>
-</div>
-
-<!-- ═══ COMBINED SUMMARY ═══ -->
+<!-- ═══ SUMMARY ═══ -->
 <div id="combined-summary" style="display:none">
   <hr class="divider">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
-    <span style="font-size:15px;font-weight:600;color:var(--text-pri)">Combined Summary</span>
+    <span style="font-size:15px;font-weight:600;color:var(--text-pri)">Summary</span>
     <span style="font-size:11px;color:var(--text-sec)">All selected treatments</span>
   </div>
 
@@ -781,80 +688,23 @@ function renderNonSurg(){
 
 function updateSurgSummary(){
   const active = SURG.filter(p=>surgState[p.code].on)
-  const sec = document.getElementById("summary-section")
-  if(!active.length){ sec.style.display="none"; return null }
-  sec.style.display="block"
+  if(!active.length){ return null }
   let gMv=0, gCash=0, gTotal=0, gGstOnMv=0, gInstEligible=0
-  const tbody = document.getElementById("surg-tbody")
-  tbody.innerHTML=""
   active.forEach(p=>{
-    const s=surgState[p.code], l=getSurgLine(p)
+    const l=getSurgLine(p)
     gMv+=l.mv; gCash+=l.cashTotal; gTotal+=l.total; gGstOnMv+=(l.gstOnMv||0); gInstEligible+=(l.instEligible||0)
-    let label = p.code === "SB816M_IO" ? "SB816M" : p.code
-    let sub = ""
-    if(p.feeOnly){
-      // no extra label changes needed
-    } else if(p.implantMode && !p.implantOnly){
-      label += ` — ${p.crowns[s.crown].label}, ${s.apptMode==="same"?"same appt":"diff. appts"}`
-      if(s.qty > 1 && s.apptMode === "same")
-        sub = `<div style="font-size:10px;color:var(--text-ter);margin-top:2px">Extra misc: ${fmt(l.extraMisc)} → cash</div>`
-    } else if(p.implantOnly){
-      label += ` — implant only, ${s.apptMode==="same"?"same appt (misc×1)":"diff. appts"}`
-      if(s.qty > 1 && s.apptMode === "same")
-        sub = `<div style="font-size:10px;color:var(--text-ter);margin-top:2px">$1,120 × ${s.qty} + $830 misc once = ${fmt(l.mv)} · no cash</div>`
-    }
-    const gn=gst()?"*":"", cashStr=l.cashTotal>0?`<span class="cv">${fmtD(l.cashTotal)}${gn}</span>`:`<span style="color:var(--text-ter)">—</span>`
-    const mvStr=p.feeOnly?`<span style="color:var(--text-ter)">—</span>`:`<span class="mv" style="font-weight:600">${fmt(l.mv)}</span>`
-    const tr=document.createElement("tr")
-    tr.innerHTML=`<td><div style="font-weight:600">${label}</div><div style="font-size:10px;color:var(--text-ter)">${p.unit}</div>${sub}</td>
-      <td>${l.qty}</td><td>${mvStr}</td>
-      <td>${cashStr}</td><td style="font-weight:600">${fmtD(l.total)}</td>`
-    tbody.appendChild(tr)
   })
-  const cashFt=gCash>0?`<span class="cv">${fmtD(gCash)}${gst()?" (incl. 9% GST)":""}</span>`:`<span style="color:var(--text-ter)">—</span>`
-  document.getElementById("sft-mv").textContent=fmt(gMv)
-  document.getElementById("sft-cash").innerHTML=cashFt
-  document.getElementById("sft-total").textContent=fmtD(gTotal)
-  document.getElementById("sm-total").textContent=fmtD(gTotal)
-  document.getElementById("sm-mv").textContent=fmt(gMv)
-  const ce=document.getElementById("sm-cash")
-  ce.textContent=fmtD(gCash); ce.className="mval"+(gCash>0?" cv":"")
-  document.getElementById("sm-cash-sub").textContent=gst()&&gCash>0?"incl. GST (on total)":"patient pays"
-  document.getElementById("sm-total-sub").textContent=gst()?"incl. GST":"before GST"
   return {mv:gMv, cash:gCash, total:gTotal, gstOnMv:gGstOnMv, instEligible:gInstEligible}
 }
 
 function updateNsSummary(){
   const active = NS.filter(p=>nsState[p.id].on)
-  const sec = document.getElementById("sum-nonsurg")
-  if(!active.length){ sec.style.display="none"; return null }
-  sec.style.display="block"
+  if(!active.length){ return null }
   let gFee=0, gSub=0, gCash=0, gTotal=0
-  const tbody=document.getElementById("ns-tbody")
-  tbody.innerHTML=""
   active.forEach(p=>{
     const l=getNsLine(p)
     gFee+=l.totalFee; gSub+=l.subsidyTotal; gCash+=l.cashTotal; gTotal+=l.total
-    const gn=gst()?"*":"", cashStr=l.cashTotal>0?`<span class="cv">${fmtD(l.cashTotal)}${gn}</span>`:`<span style="color:var(--text-ter)">—</span>`
-    const subStr=l.subsidyTotal>0?`<span class="sv">${fmtD(l.subsidyTotal)}</span>`:`<span style="color:var(--text-ter)">—</span>`
-    const tr=document.createElement("tr")
-    tr.innerHTML=`<td><div style="font-weight:600">${p.name}</div><div style="font-size:10px;color:var(--text-ter)">${p.unit}${l.subsidisedQty<l.qty?` · ${l.subsidisedQty}/${l.qty} subsidised`:""}</div></td>
-      <td>${l.qty}</td><td style="font-weight:600">${fmtD(l.totalFee)}</td>
-      <td>${subStr}</td><td>${cashStr}</td><td style="font-weight:600">${fmtD(l.total)}</td>`
-    tbody.appendChild(tr)
   })
-  const subFt=gSub>0?`<span class="sv">${fmtD(gSub)}</span>`:`<span style="color:var(--text-ter)">—</span>`
-  const cashFt=gCash>0?`<span class="cv">${fmtD(gCash)}${gst()?" (incl. 9% GST)":""}</span>`:`<span style="color:var(--text-ter)">—</span>`
-  document.getElementById("nft-fee").textContent=fmtD(gFee)
-  document.getElementById("nft-sub").innerHTML=subFt
-  document.getElementById("nft-cash").innerHTML=cashFt
-  document.getElementById("nft-total").textContent=fmtD(gTotal)
-  document.getElementById("nm-total").textContent=fmtD(gTotal)
-  const nce=document.getElementById("nm-cash")
-  nce.textContent=fmtD(gCash); nce.className="mval"+(gCash>0?" cv":"")
-  document.getElementById("nm-sub").textContent=fmtD(gSub)
-  document.getElementById("nm-cash-sub").textContent=gst()&&gCash>0?"incl. 9% GST":"patient pays"
-  document.getElementById("nm-total-sub").textContent=gst()?"incl. GST on cash":"before GST"
   return {fee:gFee, sub:gSub, cash:gCash, total:gTotal}
 }
 
@@ -872,10 +722,17 @@ function updateGrand(surg, ns, pro){
   const hasGst = gst()
   const gn = hasGst ? "*" : ""
 
+  const sectionStyles = {
+    "Surgical Procedures":    "background:var(--bg-info);color:var(--text-info)",
+    "Non-Surgical Procedures":"background:var(--bg-success);color:var(--text-success)",
+    "Additional Prosthesis":  "background:var(--bg-purple);color:var(--text-purple)",
+  }
+
   const addSection = (label, rows) => {
     if(!rows.length) return
+    const style = sectionStyles[label] || "background:var(--bg-surface);color:var(--text-sec)"
     const hdr = document.createElement("tr")
-    hdr.innerHTML = `<td colspan="6" style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-ter);background:var(--bg-surface);padding:6px 10px">${label}</td>`
+    hdr.innerHTML = `<td colspan="6" style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;${style};padding:6px 10px">${label}</td>`
     tbody.appendChild(hdr)
     rows.forEach(r => tbody.appendChild(r))
   }
@@ -1090,45 +947,18 @@ function renderProstho(){
 }
 
 function updateProsthoSummary(){
-  const sec = document.getElementById("sum-prostho")
-  let gFee = 0, gCash = 0
-  const tbody = document.getElementById("prostho-tbody")
-  if(!tbody){ if(sec) sec.style.display="none"; return null }
-  tbody.innerHTML = ""
   const g = gst() ? 1.09 : 1.0
-  let hasContent = false
+  let gFee = 0, gCash = 0, hasContent = false
   PROSTHO.forEach(p => {
     const s = prosthoState[p.id]
     const fee = parseFloat(s.fee)||0
-    if(fee === 0) return
+    if(!fee) return
     hasContent = true
     const total = fee * s.qty
     const cash = total * g
     gFee += total; gCash += cash
-    const gn = gst() ? "*" : ""
-    const tr = document.createElement("tr")
-    tr.innerHTML = `
-      <td><div style="font-weight:600">${p.name}</div>
-        ${s.remark?`<div style="font-size:10px;color:var(--text-ter);margin-top:1px;font-style:italic">${s.remark}</div>`:""}
-      </td>
-      <td>${s.qty}</td>
-      <td style="font-weight:600">${fmtD(total)}</td>
-      <td class="cv" style="font-weight:600">${fmtD(cash)}${gn}</td>
-      <td style="font-weight:600">${fmtD(cash)}</td>`
-    tbody.appendChild(tr)
   })
-  if(!hasContent){ if(sec) sec.style.display="none"; return null }
-  if(sec) sec.style.display = "block"
-  const gn = gst() ? " (incl. 9% GST)" : ""
-  document.getElementById("pft-fee").textContent = fmtD(gFee)
-  document.getElementById("pft-cash").innerHTML = gCash > 0 ? `<span class="cv">${fmtD(gCash)}${gn}</span>` : `<span style="color:var(--text-ter)">—</span>`
-  document.getElementById("pft-total").textContent = fmtD(gCash)
-  document.getElementById("pm-total").textContent = fmtD(gCash)
-  document.getElementById("pm-cash").textContent = fmtD(gCash)
-  const cashEl = document.getElementById("pm-cash")
-  cashEl.className = "mval" + (gCash > 0 ? " cv" : "")
-  document.getElementById("pm-cash-sub").textContent = gst() && gCash > 0 ? "incl. 9% GST" : "patient pays"
-  document.getElementById("pm-total-sub").textContent = gst() ? "incl. GST" : "before GST"
+  if(!hasContent) return null
   return { fee: gFee, cash: gCash, total: gCash }
 }
 
