@@ -1130,52 +1130,67 @@ function exportExcel(){
 }
 
 
-// ── SIGNATURE VIA QR ─────────────────────────────────────────────────────────
+// ── SIGNATURE VIA QR (Firebase Realtime Database relay) ──────────────────────
+//
+// SETUP — one-time, takes ~5 minutes:
+//  1. Go to console.firebase.google.com → Add project (any name)
+//  2. Left sidebar: Build → Realtime Database → Create Database → Start in test mode
+//  3. Copy your database URL (looks like https://your-app-default-rtdb.firebaseio.com)
+//  4. Paste it below, replacing the placeholder:
 
-const _urlParams = new URLSearchParams(window.location.search)
-const _signBlobId = _urlParams.get('sign')
+const FIREBASE_DB = 'https://dental-quotation-default-rtdb.asia-southeast1.firebasedatabase.app/'
 
-if(_signBlobId){
-  // SIGNING MODE — hide main app, show canvas
+// ─────────────────────────────────────────────────────────────────────────────
+
+function _fbUrl(sessionId){ return `${FIREBASE_DB}/sigs/${sessionId}.json` }
+
+function _randId(){
+  return Math.random().toString(36).slice(2,10) + Date.now().toString(36)
+}
+
+const _urlParams   = new URLSearchParams(window.location.search)
+const _signSession = _urlParams.get('sign')
+
+if(_signSession){
+  // ── PATIENT SIGNING PAGE ──────────────────────────────────────────────────
   document.querySelector('.wrap').style.display = 'none'
   const sp = document.getElementById('signing-page')
   sp.style.display = 'flex'
   const canvas = document.getElementById('sig-canvas')
 
-  // Size canvas properly after layout
   setTimeout(() => {
-    canvas.width = canvas.offsetWidth
+    canvas.width  = canvas.offsetWidth
     canvas.height = canvas.offsetHeight
-  }, 50)
+  }, 60)
 
   const ctx = () => canvas.getContext('2d')
   let drawing = false, lx = 0, ly = 0
 
-  function pos(e){
+  function _pos(e){
     const r = canvas.getBoundingClientRect()
-    const src = e.touches ? e.touches[0] : e
-    return { x:(src.clientX-r.left)*(canvas.width/r.width), y:(src.clientY-r.top)*(canvas.height/r.height) }
+    const s = e.touches ? e.touches[0] : e
+    return { x:(s.clientX-r.left)*(canvas.width/r.width), y:(s.clientY-r.top)*(canvas.height/r.height) }
   }
-  function startDraw(e){ drawing=true; const p=pos(e); lx=p.x; ly=p.y }
-  function draw(e){
-    if(!drawing) return
-    e.preventDefault()
-    const p=pos(e), c=ctx()
+  function _start(e){ drawing=true; const p=_pos(e); lx=p.x; ly=p.y }
+  function _draw(e){
+    if(!drawing) return; e.preventDefault()
+    const p=_pos(e), c=ctx()
     c.beginPath(); c.moveTo(lx,ly); c.lineTo(p.x,p.y)
     c.strokeStyle='#1a1a18'; c.lineWidth=2.5; c.lineCap='round'; c.lineJoin='round'; c.stroke()
     lx=p.x; ly=p.y
   }
-  function endDraw(){ drawing=false }
+  function _end(){ drawing=false }
 
-  canvas.addEventListener('mousedown', startDraw)
-  canvas.addEventListener('mousemove', draw)
-  canvas.addEventListener('mouseup', endDraw)
-  canvas.addEventListener('mouseleave', endDraw)
-  canvas.addEventListener('touchstart', e=>{e.preventDefault();startDraw(e)}, {passive:false})
-  canvas.addEventListener('touchmove', draw, {passive:false})
-  canvas.addEventListener('touchend', endDraw)
+  canvas.addEventListener('mousedown',  _start)
+  canvas.addEventListener('mousemove',  _draw)
+  canvas.addEventListener('mouseup',    _end)
+  canvas.addEventListener('mouseleave', _end)
+  canvas.addEventListener('touchstart', e=>{e.preventDefault();_start(e)}, {passive:false})
+  canvas.addEventListener('touchmove',  _draw, {passive:false})
+  canvas.addEventListener('touchend',   _end)
 
-  document.getElementById('sig-clear-btn').onclick = () => ctx().clearRect(0,0,canvas.width,canvas.height)
+  document.getElementById('sig-clear-btn').onclick = () =>
+    ctx().clearRect(0, 0, canvas.width, canvas.height)
 
   document.getElementById('sig-submit-btn').onclick = async () => {
     const btn = document.getElementById('sig-submit-btn')
@@ -1183,82 +1198,78 @@ if(_signBlobId){
     btn.disabled = true; btn.textContent = 'Submitting…'
     try {
       const dataUrl = canvas.toDataURL('image/png')
-      const resp = await fetch(`https://jsonblob.com/api/jsonBlob/${_signBlobId}`, {
-        method:'PUT',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({status:'signed', signature:dataUrl})
+      const resp = await fetch(_fbUrl(_signSession), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'signed', signature: dataUrl })
       })
-      if(resp.ok){
-        document.getElementById('signing-page').innerHTML = `
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem;font-family:system-ui">
-            <div style="font-size:48px;margin-bottom:1rem">✓</div>
-            <h2 style="font-size:20px;font-weight:600;color:#1479b8;margin:0 0 8px">Signature submitted!</h2>
-            <p style="font-size:14px;color:#666">You may now close this page.</p>
-          </div>`
-      } else {
-        throw new Error('Server error')
-      }
-    } catch(e){
-      msg.textContent = 'Failed to submit. Please try again.'
+      if(!resp.ok) throw new Error('Firebase write failed: ' + resp.status)
+      document.getElementById('signing-page').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    height:100%;text-align:center;padding:2rem;font-family:system-ui">
+          <div style="font-size:56px;margin-bottom:1rem">✓</div>
+          <h2 style="font-size:20px;font-weight:600;color:#1479b8;margin:0 0 8px">Signature submitted!</h2>
+          <p style="font-size:14px;color:#666">You may now close this page.</p>
+        </div>`
+    } catch(err){
+      msg.textContent = 'Failed to submit — ' + err.message
       btn.disabled = false; btn.textContent = 'Submit Signature'
     }
   }
 }
 
+// ── DESKTOP: generate QR and poll ────────────────────────────────────────────
+
 async function generateSigningQR(){
+  if(FIREBASE_DB.includes('YOUR_PROJECT_ID')){
+    alert('Firebase is not configured yet.\n\nPlease follow the setup instructions in the code (search for FIREBASE_DB) and replace YOUR_PROJECT_ID with your actual Firebase project ID.')
+    return
+  }
+
   const btn = document.getElementById('get-sig-btn')
   btn.textContent = 'Creating…'; btn.disabled = true
 
-  let blobId
+  const sessionId = _randId()
   try {
-    const resp = await fetch('https://jsonblob.com/api/jsonBlob', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({status:'waiting', signature:null})
+    const resp = await fetch(_fbUrl(sessionId), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'waiting', signature: null })
     })
-    const loc = resp.headers.get('Location')
-    blobId = loc.split('/').pop()
-  } catch(e){
-    alert('Could not create signing session. Please check your connection.')
+    if(!resp.ok) throw new Error('HTTP ' + resp.status)
+  } catch(err){
+    alert('Could not create signing session.\n\nError: ' + err.message + '\n\nMake sure your Firebase Realtime Database URL is correct and the database is in test mode (open read/write).')
     btn.textContent = 'Get signature'; btn.disabled = false
     return
   }
 
-  const sigUrl = window.location.origin + window.location.pathname + '?sign=' + blobId
-
-  // Show QR modal
-  const modal = document.getElementById('qr-modal')
-  modal.style.display = 'flex'
   btn.textContent = 'Get signature'; btn.disabled = false
+
+  const sigUrl = window.location.origin + window.location.pathname + '?sign=' + sessionId
+  const modal  = document.getElementById('qr-modal')
+  modal.style.display = 'flex'
 
   const qrDiv = document.getElementById('qr-code')
   qrDiv.innerHTML = ''
   if(window.QRCode){
-    new QRCode(qrDiv, { text: sigUrl, width:200, height:200, colorDark:'#1a1a18', colorLight:'#ffffff' })
+    new QRCode(qrDiv, { text:sigUrl, width:200, height:200, colorDark:'#1a1a18', colorLight:'#ffffff' })
   } else {
-    qrDiv.innerHTML = `<p style="font-size:11px;color:#666;word-break:break-all">${sigUrl}</p>`
+    qrDiv.innerHTML = `<p style="font-size:10px;color:#666;word-break:break-all;max-width:200px">${sigUrl}</p>`
   }
-
   document.getElementById('qr-status').textContent = 'Waiting for patient to sign…'
 
-  // Poll for signature
   window._sigPoll = setInterval(async () => {
     try {
-      const r = await fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`, {
-        headers:{'Accept':'application/json'}
-      })
+      const r = await fetch(_fbUrl(sessionId))
       if(!r.ok) return
       const data = await r.json()
-      if(data.status === 'signed' && data.signature){
-        clearInterval(window._sigPoll)
+      if(data && data.status === 'signed' && data.signature){
+        clearInterval(window._sigPoll); window._sigPoll = null
         document.getElementById('qr-status').textContent = '✓ Signature received!'
-        setTimeout(() => {
-          placeSignature(data.signature)
-          closeQrModal()
-        }, 800)
+        setTimeout(() => { placeSignature(data.signature); closeQrModal() }, 700)
       }
     } catch(e){ /* keep polling */ }
-  }, 2500)
+  }, 2000)
 }
 
 function closeQrModal(){
@@ -1270,14 +1281,14 @@ function placeSignature(dataUrl){
   const area = document.getElementById('sig-image-area')
   area.innerHTML = `<img src="${dataUrl}" style="height:42px;max-width:100%;object-fit:contain;object-position:left bottom">`
   document.getElementById('sig-label').textContent = 'Signed digitally'
-  document.getElementById('get-sig-btn').style.display = 'none'
+  document.getElementById('get-sig-btn').style.display  = 'none'
   document.getElementById('clear-sig-btn').style.display = 'inline-block'
 }
 
 function clearSignature(){
   document.getElementById('sig-image-area').innerHTML = ''
-  document.getElementById('sig-label').textContent = "Patient\'s signature"
-  document.getElementById('get-sig-btn').style.display = 'inline-block'
+  document.getElementById('sig-label').textContent     = "Patient\'s signature"
+  document.getElementById('get-sig-btn').style.display  = 'inline-block'
   document.getElementById('clear-sig-btn').style.display = 'none'
 }
 
