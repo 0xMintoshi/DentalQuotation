@@ -311,7 +311,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
     </p>
     <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-end">
       <div style="flex:1;min-width:180px">
-        <div id="sig-image-area" style="border-bottom:1px solid var(--text-pri);height:48px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:2px"></div>
+        <div id="sig-image-area" style="border-bottom:1px solid var(--text-pri);height:50px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:2px"></div>
         <div style="display:flex;align-items:center;gap:8px">
           <span id="sig-label" style="font-size:11px;color:var(--text-sec)">Patient's signature</span>
           <button id="get-sig-btn" onclick="generateSigningQR()" class="no-print" style="font-size:10px;padding:2px 9px;border:0.5px solid var(--border-md);background:var(--bg-info);color:var(--text-info);border-radius:20px;cursor:pointer;font-family:inherit;font-weight:500">Get signature</button>
@@ -319,7 +319,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
         </div>
       </div>
       <div style="flex:1;min-width:180px">
-        <div style="border-bottom:1px solid var(--text-pri);height:48px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:4px">
+        <div style="border-bottom:1px solid var(--text-pri);height:50px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:4px">
           <span id="sig-date" style="font-size:13px;color:var(--text-pri)"></span>
         </div>
         <div style="font-size:11px;color:var(--text-sec)">Date</div>
@@ -1138,7 +1138,7 @@ function exportExcel(){
 //  3. Copy your database URL (looks like https://your-app-default-rtdb.firebaseio.com)
 //  4. Paste it below, replacing the placeholder:
 
-const FIREBASE_DB = 'https://dental-quotation-default-rtdb.asia-southeast1.firebasedatabase.app/'
+const FIREBASE_DB = 'https://dental-quotation-default-rtdb.asia-southeast1.firebasedatabase.app'
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1279,7 +1279,7 @@ function closeQrModal(){
 
 function placeSignature(dataUrl){
   const area = document.getElementById('sig-image-area')
-  area.innerHTML = `<img src="${dataUrl}" style="height:42px;max-width:100%;object-fit:contain;object-position:left bottom">`
+  area.innerHTML = `<img src="${dataUrl}" style="width:100%;height:44px;object-fit:fill;object-position:center bottom">`
   document.getElementById('sig-label').textContent = 'Signed digitally'
   document.getElementById('get-sig-btn').style.display  = 'none'
   document.getElementById('clear-sig-btn').style.display = 'inline-block'
