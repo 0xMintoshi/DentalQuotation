@@ -97,6 +97,34 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </style>
 </head>
 <body>
+<!-- ── SIGNING PAGE (shown when ?sign= param present) ── -->
+<div id="signing-page" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;flex-direction:column;padding:1.25rem;box-sizing:border-box">
+  <div style="text-align:center;margin-bottom:1rem">
+    <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Dental Treatment Quotation</div>
+    <h2 style="font-size:18px;font-weight:600;color:#1a1a18;margin:0">Please sign below</h2>
+    <p style="font-size:12px;color:#666;margin-top:4px">Draw your signature in the box using your finger</p>
+  </div>
+  <canvas id="sig-canvas" style="flex:1;width:100%;border:1.5px solid #ccc;border-radius:10px;background:#fafaf8;touch-action:none;cursor:crosshair;display:block"></canvas>
+  <div style="display:flex;gap:10px;margin-top:1rem">
+    <button id="sig-clear-btn" style="flex:1;padding:12px;font-size:14px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Clear</button>
+    <button id="sig-submit-btn" style="flex:2;padding:12px;font-size:14px;font-weight:600;border:none;border-radius:8px;background:#1479b8;color:#fff;cursor:pointer;font-family:inherit">Submit Signature</button>
+  </div>
+  <p id="sig-msg" style="text-align:center;font-size:12px;color:#666;margin-top:8px;min-height:18px"></p>
+</div>
+
+<!-- ── QR MODAL (shown on desktop while waiting) ── -->
+<div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:8888;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px;color:#1a1a18">Patient Signature</div>
+    <p style="font-size:12px;color:#666;margin-bottom:1.25rem">Ask the patient to scan this QR code with their phone to sign</p>
+    <div id="qr-code" style="display:inline-block;padding:10px;border:1px solid #eee;border-radius:8px;margin-bottom:1rem"></div>
+    <div id="qr-status" style="font-size:12px;color:#1479b8;margin-bottom:1.25rem;min-height:18px">Waiting for patient to sign…</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeQrModal()" style="flex:1;padding:9px;font-size:12px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="wrap">
 
 <!-- Header -->
@@ -283,8 +311,12 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
     </p>
     <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-end">
       <div style="flex:1;min-width:180px">
-        <div style="border-bottom:1px solid var(--text-pri);height:48px;margin-bottom:6px"></div>
-        <div style="font-size:11px;color:var(--text-sec)">Patient's signature</div>
+        <div id="sig-image-area" style="border-bottom:1px solid var(--text-pri);height:48px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:2px"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="sig-label" style="font-size:11px;color:var(--text-sec)">Patient's signature</span>
+          <button id="get-sig-btn" onclick="generateSigningQR()" class="no-print" style="font-size:10px;padding:2px 9px;border:0.5px solid var(--border-md);background:var(--bg-info);color:var(--text-info);border-radius:20px;cursor:pointer;font-family:inherit;font-weight:500">Get signature</button>
+          <button id="clear-sig-btn" onclick="clearSignature()" class="no-print" style="display:none;font-size:10px;padding:2px 9px;border:0.5px solid var(--border-md);background:var(--bg-surface);color:var(--text-sec);border-radius:20px;cursor:pointer;font-family:inherit">Clear</button>
+        </div>
       </div>
       <div style="flex:1;min-width:180px">
         <div style="border-bottom:1px solid var(--text-pri);height:48px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:4px">
@@ -312,6 +344,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </div><!-- .wrap -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 // ── DATA ────────────────────────────────────────────────────────────────────
 
@@ -1094,6 +1127,158 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb, ws, "Quotation")
   const safe=(patient==="(Not specified)"?"Patient":patient).replace(/\s+/g,"_")
   XLSX.writeFile(wb, `Dental_Quote_${safe}_${new Date().toISOString().slice(0,10)}.xlsx`)
+}
+
+
+// ── SIGNATURE VIA QR ─────────────────────────────────────────────────────────
+
+const _urlParams = new URLSearchParams(window.location.search)
+const _signBlobId = _urlParams.get('sign')
+
+if(_signBlobId){
+  // SIGNING MODE — hide main app, show canvas
+  document.querySelector('.wrap').style.display = 'none'
+  const sp = document.getElementById('signing-page')
+  sp.style.display = 'flex'
+  const canvas = document.getElementById('sig-canvas')
+
+  // Size canvas properly after layout
+  setTimeout(() => {
+    canvas.width = canvas.offsetWidth
+    canvas.height = canvas.offsetHeight
+  }, 50)
+
+  const ctx = () => canvas.getContext('2d')
+  let drawing = false, lx = 0, ly = 0
+
+  function pos(e){
+    const r = canvas.getBoundingClientRect()
+    const src = e.touches ? e.touches[0] : e
+    return { x:(src.clientX-r.left)*(canvas.width/r.width), y:(src.clientY-r.top)*(canvas.height/r.height) }
+  }
+  function startDraw(e){ drawing=true; const p=pos(e); lx=p.x; ly=p.y }
+  function draw(e){
+    if(!drawing) return
+    e.preventDefault()
+    const p=pos(e), c=ctx()
+    c.beginPath(); c.moveTo(lx,ly); c.lineTo(p.x,p.y)
+    c.strokeStyle='#1a1a18'; c.lineWidth=2.5; c.lineCap='round'; c.lineJoin='round'; c.stroke()
+    lx=p.x; ly=p.y
+  }
+  function endDraw(){ drawing=false }
+
+  canvas.addEventListener('mousedown', startDraw)
+  canvas.addEventListener('mousemove', draw)
+  canvas.addEventListener('mouseup', endDraw)
+  canvas.addEventListener('mouseleave', endDraw)
+  canvas.addEventListener('touchstart', e=>{e.preventDefault();startDraw(e)}, {passive:false})
+  canvas.addEventListener('touchmove', draw, {passive:false})
+  canvas.addEventListener('touchend', endDraw)
+
+  document.getElementById('sig-clear-btn').onclick = () => ctx().clearRect(0,0,canvas.width,canvas.height)
+
+  document.getElementById('sig-submit-btn').onclick = async () => {
+    const btn = document.getElementById('sig-submit-btn')
+    const msg = document.getElementById('sig-msg')
+    btn.disabled = true; btn.textContent = 'Submitting…'
+    try {
+      const dataUrl = canvas.toDataURL('image/png')
+      const resp = await fetch(`https://jsonblob.com/api/jsonBlob/${_signBlobId}`, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({status:'signed', signature:dataUrl})
+      })
+      if(resp.ok){
+        document.getElementById('signing-page').innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem;font-family:system-ui">
+            <div style="font-size:48px;margin-bottom:1rem">✓</div>
+            <h2 style="font-size:20px;font-weight:600;color:#1479b8;margin:0 0 8px">Signature submitted!</h2>
+            <p style="font-size:14px;color:#666">You may now close this page.</p>
+          </div>`
+      } else {
+        throw new Error('Server error')
+      }
+    } catch(e){
+      msg.textContent = 'Failed to submit. Please try again.'
+      btn.disabled = false; btn.textContent = 'Submit Signature'
+    }
+  }
+}
+
+async function generateSigningQR(){
+  const btn = document.getElementById('get-sig-btn')
+  btn.textContent = 'Creating…'; btn.disabled = true
+
+  let blobId
+  try {
+    const resp = await fetch('https://jsonblob.com/api/jsonBlob', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({status:'waiting', signature:null})
+    })
+    const loc = resp.headers.get('Location')
+    blobId = loc.split('/').pop()
+  } catch(e){
+    alert('Could not create signing session. Please check your connection.')
+    btn.textContent = 'Get signature'; btn.disabled = false
+    return
+  }
+
+  const sigUrl = window.location.origin + window.location.pathname + '?sign=' + blobId
+
+  // Show QR modal
+  const modal = document.getElementById('qr-modal')
+  modal.style.display = 'flex'
+  btn.textContent = 'Get signature'; btn.disabled = false
+
+  const qrDiv = document.getElementById('qr-code')
+  qrDiv.innerHTML = ''
+  if(window.QRCode){
+    new QRCode(qrDiv, { text: sigUrl, width:200, height:200, colorDark:'#1a1a18', colorLight:'#ffffff' })
+  } else {
+    qrDiv.innerHTML = `<p style="font-size:11px;color:#666;word-break:break-all">${sigUrl}</p>`
+  }
+
+  document.getElementById('qr-status').textContent = 'Waiting for patient to sign…'
+
+  // Poll for signature
+  window._sigPoll = setInterval(async () => {
+    try {
+      const r = await fetch(`https://jsonblob.com/api/jsonBlob/${blobId}`, {
+        headers:{'Accept':'application/json'}
+      })
+      if(!r.ok) return
+      const data = await r.json()
+      if(data.status === 'signed' && data.signature){
+        clearInterval(window._sigPoll)
+        document.getElementById('qr-status').textContent = '✓ Signature received!'
+        setTimeout(() => {
+          placeSignature(data.signature)
+          closeQrModal()
+        }, 800)
+      }
+    } catch(e){ /* keep polling */ }
+  }, 2500)
+}
+
+function closeQrModal(){
+  document.getElementById('qr-modal').style.display = 'none'
+  if(window._sigPoll){ clearInterval(window._sigPoll); window._sigPoll = null }
+}
+
+function placeSignature(dataUrl){
+  const area = document.getElementById('sig-image-area')
+  area.innerHTML = `<img src="${dataUrl}" style="height:42px;max-width:100%;object-fit:contain;object-position:left bottom">`
+  document.getElementById('sig-label').textContent = 'Signed digitally'
+  document.getElementById('get-sig-btn').style.display = 'none'
+  document.getElementById('clear-sig-btn').style.display = 'inline-block'
+}
+
+function clearSignature(){
+  document.getElementById('sig-image-area').innerHTML = ''
+  document.getElementById('sig-label').textContent = "Patient\'s signature"
+  document.getElementById('get-sig-btn').style.display = 'inline-block'
+  document.getElementById('clear-sig-btn').style.display = 'none'
 }
 
 render()
