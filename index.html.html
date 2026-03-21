@@ -373,9 +373,9 @@ const NS = [
   { id:"rct_pm", name:"Root Canal Treatment — Pre-molar",     unit:"per tooth",     maxClaims:2,  claimNote:"Up to 2 RCTs/yr shared across all RCT types",          subs:[308.50,462.50,467.50,472.50] },
   { id:"rct_m",  name:"Root Canal Treatment — Molar",         unit:"per tooth",     maxClaims:2,  claimNote:"Up to 2 RCTs/yr shared across all RCT types",          subs:[389.50,584.50,589.50,594.50] },
   { id:"crown",  name:"Permanent Crown",                      unit:"per crown",     maxClaims:4,  claimNote:"Up to 4/yr; natural teeth only, not implant-supported", subs:[410,615,620,625] },
-  { id:"pd_s",   name:"Partial Denture — Simple (< 6 teeth)", unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 upper + 1 lower per 3 calendar years",         subs:[202.50,304,309,314],    hasMaterials:true },
-  { id:"pd_c",   name:"Partial Denture — Complex (≥ 6 teeth)",unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 upper + 1 lower per 3 calendar years",         subs:[257,385.50,390.50,395.50], hasMaterials:true },
-  { id:"cd",     name:"Complete Denture (Upper or Lower)",    unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 upper + 1 lower per 3 calendar years",         subs:[272.50,408.50,413.50,418.50], hasMaterials:true },
+  { id:"pd_s",   name:"Partial Denture — Simple (< 6 teeth)", unit:"per denture",   maxClaims:2,  claimNote:"Up to 2 per 3 calendar years (1 upper + 1 lower)",      subs:[202.50,304,309,314],    hasMaterials:true },
+  { id:"pd_c",   name:"Partial Denture — Complex (≥ 6 teeth)",unit:"per denture",   maxClaims:2,  claimNote:"Up to 2 per 3 calendar years (1 upper + 1 lower)",      subs:[257,385.50,390.50,395.50], hasMaterials:true },
+  { id:"cd",     name:"Complete Denture (Upper or Lower)",    unit:"per denture",   maxClaims:2,  claimNote:"Up to 2 per 3 calendar years (1 upper + 1 lower)",      subs:[272.50,408.50,413.50,418.50], hasMaterials:true },
 ]
 
 const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
@@ -677,7 +677,7 @@ function renderSurg(){
         <input type="text" value="${s.remark||''}" placeholder="e.g. tooth 16, upper right…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="surgState['${p.code}'].remark=this.value" onblur="renderSurg()">
       </div>
       <div class="sep" style="display:flex;justify-content:flex-end">
-        <button onclick="addToSummary('surg','${p.code}')" style="font-size:12px;padding:6px 18px;background:var(--bg-info);color:var(--text-info);border:1px solid var(--text-info);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onclick="addToSummary('surg','${p.code}',event)" style="font-size:12px;padding:6px 18px;background:var(--bg-info);color:var(--text-info);border:1px solid var(--text-info);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
       </div>` : ""}
       ${lineTot}`
     list.appendChild(div)
@@ -759,7 +759,7 @@ function renderNonSurg(){
         <input type="text" value="${s.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="nsState['${p.id}'].remark=this.value" onblur="renderNonSurg()">
       </div>
       <div class="sep" style="display:flex;justify-content:flex-end">
-        <button onclick="addToSummary('ns','${p.id}')" style="font-size:12px;padding:6px 18px;background:var(--bg-success);color:var(--text-success);border:1px solid var(--text-success);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onclick="addToSummary('ns','${p.id}',event)" style="font-size:12px;padding:6px 18px;background:var(--bg-success);color:var(--text-success);border:1px solid var(--text-success);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
       </div>` : ""}
       ${lineTot}`
     list.appendChild(div)
@@ -911,7 +911,7 @@ function updateGrandFromItems(){
 }
 // ── ADD TO SUMMARY (store raw pre-GST values; GST recalculated live) ─────────
 
-function addToSummary(sec, id){
+function addToSummary(sec, id, event){
   if(sec === 'surg'){
     const p = SURG.find(x => x.code === id)
     if(!p) return
@@ -970,6 +970,18 @@ function addToSummary(sec, id){
   }
 
   updateGrandFromItems()
+
+  // Flash the button green for 1 second
+  const btn = event && event.target
+  if(btn){
+    const orig = btn.getAttribute('style')
+    btn.style.cssText = btn.style.cssText.replace(/background:[^;]+/, 'background:#2f6010').replace(/color:[^;]+/, 'color:#fff').replace(/border:[^;]+/, 'border:1px solid #2f6010')
+    btn.textContent = '✓ Added'
+    setTimeout(() => {
+      btn.setAttribute('style', orig)
+      btn.textContent = '+ Add to Summary'
+    }, 2000)
+  }
 }
 
 function removeFromSummary(id){
@@ -1017,7 +1029,7 @@ function renderProstho(){
           <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(totalRaw)}</span></span>
           <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
         </span>
-        <button onclick="addToSummary('prostho',${item.id})" style="font-size:12px;padding:6px 18px;background:var(--bg-purple);color:var(--text-purple);border:1px solid var(--text-purple);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onclick="addToSummary('prostho',${item.id},event)" style="font-size:12px;padding:6px 18px;background:var(--bg-purple);color:var(--text-purple);border:1px solid var(--text-purple);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
       </div>` : ''}
     `
     list.appendChild(div)
