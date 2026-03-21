@@ -661,11 +661,6 @@ function renderSurg(){
           <input type="number" min="1" max="20" value="${s.qty}" onchange="surgState['${p.code}'].qty=Math.max(1,parseInt(this.value)||1);render()">
         </div>`:""}
       </div>${apptHtml}${crownHtml}
-      ${s.on ? `
-      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
-        <input type="text" value="${s.remark||''}" placeholder="e.g. tooth 16, upper right…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="surgState['${p.code}'].remark=this.value" onblur="render()">
-      </div>` : ""}
       ${s.on && p.implantMode && !p.implantOnly ? `
       <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cash top-up ($)</span>
@@ -1087,9 +1082,6 @@ function addToSummary(sec, id){
     })
   }
 
-  // Scroll to summary
-  const el = document.getElementById('combined-summary')
-  if(el) setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 50)
   updateGrandFromItems()
 }
 
