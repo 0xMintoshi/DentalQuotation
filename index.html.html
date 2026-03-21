@@ -12,13 +12,7 @@
   --border-lt:rgba(0,0,0,.11);--border-md:rgba(0,0,0,.24);
   --r-sm:6px;--r-md:8px;--r-lg:12px;
 }
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg-page:#1a1a18;--bg-card:#242422;--bg-surface:#2c2c2a;--bg-info:#0c2a44;--bg-success:#172d06;--bg-purple:#26215c;
-    --text-pri:#f0ede6;--text-sec:#a8a49e;--text-ter:#706d68;
-    --text-info:#78bbf0;--text-success:#7aba3a;--text-cash:#e09030;--text-mv:#5ab0f0;--text-purple:#afa9ec;
-    --border-lt:rgba(255,255,255,.09);--border-md:rgba(255,255,255,.21);
-  }
+
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg-page);color:var(--text-pri);padding:1.5rem 1rem;font-size:14px;line-height:1.5;min-height:100vh}
@@ -76,8 +70,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 .chas-btn.sel-blue{border-color:#1479b8;background:#e6f1fb;color:#185fa5}
 .chas-btn.sel-mg{border-color:#7a5c0a;background:#fef9ec;color:#6b4d08}
 .chas-btn.sel-pg{border-color:#2f6010;background:#eaf3de;color:#2f6010}
-@media(prefers-color-scheme:dark){
-  .chas-btn.sel-orange{background:#3a2200;color:#e09030}
+
   .chas-btn.sel-blue{background:#0c2a44;color:#78bbf0}
   .chas-btn.sel-mg{background:#2a1c00;color:#c9980a}
   .chas-btn.sel-pg{background:#172d06;color:#7aba3a}
@@ -189,8 +182,8 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <!-- ═══ PROSTHODONTIC SECTION ═══ -->
 <hr class="divider">
 <div class="section-header no-print" onclick="toggleSection('prostho')">
-  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Additional Prosthesis</span>
-  <span style="font-size:12px;color:var(--text-sec)">Additional components · No CHAS · Cash only</span>
+  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Miscellaneous Procedures</span>
+  <span style="font-size:12px;color:var(--text-sec)">Free-text · No CHAS · Cash only</span>
   <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
     <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
     <button class="collapse-btn" id="prostho-chevron" tabindex="-1">▾</button>
@@ -331,7 +324,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </div>
 
 <!-- Buttons -->
-<div style="display:flex;gap:8px;flex-wrap:wrap" class="no-print">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2rem" class="no-print">
   <button class="btn btn-p" id="btn-excel" disabled onclick="exportExcel()">⬇ Download Excel</button>
   <button class="btn" id="btn-print" disabled onclick="printQuote()">🖨 Print / PDF</button>
 </div>
@@ -388,10 +381,10 @@ const NS = [
 const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
 
 // Prosthodontic extras — no CHAS, no checkbox toggle (always rendered), fee + qty + remark
-const PROSTHO = [
-  { id:"dent_comp",  name:"Denture",  unit:"per unit", materials:["Acrylic","Flexible","CoCr","Implant Overdenture"] },
-  { id:"crown_comp", name:"Crown",    unit:"per unit", materials:["Natural Tooth","Implant"] },
-]
+// Miscellaneous procedures — dynamic list, no fixed items
+let miscItems = [ { id: 1, name:'', fee:0, qty:1, remark:'' } ]
+let _miscId = 1
+function nextMiscId(){ return ++_miscId }
 
 const CHAS_TIERS = ["orange","blue","mg","pg"]
 const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
@@ -404,8 +397,6 @@ SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"sa
 const nsState = {}
 NS.forEach(p => { nsState[p.id] = { on:false, qty:1, fee:0, remaining:p.maxClaims, materials:[], remark:'' } })
 
-const prosthoState = {}
-PROSTHO.forEach(p => { prosthoState[p.id] = { qty:1, fee:0, remark:"", materials:[] } })
 
 let chasMode = "none"
 
@@ -557,12 +548,7 @@ function clearSection(sec) {
       nsState[p.id].materials = []
     })
   } else if (sec === 'prostho') {
-    PROSTHO.forEach(p => {
-      prosthoState[p.id].qty = 1
-      prosthoState[p.id].fee = 0
-      prosthoState[p.id].remark = ""
-      prosthoState[p.id].materials = []
-    })
+    miscItems = [ { id: nextMiscId(), name:'', fee:0, qty:1, remark:'' } ]
   }
   render()
 }
@@ -823,7 +809,7 @@ function updateGrandFromItems(){
     ns:     "background:var(--bg-success);color:var(--text-success)",
     prostho:"background:var(--bg-purple);color:var(--text-purple)",
   }
-  const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Additional Prosthesis" }
+  const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Miscellaneous Procedures" }
 
   let lastSec = null
   let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gInstEligible=0
@@ -837,25 +823,40 @@ function updateGrandFromItems(){
       lastSec = item._sec
     }
 
+    // ── Recalculate GST live from raw values ──
+    const mv         = item.mv || 0
+    const cashBefore = item.cashBefore || 0
+    const gstOnMv    = (item._sec === 'surg' && !item.feeOnly && hasGst) ? mv * 0.09 : 0
+    const cashTotal  = hasGst ? cashBefore * 1.09 + gstOnMv : cashBefore
+    const total      = mv + (hasGst ? cashBefore * 1.09 + gstOnMv : cashBefore)
+      // For NS: total = subsidyTotal + cashTotal (no mv)
+      // For prostho/feeOnly: total = cashTotal only
+    const displayTotal = item._sec === 'surg' && !item.feeOnly
+      ? mv + cashTotal
+      : item.subsidyTotal + cashTotal
+
+    const instEligible = hasGst
+      ? cashBefore * 1.09   // cash top-up incl its GST, but NOT gstOnMv
+      : cashBefore
+
     // Accumulate totals
-    gMv          += item.mv           || 0
+    gMv          += mv
     gChas        += item.subsidyTotal || 0
-    gCash        += item.cashTotal    || 0
-    gTotal       += item.total        || 0
-    gGstOnMv     += item.gstOnMv      || 0
-    gInstEligible+= item.instEligible || 0
+    gCash        += cashTotal
+    gTotal       += displayTotal
+    gGstOnMv     += gstOnMv
+    gInstEligible+= instEligible
 
     // Build row
     const mvStr   = (item._sec==='surg' && !item.feeOnly)
-      ? `<span class="mv" style="font-weight:500">${fmt(item.mv)}</span>`
+      ? `<span class="mv" style="font-weight:500">${fmt(mv)}</span>`
       : `<span style="color:var(--text-ter)">—</span>`
-    const chasStr = item.subsidyTotal > 0
+    const chasStr = (item.subsidyTotal||0) > 0
       ? `<span class="sv">${fmtD(item.subsidyTotal)}</span>`
       : `<span style="color:var(--text-ter)">—</span>`
-    const cashStr = item.cashTotal > 0
-      ? `<span class="cv">${fmtD(item.cashTotal)}${gn}</span>`
+    const cashStr = cashTotal > 0
+      ? `<span class="cv">${fmtD(cashTotal)}${gn}</span>`
       : `<span style="color:var(--text-ter)">—</span>`
-    const feeTd   = item._sec==='surg' && item.feeOnly ? fmtD(item.cashTotal) : fmtD(item.total)
 
     const tr = document.createElement("tr")
     tr.innerHTML = `
@@ -865,7 +866,7 @@ function updateGrandFromItems(){
         <div style="font-size:10px;color:var(--text-ter)">${item.unit}</div>
       </td>
       <td>${item.qty}</td>
-      <td>${feeTd}</td>
+      <td>${fmtD(displayTotal)}</td>
       <td>${mvStr}</td>
       <td>${chasStr}</td>
       <td>${cashStr}</td>
@@ -875,12 +876,11 @@ function updateGrandFromItems(){
     tbody.appendChild(tr)
   })
 
-  // Grand total row
-  const cashFt = gCash>0 ? `${fmtD(gCash)}${hasGst?" (incl. GST)":""}` : "—"
+  // Grand totals
   document.getElementById("cs-fee-total").textContent  = fmtD(gTotal)
   document.getElementById("cs-mv-total").textContent   = gMv   > 0 ? fmt(gMv)    : "—"
   document.getElementById("cs-chas-total").textContent = gChas > 0 ? fmtD(gChas) : "—"
-  document.getElementById("cs-cash-total").textContent = cashFt
+  document.getElementById("cs-cash-total").innerHTML   = `${fmtD(gCash)}${hasGst?' <span style="font-size:10px">(incl. GST)</span>':""}`
 
   document.getElementById("gm-total").textContent    = fmtD(gTotal)
   document.getElementById("gm-cash").textContent     = fmtD(gCash)
@@ -889,14 +889,14 @@ function updateGrandFromItems(){
   document.getElementById("gm-total-sub").textContent = hasGst ? "incl. GST" : "before GST"
   document.getElementById("gm-cash-sub").textContent  = hasGst ? "incl. 9% GST" : "after Medisave + CHAS"
 
-  // GST note
+  // GST on Medisave note
   const gstNote = document.getElementById("gst-mv-note")
   if(hasGst && gMv > 0){
     gstNote.style.display = "block"
-    document.getElementById("gn-mv-amt").textContent   = fmt(gMv)
-    document.getElementById("gn-mv-gst").textContent   = fmtD(gGstOnMv)
-    document.getElementById("gn-cash-gst").textContent = fmtD(Math.max(0, gCash - gGstOnMv - (gCash - gGstOnMv)/1.09))
-    document.getElementById("gn-cash-total").textContent = fmtD(gCash)
+    document.getElementById("gn-mv-amt").textContent    = fmt(gMv)
+    document.getElementById("gn-mv-gst").textContent    = fmtD(gGstOnMv)
+    document.getElementById("gn-cash-gst").textContent  = fmtD(Math.max(0, gCash - gGstOnMv - (gCash - gGstOnMv)/1.09))
+    document.getElementById("gn-cash-total").textContent= fmtD(gCash)
   } else {
     gstNote.style.display = "none"
   }
@@ -909,144 +909,29 @@ function updateGrandFromItems(){
   const ackEl = document.getElementById("ack-name")
   if(ackEl) ackEl.textContent = document.getElementById("patient-name").value || "\u00a0"
 }
-
-function updateInstalmentPanel(){
-  const tog = document.getElementById("instalment-toggle")
-  const panel = document.getElementById("instalment-panel")
-  if(!tog || !panel) return
-  if(!tog.checked){ panel.style.display="none"; return }
-  panel.style.display="block"
-  const months = parseInt(document.querySelector('input[name="inst-months"]:checked')?.value || 6)
-  const eligible  = window._instEligible   || 0
-  const upfront   = window._upfrontGstOnMv || 0
-  const monthly   = eligible / months
-  document.getElementById("inst-total").textContent   = fmtD(eligible)
-  document.getElementById("inst-monthly").textContent = fmtD(monthly)
-  document.getElementById("inst-label").textContent   = `per month for ${months} months`
-  // Show/hide upfront note
-  const note = document.getElementById("inst-upfront-note")
-  if(note){
-    if(upfront > 0){
-      note.style.display = "block"
-      document.getElementById("inst-upfront-amt").textContent = fmtD(upfront)
-    } else {
-      note.style.display = "none"
-    }
-  }
-}
-
-// ── MATERIAL TOGGLE ──────────────────────────────────────────────────────────
-
-function toggleMaterial(id, mat){
-  const mats = nsState[id].materials
-  const idx = mats.indexOf(mat)
-  if(idx === -1) mats.push(mat)
-  else mats.splice(idx, 1)
-  render()
-}
-
-function toggleProsthoMaterial(id, mat){
-  const mats = prosthoState[id].materials
-  const idx = mats.indexOf(mat)
-  if(idx === -1) mats.push(mat)
-  else mats.splice(idx, 1)
-  render()
-}
-
-// ── RENDER PROSTHODONTICS ─────────────────────────────────────────────────────
-
-function renderProstho(){
-  const list = document.getElementById("prostho-list")
-  if(!list) return
-  list.innerHTML = ""
-  PROSTHO.forEach(p => {
-    const s = prosthoState[p.id]
-    const fee = parseFloat(s.fee)||0
-    const total = fee * s.qty
-    const gn = gst() ? " (incl. GST)" : ""
-    const totalWithGst = total * (gst() ? 1.09 : 1.0)
-    const div = document.createElement("div")
-    div.className = "card active"
-    div.innerHTML = `
-      <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
-        <div style="flex:1;min-width:160px">
-          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-            <span class="pname">${p.name}</span>
-            <span class="tbadge">${p.unit}</span>
-          </div>
-          <div class="pmeta" style="margin-top:4px">No CHAS subsidy · No Medisave · Cash only</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
-          <div style="display:flex;align-items:center;gap:4px">
-            <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
-            <input class="fee" type="number" min="0" step="0.5" value="${s.fee}" placeholder="0" onchange="prosthoState['${p.id}'].fee=this.value;render()">
-          </div>
-          <div style="display:flex;align-items:center;gap:4px">
-            <span style="font-size:11px;color:var(--text-sec)">Qty</span>
-            <input type="number" min="1" max="30" value="${s.qty}" onchange="prosthoState['${p.id}'].qty=Math.max(1,parseInt(this.value)||1);render()">
-          </div>
-        </div>
-      </div>
-      <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--text-sec);font-weight:500">Material</span>
-        ${p.materials.map(m=>`
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
-            <input type="checkbox" ${s.materials.includes(m)?"checked":""} onchange="toggleProsthoMaterial('${p.id}','${m}')">
-            ${m}
-          </label>`).join("")}
-      </div>
-      <div class="sep">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remarks</span>
-          <input type="text" value="${s.remark}" placeholder="Enter remark (e.g. upper full denture, shade A2)…" style="flex:1;font-size:12px" oninput="prosthoState['${p.id}'].remark=this.value" onblur="render()">
-        </div>
-      </div>
-      ${fee > 0 ? `<div class="sep line-tot">
-        <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(total)}</span></span>
-        <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" style="font-weight:600">${fmtD(totalWithGst)}${gn}</span></span>
-      </div>` : ""}
-      <div class="sep" style="display:flex;justify-content:flex-end">
-        <button onclick="addToSummary('prostho','${p.id}')" style="font-size:12px;padding:6px 18px;background:var(--bg-purple);color:var(--text-purple);border:1px solid var(--text-purple);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
-      </div>`
-    list.appendChild(div)
-  })
-}
-
-function updateProsthoSummary(){
-  const g = gst() ? 1.09 : 1.0
-  let gFee = 0, gCash = 0, hasContent = false
-  PROSTHO.forEach(p => {
-    const s = prosthoState[p.id]
-    const fee = parseFloat(s.fee)||0
-    if(!fee) return
-    hasContent = true
-    const total = fee * s.qty
-    const cash = total * g
-    gFee += total; gCash += cash
-  })
-  if(!hasContent) return null
-  return { fee: gFee, cash: gCash, total: gCash }
-}
-
-// ── ADD TO SUMMARY (snapshot current state) ──────────────────────────────────
+// ── ADD TO SUMMARY (store raw pre-GST values; GST recalculated live) ─────────
 
 function addToSummary(sec, id){
-  const hasGst = gst()
-
   if(sec === 'surg'){
     const p = SURG.find(x => x.code === id)
     if(!p) return
     const s = surgState[id]
-    const l = getSurgLine(p)
+    // Get raw values with GST off
+    const origGst = document.getElementById('gst-toggle').checked
+    document.getElementById('gst-toggle').checked = false
+    const lRaw = getSurgLine(p)
+    document.getElementById('gst-toggle').checked = origGst
     let label = p.name
     if(p.implantMode && !p.implantOnly) label += ` — ${p.crowns[s.crown].label}${s.apptMode==='diff'?' (diff. appts)':''}`
     if(p.implantOnly) label += ` — implant only${s.apptMode==='diff'?' (diff. appts)':''}`
     summaryItems.push({
       _id: nextId(), _sec: 'surg',
-      label, remark: s.remark||'', qty: s.qty, unit: p.unit, tosp: p.tosp,
-      mv: l.mv, gstOnMv: l.gstOnMv||0, cashTotal: l.cashTotal,
-      total: l.total, extraMisc: l.extraMisc||0, instEligible: l.instEligible||0,
-      feeOnly: !!p.feeOnly
+      label, remark: s.remark||'', qty: s.qty, unit: p.unit,
+      mv: lRaw.mv,
+      cashBefore: lRaw.cashBefore,
+      extraMisc: lRaw.extraMisc||0,
+      feeOnly: !!p.feeOnly,
+      subsidyTotal: 0
     })
   }
 
@@ -1054,31 +939,33 @@ function addToSummary(sec, id){
     const p = NS.find(x => x.id === id)
     if(!p) return
     const s = nsState[id]
-    const l = getNsLine(p)
+    const origGst = document.getElementById('gst-toggle').checked
+    document.getElementById('gst-toggle').checked = false
+    const lRaw = getNsLine(p)
+    document.getElementById('gst-toggle').checked = origGst
     const mats = p.hasMaterials && s.materials.length ? ` · ${s.materials.join('/')}` : ''
     summaryItems.push({
       _id: nextId(), _sec: 'ns',
       label: p.name + mats, remark: s.remark||'', qty: s.qty, unit: p.unit,
-      totalFee: l.totalFee, subsidyTotal: l.subsidyTotal, cashTotal: l.cashTotal,
-      total: l.total, subsidisedQty: l.subsidisedQty, instEligible: l.cashTotal,
-      gstOnMv: 0
+      mv: 0,
+      cashBefore: lRaw.cashBefore,
+      subsidyTotal: lRaw.subsidyTotal,
+      feeOnly: false
     })
   }
 
   if(sec === 'prostho'){
-    const p = PROSTHO.find(x => x.id === id)
-    if(!p) return
-    const s = prosthoState[id]
-    const fee = parseFloat(s.fee)||0
+    const item = miscItems.find(x => x.id === id)
+    if(!item) return
+    const fee = parseFloat(item.fee)||0
     if(!fee){ alert('Please enter a fee before adding to summary.'); return }
-    const total = fee * s.qty
-    const cash  = total * (hasGst ? 1.09 : 1.0)
-    const mats  = s.materials.length ? ` · ${s.materials.join('/')}` : ''
     summaryItems.push({
       _id: nextId(), _sec: 'prostho',
-      label: p.name + mats, remark: s.remark||'', qty: s.qty, unit: p.unit,
-      totalFee: total, cashTotal: cash, total: cash, instEligible: cash,
-      subsidyTotal: 0, gstOnMv: 0
+      label: item.name || 'Miscellaneous', remark: item.remark||'',
+      qty: item.qty, unit: 'per unit',
+      mv: 0, subsidyTotal: 0,
+      cashBefore: fee * item.qty,
+      feeOnly: true
     })
   }
 
@@ -1091,6 +978,68 @@ function removeFromSummary(id){
 }
 
 
+
+// ── RENDER MISCELLANEOUS ─────────────────────────────────────────────────────
+
+function renderProstho(){
+  const list = document.getElementById("prostho-list")
+  if(!list) return
+  list.innerHTML = ""
+
+  miscItems.forEach((item, idx) => {
+    const div = document.createElement("div")
+    div.className = "card"
+    const totalRaw = (item.fee||0) * item.qty
+    const totalCash = totalRaw * (gst() ? 1.09 : 1.0)
+    const gn = gst() ? " (incl. GST)" : ""
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:160px">
+          <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Treatment</span>
+          <input type="text" value="${item.name||''}" placeholder="e.g. Teeth whitening, Fluoride…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="miscItems[${idx}].name=this.value" onblur="renderProstho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
+          <input class="fee" type="number" min="0" step="0.5" value="${item.fee||''}" placeholder="0" onchange="miscItems[${idx}].fee=parseFloat(this.value)||0;renderProstho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+          <input type="number" min="1" max="99" value="${item.qty}" onchange="miscItems[${idx}].qty=Math.max(1,parseInt(this.value)||1);renderProstho()">
+        </div>
+        ${miscItems.length > 1 ? `<button onclick="removeMiscItem(${item.id})" style="font-size:13px;background:none;border:none;cursor:pointer;color:var(--text-ter);padding:2px 6px;flex-shrink:0" title="Remove">✕</button>` : ''}
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${item.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="miscItems[${idx}].remark=this.value" onblur="renderProstho()">
+      </div>
+      ${totalRaw > 0 ? `<div class="sep" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="line-tot" style="display:flex;gap:18px;font-size:12px">
+          <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(totalRaw)}</span></span>
+          <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
+        </span>
+        <button onclick="addToSummary('prostho',${item.id})" style="font-size:12px;padding:6px 18px;background:var(--bg-purple);color:var(--text-purple);border:1px solid var(--text-purple);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+      </div>` : ''}
+    `
+    list.appendChild(div)
+  })
+
+  // "+" Add new line button
+  const addBtn = document.createElement("button")
+  addBtn.className = "btn"
+  addBtn.style.cssText = "font-size:12px;margin-top:4px;padding:6px 16px;border-style:dashed"
+  addBtn.textContent = "+ Add another treatment"
+  addBtn.onclick = () => {
+    miscItems.push({ id: nextMiscId(), name:'', fee:0, qty:1, remark:'' })
+    renderProstho()
+  }
+  list.appendChild(addBtn)
+}
+
+function removeMiscItem(id){
+  miscItems = miscItems.filter(i => i.id !== id)
+  if(!miscItems.length) miscItems = [{ id: nextMiscId(), name:'', fee:0, qty:1, remark:'' }]
+  renderProstho()
+}
 
 function render(){
   renderSurg()
@@ -1125,7 +1074,7 @@ function exportExcel(){
     [],
     ["Treatment","Remark","Qty","Unit","Total Fee","Medisave","CHAS Subsidy","Cash"+(g?" (w/GST)":"")],
   ]
-  const secLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Additional Prosthesis" }
+  const secLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Miscellaneous Procedures" }
   let lastSec = null
   let gMv=0, gChas=0, gCash=0, gTotal=0
   summaryItems.forEach(item => {
