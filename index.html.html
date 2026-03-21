@@ -80,11 +80,16 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 #sum-nonsurg{display:none}
 #summary-section{display:none}
 @keyframes addFlash{
-  0%  {box-shadow:0 0 0 0 rgba(20,121,184,.85);outline:3px solid #1479b8}
-  50% {box-shadow:0 0 0 10px rgba(20,121,184,0);outline:3px solid transparent}
-  100%{box-shadow:0 0 0 0 rgba(20,121,184,0);outline:3px solid transparent}
+  0%  {box-shadow:0 0 0 0 rgba(20,121,184,1),0 0 0 0 rgba(20,121,184,.6)}
+  60% {box-shadow:0 0 0 6px rgba(20,121,184,.3),0 0 0 12px rgba(20,121,184,0)}
+  100%{box-shadow:0 0 0 0 rgba(20,121,184,0),0 0 0 0 rgba(20,121,184,0)}
 }
-.btn-added{animation:addFlash .8s ease-out forwards}
+.btn-add-summary{
+  font-size:12px;padding:6px 18px;background:#1479b8;color:#fff;
+  border:1px solid #1479b8;border-radius:var(--r-md);cursor:pointer;
+  font-family:inherit;font-weight:600;transition:opacity .1s
+}
+.btn-add-summary.flashing{animation:addFlash .7s ease-out}
 @media print{
   body{background:#fff;color:#000;padding:.5rem}
   .no-print{display:none!important}
@@ -714,7 +719,7 @@ function renderSurg(){
         <input type="text" value="${s.remark||''}" placeholder="e.g. tooth 16, upper right…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="surgState['${p.code}'].remark=this.value">
       </div>
       <div class="sep" style="display:flex;justify-content:flex-end">
-        <button onmousedown="addToSummary('surg','${p.code}',event)" style="font-size:12px;padding:6px 18px;background:#1479b8;color:#fff;border:1px solid #1479b8;border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onmousedown="addToSummary('surg','${p.code}',event)" class="btn-add-summary">+ Add to Summary</button>
       </div>` : ""}
       ${lineTot}`
     list.appendChild(div)
@@ -796,7 +801,7 @@ function renderNonSurg(){
         <input type="text" value="${s.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="nsState['${p.id}'].remark=this.value">
       </div>
       <div class="sep" style="display:flex;justify-content:flex-end">
-        <button onmousedown="addToSummary('ns','${p.id}',event)" style="font-size:12px;padding:6px 18px;background:#1479b8;color:#fff;border:1px solid #1479b8;border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onmousedown="addToSummary('ns','${p.id}',event)" class="btn-add-summary">+ Add to Summary</button>
       </div>` : ""}
       ${lineTot}`
     list.appendChild(div)
@@ -1009,10 +1014,12 @@ function addToSummary(sec, id, event){
   updateGrandFromItems()
 
   // Glow flash on button
-  if(event && event.currentTarget){
-    const btn = event.currentTarget
-    btn.classList.add('btn-added')
-    btn.addEventListener('animationend', () => btn.classList.remove('btn-added'), {once:true})
+  if(event){
+    const btn = event.target.closest('.btn-add-summary') || event.target
+    btn.classList.remove('flashing')
+    void btn.offsetWidth  // force reflow to restart animation
+    btn.classList.add('flashing')
+    btn.addEventListener('animationend', () => btn.classList.remove('flashing'), {once:true})
   }
 }
 
@@ -1061,7 +1068,7 @@ function renderProstho(){
           <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(totalRaw)}</span></span>
           <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
         </span>
-        <button onmousedown="addToSummary('prostho',${item.id},event)" style="font-size:12px;padding:6px 18px;background:#1479b8;color:#fff;border:1px solid #1479b8;border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
+        <button onmousedown="addToSummary('prostho',${item.id},event)" class="btn-add-summary">+ Add to Summary</button>
       </div>` : ''}
     `
     list.appendChild(div)
