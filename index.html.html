@@ -698,7 +698,7 @@ function renderSurg(){
       <div class="sep" style="display:flex;justify-content:flex-end">
         <button onclick="addToSummary('surg','${p.code}')" style="font-size:12px;padding:6px 18px;background:var(--bg-info);color:var(--text-info);border:1px solid var(--text-info);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
       </div>` : ""}
-      ${lineTot}\`
+      ${lineTot}`
     list.appendChild(div)
   })
 }
@@ -780,7 +780,7 @@ function renderNonSurg(){
       <div class="sep" style="display:flex;justify-content:flex-end">
         <button onclick="addToSummary('ns','${p.id}')" style="font-size:12px;padding:6px 18px;background:var(--bg-success);color:var(--text-success);border:1px solid var(--text-success);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:600">+ Add to Summary</button>
       </div>` : ""}
-      ${lineTot}\`
+      ${lineTot}`
     list.appendChild(div)
   })
 }
