@@ -266,7 +266,8 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   <!-- GST breakdown note (only when GST on) -->
   <div id="gst-mv-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:9px 14px;margin-bottom:12px;line-height:1.7">
     <span style="font-weight:600">GST breakdown: </span>
-    GST on Medisave (<span id="gn-mv-amt"></span>) = <span id="gn-mv-gst" class="cv"></span> added to cash ·
+    GST on Medisave (<span id="gn-mv-amt"></span>) = <span id="gn-mv-gst" class="cv"></span> ·
+    GST on CHAS subsidy (<span id="gn-chas-amt"></span>) = <span id="gn-chas-gst" class="cv"></span> ·
     GST on cash top-up = <span id="gn-cash-gst" class="cv"></span> ·
     Total cash payable = <span id="gn-cash-total" class="cv" style="font-weight:600"></span>
   </div>
@@ -281,7 +282,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
     <div id="instalment-panel" style="display:none">
       <div id="inst-upfront-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:8px 12px;margin-bottom:10px;line-height:1.6">
         <span style="font-weight:600;color:var(--text-cash)">⚠ Pay upfront on day of appointment: </span>
-        GST on Medisave amount = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — this is not eligible for instalment.
+        GST on Medisave = <span class="cv" style="font-weight:600" id="inst-upfront-mv-amt"></span> · GST on CHAS subsidy = <span class="cv" style="font-weight:600" id="inst-upfront-chas-amt"></span> · Total upfront = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — these are not eligible for instalment.
       </div>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
         <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment period</span>
@@ -544,11 +545,17 @@ function updateInstalmentPanel(){
   document.getElementById("inst-total").textContent   = fmtD(eligible)
   document.getElementById("inst-monthly").textContent = fmtD(monthly)
   document.getElementById("inst-label").textContent   = `per month for ${months} months`
+  const upfrontChas = window._upfrontGstOnChas || 0
+  const totalUpfront = upfront + upfrontChas
   const note = document.getElementById("inst-upfront-note")
   if(note){
-    if(upfront > 0){
+    if(totalUpfront > 0){
       note.style.display = "block"
-      document.getElementById("inst-upfront-amt").textContent = fmtD(upfront)
+      const mvEl = document.getElementById("inst-upfront-mv-amt")
+      const chasEl = document.getElementById("inst-upfront-chas-amt")
+      if(mvEl) mvEl.textContent = fmtD(upfront)
+      if(chasEl) chasEl.textContent = fmtD(upfrontChas)
+      document.getElementById("inst-upfront-amt").textContent = fmtD(totalUpfront)
     } else {
       note.style.display = "none"
     }
@@ -866,7 +873,7 @@ function updateGrandFromItems(){
   const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Miscellaneous Procedures" }
 
   let lastSec = null
-  let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gInstEligible=0
+  let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gGstOnChas=0, gInstEligible=0
 
   summaryItems.forEach(item => {
     // Section header row when section changes
@@ -879,26 +886,26 @@ function updateGrandFromItems(){
 
     // ── Recalculate GST live from raw values ──
     const mv         = item.mv || 0
+    const subsidyAmt = item.subsidyTotal || 0
     const cashBefore = item.cashBefore || 0
     const gstOnMv    = (item._sec === 'surg' && !item.feeOnly && hasGst) ? mv * 0.09 : 0
-    const cashTotal  = hasGst ? cashBefore * 1.09 + gstOnMv : cashBefore
-    const total      = mv + (hasGst ? cashBefore * 1.09 + gstOnMv : cashBefore)
-      // For NS: total = subsidyTotal + cashTotal (no mv)
-      // For prostho/feeOnly: total = cashTotal only
+    const gstOnChas  = (item._sec === 'ns' && hasGst) ? subsidyAmt * 0.09 : 0
+    const cashTotal  = hasGst ? cashBefore * 1.09 + gstOnMv + gstOnChas : cashBefore
     const displayTotal = item._sec === 'surg' && !item.feeOnly
       ? mv + cashTotal
-      : item.subsidyTotal + cashTotal
+      : subsidyAmt + cashTotal
 
     const instEligible = hasGst
-      ? cashBefore * 1.09   // cash top-up incl its GST, but NOT gstOnMv
+      ? cashBefore * 1.09   // cash top-up incl its GST, but NOT gstOnMv or gstOnChas
       : cashBefore
 
     // Accumulate totals
     gMv          += mv
-    gChas        += item.subsidyTotal || 0
+    gChas        += subsidyAmt
     gCash        += cashTotal
     gTotal       += displayTotal
     gGstOnMv     += gstOnMv
+    gGstOnChas   += gstOnChas
     gInstEligible+= instEligible
 
     // Build row
@@ -949,14 +956,17 @@ function updateGrandFromItems(){
     gstNote.style.display = "block"
     document.getElementById("gn-mv-amt").textContent    = fmt(gMv)
     document.getElementById("gn-mv-gst").textContent    = fmtD(gGstOnMv)
-    document.getElementById("gn-cash-gst").textContent  = fmtD(Math.max(0, gCash - gGstOnMv - (gCash - gGstOnMv)/1.09))
+    document.getElementById("gn-chas-amt").textContent  = fmtD(gChas)
+    document.getElementById("gn-chas-gst").textContent  = fmtD(gGstOnChas)
+    document.getElementById("gn-cash-gst").textContent  = fmtD(Math.max(0, gCash - gGstOnMv - gGstOnChas - (gCash - gGstOnMv - gGstOnChas)/1.09))
     document.getElementById("gn-cash-total").textContent= fmtD(gCash)
   } else {
     gstNote.style.display = "none"
   }
 
-  window._instEligible   = gInstEligible
-  window._upfrontGstOnMv = gGstOnMv
+  window._instEligible    = gInstEligible
+  window._upfrontGstOnMv  = gGstOnMv
+  window._upfrontGstOnChas = gGstOnChas
   updateInstalmentPanel()
 
   // Ack name
