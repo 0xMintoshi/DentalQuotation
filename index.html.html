@@ -190,6 +190,20 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 <div id="nonsurg-list"></div>
 </div>
 
+<!-- ═══ ORTHODONTICS SECTION ═══ -->
+<hr class="divider">
+<div class="section-header no-print" onclick="toggleSection('ortho')">
+  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Orthodontics</span>
+  <span style="font-size:12px;color:var(--text-sec)">Cash only · No CHAS · No Medisave</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('ortho')">Clear all</button>
+    <button class="collapse-btn" id="ortho-chevron" tabindex="-1">▾</button>
+  </div>
+</div>
+<div id="ortho-collapsible" class="collapsible no-print">
+  <div id="ortho-list"></div>
+</div>
+
 <!-- ═══ PROSTHODONTIC SECTION ═══ -->
 <hr class="divider">
 <div class="section-header no-print" onclick="toggleSection('prostho')">
@@ -282,7 +296,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
     <div id="instalment-panel" style="display:none">
       <div id="inst-upfront-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:8px 12px;margin-bottom:10px;line-height:1.6">
         <span style="font-weight:600;color:var(--text-cash)">⚠ Pay upfront on day of appointment: </span>
-        GST on Medisave = <span class="cv" style="font-weight:600" id="inst-upfront-mv-amt"></span> · GST on CHAS subsidy = <span class="cv" style="font-weight:600" id="inst-upfront-chas-amt"></span> · Total upfront = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — these are not eligible for instalment.
+        GST on Medisave = <span class="cv" style="font-weight:600" id="inst-upfront-mv-amt"></span> · GST on CHAS subsidy = <span class="cv" style="font-weight:600" id="inst-upfront-chas-amt"></span><span id="inst-upfront-dep-amt"> · Orthodontics deposit = <span class="cv" style="font-weight:600" id="inst-upfront-dep-val"></span></span> · Total upfront = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — these are not eligible for instalment.
       </div>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
         <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment period</span>
@@ -409,6 +423,11 @@ const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
 let miscItems = [ { id: 1, name:'', fee:0, qty:1, remark:'' } ]
 let _miscId = 1
 function nextMiscId(){ return ++_miscId }
+
+// Orthodontics — dynamic list with deposit
+let orthoItems = [ { id: 1, name:'', fee:0, qty:1, deposit:0, remark:'' } ]
+let _orthoId = 1
+function nextOrthoId(){ return ++_orthoId }
 
 const CHAS_TIERS = ["orange","blue","mg","pg"]
 const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
@@ -545,16 +564,22 @@ function updateInstalmentPanel(){
   document.getElementById("inst-total").textContent   = fmtD(eligible)
   document.getElementById("inst-monthly").textContent = fmtD(monthly)
   document.getElementById("inst-label").textContent   = `per month for ${months} months`
-  const upfrontChas = window._upfrontGstOnChas || 0
-  const totalUpfront = upfront + upfrontChas
+  const upfrontChas    = window._upfrontGstOnChas || 0
+  const orthoDeposit   = window._orthoDeposit     || 0
+  const totalUpfront   = upfront + upfrontChas + orthoDeposit
   const note = document.getElementById("inst-upfront-note")
   if(note){
     if(totalUpfront > 0){
       note.style.display = "block"
       const mvEl = document.getElementById("inst-upfront-mv-amt")
       const chasEl = document.getElementById("inst-upfront-chas-amt")
+      const depEl = document.getElementById("inst-upfront-dep-amt")
       if(mvEl) mvEl.textContent = fmtD(upfront)
       if(chasEl) chasEl.textContent = fmtD(upfrontChas)
+      if(depEl) depEl.style.display = orthoDeposit > 0 ? 'inline' : 'none'
+      if(depEl) depEl.previousSibling && (depEl.previousSibling.style && (depEl.previousSibling.style.display = orthoDeposit > 0 ? 'inline' : 'none'))
+      const depSpan = document.getElementById("inst-upfront-dep-val")
+      if(depSpan) depSpan.textContent = fmtD(orthoDeposit)
       document.getElementById("inst-upfront-amt").textContent = fmtD(totalUpfront)
     } else {
       note.style.display = "none"
@@ -575,7 +600,7 @@ setChas("none")
 
 // ── COLLAPSE ─────────────────────────────────────────────────────────────────
 
-const collapseState = { surg: false, nonsurg: false, prostho: false }
+const collapseState = { surg: false, nonsurg: false, ortho: false, prostho: false }
 
 function toggleSection(sec) {
   collapseState[sec] = !collapseState[sec]
@@ -608,6 +633,8 @@ function clearSection(sec) {
       nsState[p.id].remaining = p.maxClaims
       nsState[p.id].materials = []
     })
+  } else if (sec === 'ortho') {
+    orthoItems = [ { id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' } ]
   } else if (sec === 'prostho') {
     miscItems = [ { id: nextMiscId(), name:'', fee:0, qty:1, remark:'' } ]
   }
@@ -868,12 +895,13 @@ function updateGrandFromItems(){
   const sectionStyles = {
     surg:   "background:var(--bg-info);color:var(--text-info)",
     ns:     "background:var(--bg-success);color:var(--text-success)",
+    ortho:  "background:var(--bg-purple);color:var(--text-purple)",
     prostho:"background:var(--bg-purple);color:var(--text-purple)",
   }
-  const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Miscellaneous Procedures" }
+  const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", ortho:"Orthodontics", prostho:"Miscellaneous Procedures" }
 
   let lastSec = null
-  let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gGstOnChas=0, gInstEligible=0
+  let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gGstOnChas=0, gInstEligible=0, gOrthoDeposit=0
 
   summaryItems.forEach(item => {
     // Section header row when section changes
@@ -899,6 +927,12 @@ function updateGrandFromItems(){
       ? cashBefore * 1.09   // cash top-up incl its GST, but NOT gstOnMv or gstOnChas
       : cashBefore
 
+    // Orthodontics: deposit upfront, balance instalment-eligible
+    const deposit        = item.deposit || 0
+    const balance        = Math.max(0, cashTotal - deposit)
+    const orthoEligible  = item._sec === 'ortho' ? balance : instEligible
+    const orthoDeposit   = item._sec === 'ortho' ? deposit : 0
+
     // Accumulate totals
     gMv          += mv
     gChas        += subsidyAmt
@@ -906,7 +940,8 @@ function updateGrandFromItems(){
     gTotal       += displayTotal
     gGstOnMv     += gstOnMv
     gGstOnChas   += gstOnChas
-    gInstEligible+= instEligible
+    gInstEligible+= item._sec === 'ortho' ? orthoEligible : instEligible
+    gOrthoDeposit+= orthoDeposit
 
     // Build row
     const mvStr   = (item._sec==='surg' && !item.feeOnly)
@@ -967,6 +1002,7 @@ function updateGrandFromItems(){
   window._instEligible    = gInstEligible
   window._upfrontGstOnMv  = gGstOnMv
   window._upfrontGstOnChas = gGstOnChas
+  window._orthoDeposit     = gOrthoDeposit
   updateInstalmentPanel()
 
   // Ack name
@@ -1018,6 +1054,32 @@ function addToSummary(sec, id, event){
     })
   }
 
+  if(sec === 'ortho'){
+    const item = orthoItems.find(x => x.id === id)
+    if(!item) return
+    const fee = parseFloat(item.fee)||0
+    if(!fee){ alert('Please enter a fee before adding to summary.'); return }
+    const deposit = parseFloat(item.deposit)||0
+    const totalRaw = fee * item.qty
+    const cashRaw  = totalRaw * (gst() ? 1.09 : 1.0)
+    summaryItems.push({
+      _id: nextId(), _sec: 'ortho',
+      label: item.name || 'Orthodontics', remark: item.remark||'',
+      qty: item.qty, unit: 'per treatment',
+      mv: 0, subsidyTotal: 0,
+      cashBefore: totalRaw,
+      deposit: deposit,
+      feeOnly: true
+    })
+    updateGrandFromItems()
+    if(event){
+      const btn = event.target.closest('.btn-add-summary') || event.target
+      btn.classList.remove('flashing'); void btn.offsetWidth; btn.classList.add('flashing')
+      btn.addEventListener('animationend', () => btn.classList.remove('flashing'), {once:true})
+    }
+    return
+  }
+
   if(sec === 'prostho'){
     const item = miscItems.find(x => x.id === id)
     if(!item) return
@@ -1053,6 +1115,77 @@ function removeFromSummary(id){
 
 
 // ── RENDER MISCELLANEOUS ─────────────────────────────────────────────────────
+
+
+// ── RENDER ORTHODONTICS ───────────────────────────────────────────────────────
+
+function renderOrtho(){
+  const list = document.getElementById("ortho-list")
+  if(!list) return
+  list.innerHTML = ""
+
+  orthoItems.forEach((item, idx) => {
+    const div = document.createElement("div")
+    div.className = "card"
+    const totalRaw  = (item.fee||0) * item.qty
+    const totalCash = totalRaw * (gst() ? 1.09 : 1.0)
+    const deposit   = parseFloat(item.deposit)||0
+    const balance   = Math.max(0, totalCash - deposit)
+    const gn = gst() ? " (incl. GST)" : ""
+
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:160px">
+          <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Treatment</span>
+          <input type="text" value="${item.name||''}" placeholder="e.g. Metal Braces, Invisalign…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="orthoItems[${idx}].name=this.value" onblur="renderOrtho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
+          <input class="fee" type="number" min="0" step="0.5" value="${item.fee||''}" placeholder="0" onchange="orthoItems[${idx}].fee=parseFloat(this.value)||0;renderOrtho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+          <input type="number" min="1" max="99" value="${item.qty}" onchange="orthoItems[${idx}].qty=Math.max(1,parseInt(this.value)||1);renderOrtho()">
+        </div>
+        ${orthoItems.length > 1 ? `<button onclick="removeOrthoItem(${item.id})" style="font-size:13px;background:none;border:none;cursor:pointer;color:var(--text-ter);padding:2px 6px;flex-shrink:0" title="Remove">✕</button>` : ''}
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Deposit ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${item.deposit||''}" placeholder="0" style="width:100px" onchange="orthoItems[${idx}].deposit=parseFloat(this.value)||0;renderOrtho()">
+        <span style="font-size:11px;color:var(--text-ter)">paid upfront · not eligible for instalment</span>
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${item.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="orthoItems[${idx}].remark=this.value">
+      </div>
+      ${totalRaw > 0 ? `<div class="sep" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="line-tot" style="display:flex;gap:18px;font-size:12px;flex-wrap:wrap">
+          <span><span style="color:var(--text-sec)">Total: </span><span style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
+          ${deposit > 0 ? `<span><span style="color:var(--text-sec)">Deposit (upfront): </span><span class="cv" style="font-weight:600">${fmtD(deposit)}</span></span>
+          <span><span style="color:var(--text-sec)">Balance (instalment-eligible): </span><span style="font-weight:600">${fmtD(balance)}</span></span>` : ''}
+        </span>
+        <button onmousedown="addToSummary('ortho',${item.id},event)" class="btn-add-summary">+ Add to Summary</button>
+      </div>` : ''}
+    `
+    list.appendChild(div)
+  })
+
+  const addBtn = document.createElement("button")
+  addBtn.className = "btn"
+  addBtn.style.cssText = "font-size:12px;margin-top:4px;padding:6px 16px;border-style:dashed"
+  addBtn.textContent = "+ Add another treatment"
+  addBtn.onclick = () => {
+    orthoItems.push({ id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' })
+    renderOrtho()
+  }
+  list.appendChild(addBtn)
+}
+
+function removeOrthoItem(id){
+  orthoItems = orthoItems.filter(i => i.id !== id)
+  if(!orthoItems.length) orthoItems = [{ id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' }]
+  renderOrtho()
+}
 
 function renderProstho(){
   const list = document.getElementById("prostho-list")
@@ -1117,6 +1250,7 @@ function removeMiscItem(id){
 function render(){
   renderSurg()
   renderNonSurg()
+  renderOrtho()
   renderProstho()
   updateGrandFromItems()
 }
