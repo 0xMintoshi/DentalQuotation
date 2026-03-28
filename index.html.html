@@ -435,7 +435,7 @@ const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
 // ── STATE ────────────────────────────────────────────────────────────────────
 
 const surgState = {}
-SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0, remark:"" } })
+SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0, remark:"", capOverflowToCash:false } })
 
 const nsState = {}
 NS.forEach(p => { nsState[p.id] = { on:false, qty:1, fee:0, remaining:p.maxClaims, materials:[], remark:'' } })
@@ -464,6 +464,8 @@ document.getElementById("patient-name").addEventListener("input", function(){
   if(ackName) ackName.textContent = this.value || "\u00a0"
 })
 
+const MV_SESSION_CAP = 5290  // CPF Medisave max per session (1 Apr 2025)
+
 function getChasSubsidy(p){
   const idx = CHAS_IDX[chasMode]
   if(idx < 0) return 0
@@ -483,39 +485,44 @@ function getSurgLine(p){
       const costPer = parseFloat(s.cashTopup)||0   // cashTopup field reused as costPerImplant
       const totalFee = costPer * qty
       // Medisave is always same-session logic (no appt toggle): 1120×qty + 830 once
-      const mv = p.surgical*qty + p.misc
+      const surgicalRaw = p.surgical * qty
+      const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+      const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+      const mv = surgicalCapped + p.misc   // misc ($830) not subject to cap
       if(costPer === 0){
         // No cost entered — show Medisave only, $0 cash
         const gstOnMv = hasGst ? mv * 0.09 : 0
-        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0 }
+        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0, capOverflow }
       }
-      // Total fee incl GST = costPer × qty × (1+GST)
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const effectiveFee = Math.max(0, totalFee - mv + overflowCash)
       const totalFeeWithGst = hasGst ? totalFee * 1.09 : totalFee
-      // Cash = total fee (incl GST) - Medisave (Medisave is fixed, no GST deducted from it)
       const cashTotal = Math.max(0, totalFeeWithGst - mv)
-      // GST on Medisave = portion of overall GST attributable to Medisave amount
       const gstOnMv = hasGst ? mv * 0.09 : 0
-      // instEligible = cash - gstOnMv (cash top-up portion only)
       const instEligible = Math.max(0, cashTotal - gstOnMv)
-      return { qty, mv, gstOnMv, cashBefore:Math.max(0,totalFee-mv), cashTotal, total:hasGst?totalFeeWithGst:totalFee, extraMisc:0, instEligible }
+      return { qty, mv, gstOnMv, cashBefore:Math.max(0,totalFee-mv), cashTotal, total:hasGst?totalFeeWithGst:totalFee, extraMisc:0, instEligible, capOverflow }
     }
     const ccp = p.crowns[s.crown].cash
     const extraCash = parseFloat(s.cashTopup)||0  // additional cash top-up per implant
     if(s.apptMode === "same"){
-      const mv = p.surgical*qty + p.misc
+      const surgicalRaw = p.surgical * qty
+      const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+      const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+      const mv = surgicalCapped + p.misc   // misc ($830) is separate, not subject to cap
       const extraMisc = p.misc*(qty-1)
-      const cashBefore = extraMisc + (ccp + extraCash)*qty
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const cashBefore = extraMisc + (ccp + extraCash)*qty + overflowCash
       const gstOnMv = hasGst ? mv * 0.09 : 0
       const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
       const cashTotal = cashTopupWithGst + gstOnMv
-      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst }
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst, capOverflow }
     } else {
       const mv = (p.surgical+p.misc)*qty
       const cashBefore = (ccp + extraCash)*qty
       const gstOnMv = hasGst ? mv * 0.09 : 0
       const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
       const cashTotal = cashTopupWithGst + gstOnMv
-      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst }
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst, capOverflow:0 }
     }
   } else {
     const mv = p.medisave*qty
@@ -662,11 +669,23 @@ function renderSurg(){
 
     let apptHtml = ""
     if(s.on && p.implantMode && !p.implantOnly){
-      const info = s.apptMode==="same"
+      const capOverflow = l.capOverflow || 0
+      let info = s.apptMode==="same"
         ? s.qty===1
           ? `Single implant: Medisave covers full $1,120 + $830 misc = <strong>$1,950</strong>.`
-          : `${s.qty} implants in one session: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>. Extra misc ($830 × ${s.qty-1} = <strong>${fmt(l.extraMisc)}</strong>) added to cash.`
+          : `${s.qty} implants in one session: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>.${l.extraMisc>0?` Extra misc ($830 × ${s.qty-1} = <strong>${fmt(l.extraMisc)}</strong>) → cash.`:""}`
         : `${s.qty} implant${s.qty>1?"s":""} across separate appointments: Medisave = $1,950 × ${s.qty} = <strong>${fmt(l.mv)}</strong>. No extra misc cash.`
+
+      const capWarning = capOverflow > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflow)}</strong> is not claimable from Medisave in this session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflow)} overflow to patient's cash
+            </label>
+          </div>` : ""
+
       apptHtml = `
         <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Appointment</span>
@@ -677,7 +696,7 @@ function renderSurg(){
             <input type="radio" name="appt-${p.code}" ${s.apptMode==="diff"?"checked":""} onchange="surgState['${p.code}'].apptMode='diff';render()"> Different appointments
           </label>
         </div>
-        <div class="info-box">${info}</div>`
+        <div class="info-box">${info}${capWarning}</div>`
     } else if(s.on && p.implantOnly){
       const costPer = parseFloat(s.cashTopup)||0
       let info = ""
@@ -691,7 +710,17 @@ function renderSurg(){
           ? `Cost: ${fmt(costPer)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
           : `Cost: ${fmt(costPer)} × ${s.qty} = ${fmt(totalFee)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
       }
-      apptHtml = `<div class="info-box" style="margin-top:8px">${info}</div>`
+      const capOverflowIO = l.capOverflow || 0
+      const capWarningIO = capOverflowIO > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflowIO)}</strong> is not claimable from Medisave in this session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflowIO)} overflow to patient's cash
+            </label>
+          </div>` : ""
+      apptHtml = `<div class="info-box" style="margin-top:8px">${info}</div>${capWarningIO}`
     }
 
     let crownHtml = ""
