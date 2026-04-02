@@ -368,7 +368,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 </div>
 
 <div style="font-size:10px;color:var(--text-ter);line-height:1.7;border-top:0.5px solid var(--border-lt);padding-top:12px;margin-top:16px" class="no-print">
-  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M/SB813M = $1,950/unit · SB802M = $2,220/unit · SF812T = $420 surgical + $830 misc = $1,250/tooth · SF813T = $1,120 surgical + $830 misc = $1,950/tooth · Socket Preservation = not Medisave-claimable<br>
+  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M = $1,950/unit · SB813M = $1,120/quadrant + $830 misc once per session · SB802M = $2,220/unit · SF812T = $420 surgical + $830 misc = $1,250/tooth · SF813T = $1,120 surgical + $830 misc = $1,950/tooth · Socket Preservation = not Medisave-claimable<br>
   <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged.<br>
   <strong>GST (9%):</strong> Applied to the full fee including Medisave amount. GST on Medisave portion is added to patient's cash payable. GST on CHAS subsidy portion is not charged to patient.<br>
   Subject to CPF/MOH approval. All amounts in SGD.
@@ -392,7 +392,7 @@ const SURG = [
   { code:"SB802M", name:"Complex Sinus Lift", tosp:"Table 3A",
     medisave:2220, breakdown:"$1,390+$830 misc", unit:"per procedure" },
   { code:"SB813M", name:"Alveolectomy", tosp:"Table 2C",
-    medisave:1950, breakdown:"$1,120+$830 misc", unit:"per quadrant" },
+    surgical:1120, misc:830, miscOnce:true, unit:"per quadrant" },
   { code:"SF812T", name:"Surgical Tooth Removal — bone removal, no tooth division", tosp:"Table 1B",
     medisave:1250, breakdown:"$420 surgical + $830 misc", unit:"per tooth" },
   { code:"SF813T", name:"Surgical Tooth Removal — bone removal + tooth division", tosp:"Table 2C",
@@ -435,7 +435,7 @@ const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
 // ── STATE ────────────────────────────────────────────────────────────────────
 
 const surgState = {}
-SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0, remark:"", capOverflowToCash:false } })
+SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0, remark:"", capOverflowToCash:false, extraMiscToCash:false } })
 
 const nsState = {}
 NS.forEach(p => { nsState[p.id] = { on:false, qty:1, fee:0, remaining:p.maxClaims, materials:[], remark:'' } })
@@ -519,6 +519,30 @@ function getSurgLine(p){
     } else {
       const mv = (p.surgical+p.misc)*qty
       const cashBefore = (ccp + extraCash)*qty
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst, capOverflow:0 }
+    }
+  } else if(p.miscOnce) {
+    // Procedures where misc ($830) is claimable only once per session regardless of qty
+    const surgicalRaw = p.surgical * qty
+    const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+    const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+    if(s.apptMode === "same"){
+      const mv = surgicalCapped + p.misc  // misc once per session
+      const extraMisc = p.misc * (qty - 1) // extra misc units — optional cash
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const extraMiscCash = (qty > 1 && s.extraMiscToCash) ? extraMisc : 0
+      const cashBefore = extraMiscCash + (parseFloat(s.cashTopup)||0)*qty + overflowCash
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst, capOverflow }
+    } else {
+      // Different appointments: each unit claims full surgical + misc
+      const mv = (p.surgical + p.misc) * qty
+      const cashBefore = (parseFloat(s.cashTopup)||0) * qty
       const gstOnMv = hasGst ? mv * 0.09 : 0
       const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
       const cashTotal = cashTopupWithGst + gstOnMv
@@ -611,7 +635,7 @@ const collapseState = { surg: false, nonsurg: false, ortho: false, prostho: fals
 
 function toggleSection(sec) {
   collapseState[sec] = !collapseState[sec]
-  const idMap = { surg:'surg-collapsible', nonsurg:'nonsurg-collapsible', prostho:'prostho-collapsible' }
+  const idMap = { surg:'surg-collapsible', nonsurg:'nonsurg-collapsible', ortho:'ortho-collapsible', prostho:'prostho-collapsible' }
   const col = document.getElementById(idMap[sec])
   const btn = document.getElementById(sec + '-chevron')
   if (collapseState[sec]) {
@@ -662,10 +686,12 @@ function renderSurg(){
       ? `<span style="color:var(--text-ter)">No Medisave · Cash only · ${p.unit}</span>`
       : p.implantMode
       ? `Medisave: <span class="mv">$1,950</span> per implant`
+      : p.miscOnce
+      ? `Medisave: <span class="mv">$${p.surgical}</span> surgical + <span class="mv">$${p.misc}</span> misc once per session · ${p.unit}`
       : `Medisave: <span class="mv">${fmt(p.medisave)}</span> ${p.unit}`
         + ((parseFloat(surgState[p.code].cashTopup)||0) > 0
           ? ` &nbsp;·&nbsp; <span class="cv">Cash top-up: ${fmt(parseFloat(surgState[p.code].cashTopup))}/unit</span>`
-          : ``)
+          : `` )
 
     let apptHtml = ""
     if(s.on && p.implantMode && !p.implantOnly){
@@ -721,6 +747,45 @@ function renderSurg(){
             </label>
           </div>` : ""
       apptHtml = `<div class="info-box" style="margin-top:8px">${info}</div>${capWarningIO}`
+    }
+
+    // ── miscOnce (e.g. Alveolectomy) appointment toggle + cap warning ──
+    if(s.on && p.miscOnce){
+      const capOverflowMO = l.capOverflow || 0
+      const extraMiscAmt = p.misc * (s.qty - 1)
+      const infoMO = s.apptMode==="same"
+        ? s.qty===1
+          ? `Single quadrant: Medisave = $1,120 + $830 misc = <strong>$1,950</strong>.`
+          : `${s.qty} quadrants same session: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>.`
+        : `${s.qty} quadrant${s.qty>1?"s":""} separate appointments: Medisave = $1,950 × ${s.qty} = <strong>${fmt(l.mv)}</strong>.`
+      const extraMiscWarning = s.apptMode==="same" && s.qty > 1
+        ? `<div style="margin-top:8px;padding:7px 10px;background:var(--bg-surface);border-radius:var(--r-sm);border:0.5px solid var(--border-md);font-size:11px;color:var(--text-sec);line-height:1.6">
+            Extra misc ($830 × ${s.qty-1} = <strong>${fmt(extraMiscAmt)}</strong>) not claimable — only one $830 per session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.extraMiscToCash?"checked":""} onchange="surgState['${p.code}'].extraMiscToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(extraMiscAmt)} to patient's cash
+            </label>
+          </div>` : ""
+      const capWarnMO = capOverflowMO > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflowMO)}</strong> is not claimable.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflowMO)} overflow to patient's cash
+            </label>
+          </div>` : ""
+      apptHtml = `
+        <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Appointment</span>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="same"?"checked":""} onchange="surgState['${p.code}'].apptMode='same';render()"> Same appointment
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="diff"?"checked":""} onchange="surgState['${p.code}'].apptMode='diff';render()"> Different appointments
+          </label>
+        </div>
+        <div class="info-box">${infoMO}</div>${extraMiscWarning}${capWarnMO}`
     }
 
     let crownHtml = ""
