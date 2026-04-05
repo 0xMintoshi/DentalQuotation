@@ -15,6 +15,8 @@
 
 }
 *{box-sizing:border-box;margin:0;padding:0}
+select,button,input,textarea{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+input::placeholder{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text-ter)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg-page);color:var(--text-pri);padding:1.5rem 1rem;font-size:14px;line-height:1.5;min-height:100vh}
 .wrap{max-width:860px;margin:0 auto}
 h1{font-size:21px;font-weight:600}
@@ -97,6 +99,34 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .card{border:1px solid #ccc;break-inside:avoid}
   .metric{background:#f5f5f5}
   .info-box{background:#e8f4fd;color:#0a4a80}
+}
+/* ── Treatment Timeline ── */
+.tl-vcard{background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:11px 13px}
+.tl-dzone{min-height:42px;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;position:relative;transition:border-color .1s,background .1s}
+.tl-dzone.tl-empty::after{content:'drop here';font-size:11px;color:#bbb;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.tl-dzone.tl-over,.tl-uzone.tl-over{border:0.5px solid #1D9E75!important;background:#E1F5EE!important}
+.tl-pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:3px 9px;border-radius:20px;cursor:grab;user-select:none;border:0.5px solid transparent;line-height:1.5;position:relative}
+.tl-pill *{pointer-events:none}
+.tl-pill.tl-picked{opacity:.3;cursor:grabbing}
+.tl-pill.tl-in{background:#E1F5EE;color:#085041}
+.tl-pill.tl-in:hover{border-color:#5DCAA5}
+.tl-pill.tl-out{background:var(--bg-surface);color:#999;border-color:var(--border-lt)}
+.tl-pill.tl-out:hover{border-color:#bbb}
+.tl-pill .tl-pc{font-size:10.5px;opacity:.75}
+.tl-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:rotate(2deg);font-size:11.5px;padding:3px 9px;border-radius:20px;background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.tl-wrow{display:flex;align-items:center;gap:8px;padding:5px 0 5px 10px}
+.tl-wvline{width:1.5px;height:28px;background:var(--border-lt);flex-shrink:0}
+select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);border-radius:4px;background:var(--bg-surface);color:inherit;cursor:pointer;min-width:52px}
+.tl-add-btn{width:100%;margin-top:10px;padding:8px;font-size:12px;color:#999;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);background:none;cursor:pointer}
+.tl-add-btn:hover{background:var(--bg-surface)}
+@media(max-width:580px){.tl-layout{flex-direction:column!important}}
+@media print{
+  .tl-dzone{border:none!important;padding:2px!important;min-height:0}
+  .tl-pill{cursor:default!important}
+  .tl-pill.tl-out{display:none!important}
+  .tl-wait-interactive{display:none!important}
+  .tl-wait-text{display:inline!important}
+  .tl-add-btn{display:none!important}
 }
 </style>
 </head>
@@ -223,7 +253,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   <hr class="divider">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
     <span style="font-size:15px;font-weight:600;color:var(--text-pri)">Summary</span>
-    <span style="font-size:11px;color:var(--text-sec)">All selected treatments</span>
+    <span style="font-size:11px;color:var(--text-sec)">All Selected Treatments</span>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0" class="no-print">
       <input type="checkbox" id="gst-toggle" onchange="render();updateGrandFromItems()" style="width:14px;height:14px;accent-color:#1479b8;cursor:pointer">
       <label for="gst-toggle" style="font-size:12px;cursor:pointer;font-weight:500">Add 9% GST</label>
@@ -240,14 +270,14 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
           <th style="width:13%">Total Fee</th>
           <th style="width:13%">Medisave</th>
           <th style="width:11%">CHAS</th>
-          <th style="width:15%">Cash payable</th>
+          <th style="width:15%">Cash Payable</th>
           <th style="width:8%" class="no-print"></th>
         </tr>
       </thead>
       <tbody id="combined-tbody"></tbody>
       <tfoot>
         <tr style="border-top:2px solid var(--border-md)">
-          <td colspan="2" style="font-size:13px"><strong>Grand total</strong></td>
+          <td colspan="2" style="font-size:13px"><strong>Grand Total</strong></td>
           <td id="cs-fee-total" style="font-size:13px;font-weight:600"></td>
           <td id="cs-mv-total" class="mv" style="font-size:13px;font-weight:600"></td>
           <td id="cs-chas-total" class="sv" style="font-size:13px;font-weight:600"></td>
@@ -260,14 +290,14 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 
   <!-- Grand metric cards -->
   <div class="mgrid">
-    <div class="metric"><div class="mlabel">Grand total fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">incl. GST</div></div>
+    <div class="metric"><div class="mlabel">Grand Total Fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">Incl. GST</div></div>
     <div class="metric" style="border:1px solid var(--border-lt)">
-      <div class="mlabel">Patient pays cash</div>
+      <div class="mlabel">Patient Pays Cash</div>
       <div class="mval cv" id="gm-cash">$0</div>
-      <div class="msub" id="gm-cash-sub">after Medisave + CHAS</div>
+      <div class="msub" id="gm-cash-sub">After Medisave + CHAS</div>
     </div>
     <div class="metric">
-      <div class="mlabel">Subsidies applied</div>
+      <div class="mlabel">Subsidies Applied</div>
       <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-top:3px">
         <span class="mv" style="font-size:15px;font-weight:600" id="gm-mv">$0</span>
         <span style="font-size:11px;color:var(--text-sec)">Medisave</span>
@@ -290,7 +320,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1rem">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <input type="checkbox" id="instalment-toggle" onchange="updateInstalmentPanel()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
-      <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show instalment plan</label>
+      <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Instalment Plan</label>
       <span style="font-size:11px;color:var(--text-ter)">(cash top-up + GST on cash top-up only)</span>
     </div>
     <div id="instalment-panel" style="display:none">
@@ -299,7 +329,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
         GST on Medisave = <span class="cv" style="font-weight:600" id="inst-upfront-mv-amt"></span> · GST on CHAS subsidy = <span class="cv" style="font-weight:600" id="inst-upfront-chas-amt"></span><span id="inst-upfront-dep-amt"> · Orthodontics deposit = <span class="cv" style="font-weight:600" id="inst-upfront-dep-val"></span></span> · Total upfront = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — these are not eligible for instalment.
       </div>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
-        <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment period</span>
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment Period</span>
         <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
           <input type="radio" name="inst-months" value="3"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 3 months
         </label>
@@ -324,14 +354,56 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <div class="metric" style="flex:1;min-width:140px">
-          <div class="mlabel">Instalment-eligible amount</div>
+          <div class="mlabel">Instalment-Eligible Amount</div>
           <div class="mval cv" id="inst-total">$0</div>
-          <div class="msub">cash top-up + GST on cash top-up</div>
+          <div class="msub">Cash Top-Up + GST On Cash Top-Up</div>
         </div>
         <div class="metric" style="flex:1;min-width:140px;background:var(--bg-info)">
-          <div class="mlabel" style="color:var(--text-info)">Monthly instalment</div>
+          <div class="mlabel" style="color:var(--text-info)">Monthly Instalment</div>
           <div class="mval" style="color:var(--text-info)" id="inst-monthly">$0</div>
           <div class="msub" id="inst-label">per month for 6 months</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Treatment Timeline -->
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input type="checkbox" id="tl-toggle" onchange="tlToggle()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
+      <label for="tl-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Treatment Timeline</label>
+    </div>
+    <div id="tl-panel" style="display:none">
+      <!-- Cost display toggles -->
+      <div class="no-print" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:11.5px;color:#888;font-weight:500">Show on pills:</span>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-fee" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Total Fee
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-mv" onchange="tlRender()" style="accent-color:#1479b8;cursor:pointer"> Medisave
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-cash" onchange="tlRender()" style="accent-color:#1479b8;cursor:pointer"> Cash
+        </label>
+      </div>
+      <div class="tl-layout" style="display:flex;gap:14px;align-items:flex-start">
+        <div id="tl-main" style="flex:1;min-width:0"></div>
+        <div class="no-print" style="width:210px;flex-shrink:0">
+          <div style="font-size:11.5px;font-weight:500;color:#888;margin-bottom:7px">Unassigned Treatments</div>
+          <div id="tl-uzone" class="tl-uzone" data-tl-zone="unassigned"
+            style="min-height:60px;background:var(--bg-surface);border:0.5px solid var(--border-lt);border-radius:var(--r-md);padding:8px;display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;margin-bottom:10px">
+          </div>
+          <!-- Generic treatments -->
+          <div style="font-size:11.5px;font-weight:500;color:#888;margin-bottom:6px">Add Generic Treatment</div>
+          <div style="display:flex;gap:5px">
+            <select id="tl-generic-sel" style="flex:1;font-size:11.5px;padding:4px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-pri);cursor:pointer">
+              <option value="Stitches Removal">Stitches Removal</option>
+              <option value="Implant Crown Fabrication">Implant Crown Fabrication</option>
+              <option value="Implant Denture Fabrication">Implant Denture Fabrication</option>
+            </select>
+            <button onclick="tlAddGeneric()" style="font-size:11.5px;padding:4px 9px;background:#1479b8;color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500">+ Add</button>
+          </div>
         </div>
       </div>
     </div>
@@ -447,6 +519,288 @@ let chasMode = "none"
 let summaryItems = []
 let _snapId = 0
 function nextId(){ return ++_snapId }
+
+// ── TREATMENT TIMELINE ───────────────────────────────────────────────────────
+const TL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const _tlNow    = new Date()
+const _tlCurM   = _tlNow.getMonth()   // 0-indexed
+const _tlCurY   = _tlNow.getFullYear()
+
+function tlDateKey(m, y){ return y * 12 + m }  // monotonic for comparison
+function tlAddMonths(date, n){
+  let m = date.m + n, y = date.y
+  while(m > 11){ m -= 12; y++ }
+  while(m < 0) { m += 12; y-- }
+  return {m, y}
+}
+function tlDateLabel(date){ return TL_MONTHS[date.m] + ' ' + date.y }
+
+// Generate option list: current month → 36 months forward
+function tlDateOptions(selected){
+  let opts = ''
+  for(let delta = 0; delta <= 36; delta++){
+    let m = _tlCurM + delta, y = _tlCurY
+    while(m > 11){ m -= 12; y++ }
+    while(m < 0) { m += 12; y-- }
+    const sel = (selected && selected.m === m && selected.y === y) ? ' selected' : ''
+    opts += `<option value="${m}_${y}"${sel}>${TL_MONTHS[m]} ${y}</option>`
+  }
+  return opts
+}
+
+let tlVisits     = [{id:'v1', label:'Visit 1', tIds:[], date:{m:_tlCurM, y:_tlCurY}}]
+let tlWaits      = {}
+let tlUnassigned = []
+const TL_WK = ['','2','4','6','8']
+const TL_MO = ['','3','4','5','6','7','8']
+
+// Mouse-drag state
+let tlDrag = null  // { id, src, ghost }
+
+// Generic treatment items (no cost, draggable into visits)
+let tlGenericItems = []
+let _tlGenId = -1  // negative IDs avoid collision with summaryItems
+
+function tlAddGeneric(){
+  const sel = document.getElementById('tl-generic-sel')
+  if(!sel) return
+  const id = _tlGenId--
+  tlGenericItems.push({ _id: id, label: sel.value, mv: 0, cashBefore: 0, subsidyTotal: 0 })
+  tlUnassigned.push(id)
+  tlRender()
+}
+
+function tlItem(id){
+  return summaryItems.find(i => i._id == id) || tlGenericItems.find(i => i._id == id)
+}
+
+function tlSync(){
+  const allIds   = summaryItems.map(i => i._id)
+  const genIds   = tlGenericItems.map(i => i._id)
+  const validIds = [...allIds, ...genIds]
+  const assigned = tlVisits.flatMap(v => v.tIds)
+  tlUnassigned   = tlUnassigned.filter(id => validIds.some(v => v == id))
+  tlVisits.forEach(v => { v.tIds = v.tIds.filter(id => validIds.some(v => v == id)) })
+  allIds.forEach(id => {
+    if(!assigned.some(a => a == id) && !tlUnassigned.some(u => u == id)) tlUnassigned.push(id)
+  })
+}
+
+function tlPillCost(item){
+  const showFee  = document.getElementById('tl-show-fee')?.checked
+  const showMv   = document.getElementById('tl-show-mv')?.checked
+  const showCash = document.getElementById('tl-show-cash')?.checked
+  const parts = []
+  if(showFee){
+    const fee = (item.cashBefore||0) + (item.mv||0) + (item.subsidyTotal||0)
+    if(fee) parts.push(`<span class="tl-pc">$${Number.isInteger(fee)?fee:fee.toFixed(2)}</span>`)
+  }
+  if(showMv && item.mv)
+    parts.push(`<span class="tl-pc" style="color:#1479b8">MS $${Number.isInteger(item.mv)?item.mv:item.mv.toFixed(2)}</span>`)
+  if(showCash && item.cashBefore)
+    parts.push(`<span class="tl-pc" style="color:#b06000">Cash $${Number.isInteger(item.cashBefore)?item.cashBefore:item.cashBefore.toFixed(2)}</span>`)
+  return parts.length ? ' ' + parts.join(' ') : ''
+}
+
+function tlPill(id, ctx){
+  const item = tlItem(id)
+  if(!item) return ''
+  const cls = ctx==='unassigned' ? 'tl-out' : 'tl-in'
+  return `<span class="tl-pill ${cls}" id="tlp_${id}"
+    onmousedown="tlMouseDown(event,${id},'${ctx}')"
+  >${item.label}${tlPillCost(item)}</span>`
+}
+
+function tlToggle(){
+  const tog   = document.getElementById('tl-toggle')
+  const panel = document.getElementById('tl-panel')
+  if(!tog || !panel) return
+  if(tog.checked){ tlSync(); panel.style.display='block'; tlRender() }
+  else panel.style.display='none'
+}
+
+function tlAddVisit(){
+  const nid  = 'v' + Date.now()
+  const prev = tlVisits[tlVisits.length-1]
+  tlWaits[prev.id+'_'+nid] = {w:'',m:''}
+  // Default date = same as previous visit (no wait selected yet)
+  tlVisits.push({id:nid, label:'Visit '+(tlVisits.length+1), tIds:[], date:{...prev.date}})
+  tlRender()
+}
+
+function tlSetVisitDate(vid, val){
+  const v = tlVisits.find(v => v.id === vid)
+  if(!v) return
+  const [m, y] = val.split('_').map(Number)
+  v.date = {m, y}
+  // Propagate forward from this visit
+  const idx = tlVisits.indexOf(v)
+  tlPropagateFrom(idx)
+  tlRender()
+}
+
+function tlPropagateFrom(fromIdx){
+  for(let i = fromIdx + 1; i < tlVisits.length; i++){
+    const prev = tlVisits[i-1]
+    const k    = prev.id + '_' + tlVisits[i].id
+    const wp   = tlWaits[k] || {w:'',m:''}
+    const addM = Math.round((parseInt(wp.w)||0) / 4) + (parseInt(wp.m)||0)
+    if(addM > 0) tlVisits[i].date = tlAddMonths(prev.date, addM)
+  }
+}
+
+function tlRemoveVisit(vid){
+  if(tlVisits.length <= 1) return
+  const idx = tlVisits.findIndex(v => v.id === vid)
+  tlUnassigned.push(...tlVisits[idx].tIds)
+  Object.keys(tlWaits).filter(k => k.split('_').includes(vid)).forEach(k => delete tlWaits[k])
+  if(idx > 0 && idx < tlVisits.length-1)
+    tlWaits[tlVisits[idx-1].id+'_'+tlVisits[idx+1].id] = {w:'',m:''}
+  tlVisits.splice(idx,1)
+  tlVisits.forEach((v,i) => v.label = 'Visit '+(i+1))
+  tlRender()
+}
+
+function tlSetWait(key, field, val){
+  if(!tlWaits[key]) tlWaits[key]={w:'',m:''}
+  tlWaits[key][field] = val
+  // Propagate date from the "from" visit
+  const fromId = key.split('_')[0]
+  const fromIdx = tlVisits.findIndex(v => v.id === fromId)
+  if(fromIdx >= 0) tlPropagateFrom(fromIdx)
+  tlRender()
+}
+
+function tlWaitText(wp){
+  const parts=[]
+  if(wp.w) parts.push(wp.w+' Weeks')
+  if(wp.m) parts.push(wp.m+' Months')
+  return parts.length ? parts.join(' + ') : '—'
+}
+
+function tlZoneAt(x, y){
+  // Temporarily hide ghost so elementFromPoint sees what's underneath
+  if(tlDrag && tlDrag.ghost) tlDrag.ghost.style.display='none'
+  const el = document.elementFromPoint(x, y)
+  if(tlDrag && tlDrag.ghost) tlDrag.ghost.style.display=''
+  if(!el) return null
+  return el.closest('[data-tl-zone]')
+}
+
+function tlWaitRow(key){
+  const wp = tlWaits[key]||{w:'',m:''}
+  const ms = TL_MO.map(o=>`<option value="${o}"${wp.m===o?' selected':''}>${o||'—'}</option>`).join('')
+  const ws = TL_WK.map(o=>`<option value="${o}"${wp.w===o?' selected':''}>${o||'—'}</option>`).join('')
+  return `<div class="tl-wrow">
+    <div class="tl-wvline"></div>
+    <div style="display:flex;align-items:center;gap:5px">
+      <span class="tl-wait-interactive" style="display:flex;align-items:center;gap:5px">
+        <select class="tl-ws" onchange="tlSetWait('${key}','m',this.value)">${ms}</select>
+        <span style="font-size:12px;color:#888">Months</span>
+        <select class="tl-ws" onchange="tlSetWait('${key}','w',this.value)">${ws}</select>
+        <span style="font-size:12px;color:#888">Weeks</span>
+      </span>
+      <span class="tl-wait-text" id="tlwt_${key}" style="display:none;font-size:12px;color:#666">${tlWaitText(wp)}</span>
+    </div>
+  </div>`
+}
+
+function tlRender(){
+  let html=''
+  tlVisits.forEach((v,i) => {
+    if(i>0){
+      const k=tlVisits[i-1].id+'_'+v.id
+      if(!tlWaits[k]) tlWaits[k]={w:'',m:''}
+      html+=tlWaitRow(k)
+    }
+    const empty=v.tIds.length===0
+    html+=`<div class="tl-vcard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;flex-shrink:0">
+          <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0"></div>
+          ${v.label}
+        </div>
+        <select style="font-size:12px;padding:3px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;flex:1;min-width:100px;max-width:130px"
+          onchange="tlSetVisitDate('${v.id}',this.value)">${tlDateOptions(v.date)}</select>
+        ${tlVisits.length>1?`<button class="no-print" style="font-size:11px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 5px;border-radius:4px;flex-shrink:0" onclick="tlRemoveVisit('${v.id}')" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#bbb'">✕ remove</button>`:''}
+      </div>
+      <div class="tl-dzone${empty?' tl-empty':''}" id="tldz_${v.id}" data-tl-zone="${v.id}"
+      >${v.tIds.map(id=>tlPill(id,v.id)).join('')}</div>
+    </div>`
+  })
+  html+=`<button class="tl-add-btn no-print" onclick="tlAddVisit()">+ add visit</button>`
+  document.getElementById('tl-main').innerHTML=html
+
+  const uz=document.getElementById('tl-uzone')
+  uz.innerHTML=tlUnassigned.length
+    ? tlUnassigned.map(id=>tlPill(id,'unassigned')).join('')
+    : '<span style="font-size:11px;color:#bbb">All treatments assigned ✓</span>'
+}
+
+// ── Mouse-based drag ──────────────────────────────────────────────────────────
+function tlMouseDown(e, id, src){
+  if(e.button !== 0) return
+  e.preventDefault()
+
+  const item = tlItem(id)
+  if(!item) return
+
+  // Ghost element that follows cursor
+  const ghost = document.createElement('span')
+  ghost.className = 'tl-ghost'
+  const cost = (item.cashBefore||0) + (item.mv||0)
+  ghost.textContent = item.label + (cost ? '  $'+(Number.isInteger(cost)?cost:cost.toFixed(2)) : '')
+  ghost.style.left = (e.clientX + 10) + 'px'
+  ghost.style.top  = (e.clientY + 10) + 'px'
+  document.body.appendChild(ghost)
+
+  // Dim the source pill
+  const pill = document.getElementById('tlp_'+id)
+  if(pill) pill.classList.add('tl-picked')
+
+  tlDrag = { id, src, ghost }
+
+  // Prevent text selection during drag
+  document.body.style.userSelect = 'none'
+}
+
+document.addEventListener('mousemove', function(e){
+  if(!tlDrag) return
+  tlDrag.ghost.style.left = (e.clientX + 10) + 'px'
+  tlDrag.ghost.style.top  = (e.clientY + 10) + 'px'
+
+  // Highlight drop zone under cursor
+  const zone = tlZoneAt(e.clientX, e.clientY)
+  document.querySelectorAll('[data-tl-zone]').forEach(z => z.classList.remove('tl-over'))
+  if(zone) zone.classList.add('tl-over')
+})
+
+document.addEventListener('mouseup', function(e){
+  if(!tlDrag) return
+  document.body.style.userSelect = ''
+
+  const zone = tlZoneAt(e.clientX, e.clientY)
+  const { id, src } = tlDrag
+
+  // Clean up ghost and highlighting
+  tlDrag.ghost.remove()
+  tlDrag = null
+  document.querySelectorAll('[data-tl-zone]').forEach(z => z.classList.remove('tl-over'))
+
+  if(!zone){ tlRender(); return }          // dropped outside — just re-render (restores picked state)
+  const zid = zone.dataset.tlZone
+  if(src === zid){ tlRender(); return }    // same zone — no-op
+
+  // Remove from source
+  if(src==='unassigned') tlUnassigned = tlUnassigned.filter(i => i !== id)
+  else { const sv=tlVisits.find(v=>v.id===src); if(sv) sv.tIds=sv.tIds.filter(i=>i!==id) }
+
+  // Add to target
+  if(zid==='unassigned') tlUnassigned.push(id)
+  else { const tv=tlVisits.find(v=>v.id===zid); if(tv) tv.tIds.push(id) }
+
+  tlRender()
+})
 
 // ── HELPERS ─────────────────────────────────────────────────────────────────
 
