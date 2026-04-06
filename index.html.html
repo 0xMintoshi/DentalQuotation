@@ -99,19 +99,24 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .card{border:1px solid #ccc;break-inside:avoid}
   .metric{background:#f5f5f5}
   .info-box{background:#e8f4fd;color:#0a4a80}
+  .divider{display:none!important}
+  #tl-print-section{page-break-before:always;break-before:always}
+  #instalment-panel [style*="gap:16px"]{gap:8px!important;font-size:10px!important}
+  #instalment-panel [style*="gap:16px"] label{font-size:10px!important;gap:3px!important}
+  #instalment-panel [style*="gap:16px"] input[type=radio]{width:10px!important;height:10px!important}
 }
 /* ── Treatment Timeline ── */
-.tl-vcard{background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:11px 13px}
-.tl-dzone{min-height:42px;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;position:relative;transition:border-color .1s,background .1s}
+.tl-vcard{background:var(--bg-card);border-radius:var(--r-lg);padding:11px 13px}
+.tl-dzone{min-height:42px;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);padding:5px;display:flex;flex-direction:column;gap:4px;position:relative;transition:border-color .1s,background .1s;box-sizing:border-box;overflow:hidden}
 .tl-dzone.tl-empty::after{content:'drop here';font-size:11px;color:#bbb;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
 .tl-dzone.tl-over,.tl-uzone.tl-over{border:0.5px solid #1D9E75!important;background:#E1F5EE!important}
-.tl-pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:3px 9px;border-radius:20px;cursor:grab;user-select:none;border:0.5px solid transparent;line-height:1.5;position:relative}
+.tl-pill{display:flex;align-items:center;gap:4px;font-size:11.5px;padding:5px 10px;border-radius:var(--r-md);cursor:grab;user-select:none;border:0.5px solid var(--border-lt);line-height:1.5;position:relative;box-sizing:border-box;width:100%}
 .tl-pill *{pointer-events:none}
 .tl-pill.tl-picked{opacity:.3;cursor:grabbing}
-.tl-pill.tl-in{background:#E1F5EE;color:#085041}
-.tl-pill.tl-in:hover{border-color:#5DCAA5}
-.tl-pill.tl-out{background:var(--bg-surface);color:#999;border-color:var(--border-lt)}
-.tl-pill.tl-out:hover{border-color:#bbb}
+.tl-pill.tl-in{background:var(--bg-card);color:var(--text-pri);border-color:var(--border-lt)}
+.tl-pill.tl-in:hover{border-color:var(--border-md);background:var(--bg-surface)}
+.tl-pill.tl-out{background:var(--bg-surface);color:var(--text-sec);border-color:var(--border-lt)}
+.tl-pill.tl-out:hover{border-color:var(--border-md)}
 .tl-pill .tl-pc{font-size:10.5px;opacity:.75}
 .tl-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:rotate(2deg);font-size:11.5px;padding:3px 9px;border-radius:20px;background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .tl-wrow{display:flex;align-items:center;gap:8px;padding:5px 0 5px 10px}
@@ -121,12 +126,22 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
 .tl-add-btn:hover{background:var(--bg-surface)}
 @media(max-width:580px){.tl-layout{flex-direction:column!important}}
 @media print{
-  .tl-dzone{border:none!important;padding:2px!important;min-height:0}
-  .tl-pill{cursor:default!important}
+  .tl-dzone{border:none!important;padding:0!important;min-height:0;gap:3px!important}
+  .tl-pill{cursor:default!important;border:none!important;border-left:3px solid var(--pill-accent,#ccc)!important;border-radius:0!important;padding:4px 8px!important;background:transparent!important;font-size:11px!important}
   .tl-pill.tl-out{display:none!important}
   .tl-wait-interactive{display:none!important}
   .tl-wait-text{display:inline!important}
   .tl-add-btn{display:none!important}
+  /* Make visit card header look like a proper title, not a form */
+  .tl-vcard select{-webkit-appearance:none;appearance:none;pointer-events:none;font-size:11px!important;font-weight:700!important;letter-spacing:.06em!important;text-transform:uppercase!important;color:#555!important}
+  /* Solid tinted header in print */
+  .tl-vcard > div:first-child{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Wait row: show as clean centred connector */
+  .tl-wrow{padding:3px 0 3px 14px!important}
+  .tl-wvline{height:20px!important}
+  .tl-wait-text{font-size:10px!important;color:#999!important;font-style:italic}
+  /* Cards: no shadow, keep border */
+  .tl-vcard{break-inside:avoid;margin-bottom:6px!important}
 }
 </style>
 </head>
@@ -367,8 +382,9 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
     </div>
   </div>
 
-  <!-- Treatment Timeline -->
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1rem">
+  <!-- Treatment Timeline — always new page when printed -->
+  <div id="tl-print-section">
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-top:1.5rem;margin-bottom:1rem">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <input type="checkbox" id="tl-toggle" onchange="tlToggle()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
       <label for="tl-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Treatment Timeline</label>
@@ -376,15 +392,18 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
     <div id="tl-panel" style="display:none">
       <!-- Cost display toggles -->
       <div class="no-print" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:11.5px;color:#888;font-weight:500">Show on pills:</span>
+        <span style="font-size:11.5px;color:#888;font-weight:500">Fee Type:</span>
         <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
           <input type="checkbox" id="tl-show-fee" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Total Fee
         </label>
         <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
-          <input type="checkbox" id="tl-show-mv" onchange="tlRender()" style="accent-color:#1479b8;cursor:pointer"> Medisave
+          <input type="checkbox" id="tl-show-mv" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Medisave
         </label>
         <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
-          <input type="checkbox" id="tl-show-cash" onchange="tlRender()" style="accent-color:#1479b8;cursor:pointer"> Cash
+          <input type="checkbox" id="tl-show-cash" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Cash
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-chas" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> CHAS
         </label>
       </div>
       <div class="tl-layout" style="display:flex;gap:14px;align-items:flex-start">
@@ -396,17 +415,20 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
           </div>
           <!-- Generic treatments -->
           <div style="font-size:11.5px;font-weight:500;color:#888;margin-bottom:6px">Add Generic Treatment</div>
-          <div style="display:flex;gap:5px">
-            <select id="tl-generic-sel" style="flex:1;font-size:11.5px;padding:4px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-pri);cursor:pointer">
+          <div style="display:flex;gap:5px;margin-bottom:6px">
+            <select id="tl-generic-sel" onchange="tlGenSelChange()" style="flex:1;font-size:11.5px;padding:4px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-pri);cursor:pointer;min-width:0">
               <option value="Stitches Removal">Stitches Removal</option>
               <option value="Implant Crown Fabrication">Implant Crown Fabrication</option>
               <option value="Implant Denture Fabrication">Implant Denture Fabrication</option>
+              <option value="__custom__">Custom…</option>
             </select>
-            <button onclick="tlAddGeneric()" style="font-size:11.5px;padding:4px 9px;background:#1479b8;color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500">+ Add</button>
+            <button onclick="tlAddGeneric()" style="font-size:11.5px;padding:4px 9px;background:#1479b8;color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500;flex-shrink:0">+ Add</button>
           </div>
+          <input type="text" id="tl-generic-custom" placeholder="Type treatment name…" style="display:none;width:100%;font-size:11.5px;padding:4px 7px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-card);color:var(--text-pri);margin-bottom:4px">
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- Acknowledgement + Signature -->
@@ -561,12 +583,25 @@ let tlDrag = null  // { id, src, ghost }
 let tlGenericItems = []
 let _tlGenId = -1  // negative IDs avoid collision with summaryItems
 
+function tlGenSelChange(){
+  const sel    = document.getElementById('tl-generic-sel')
+  const custom = document.getElementById('tl-generic-custom')
+  if(!sel || !custom) return
+  custom.style.display = sel.value === '__custom__' ? 'block' : 'none'
+}
+
 function tlAddGeneric(){
-  const sel = document.getElementById('tl-generic-sel')
+  const sel    = document.getElementById('tl-generic-sel')
+  const custom = document.getElementById('tl-generic-custom')
   if(!sel) return
+  const name = sel.value === '__custom__'
+    ? (custom?.value.trim() || '')
+    : sel.value
+  if(!name) return
   const id = _tlGenId--
-  tlGenericItems.push({ _id: id, label: sel.value, mv: 0, cashBefore: 0, subsidyTotal: 0 })
+  tlGenericItems.push({ _id: id, label: name, mv: 0, cashBefore: 0, subsidyTotal: 0 })
   tlUnassigned.push(id)
+  if(custom) custom.value = ''
   tlRender()
 }
 
@@ -589,6 +624,7 @@ function tlSync(){
 function tlPillCost(item){
   const showFee  = document.getElementById('tl-show-fee')?.checked
   const showMv   = document.getElementById('tl-show-mv')?.checked
+  const showChas = document.getElementById('tl-show-chas')?.checked
   const showCash = document.getElementById('tl-show-cash')?.checked
   const parts = []
   if(showFee){
@@ -597,17 +633,22 @@ function tlPillCost(item){
   }
   if(showMv && item.mv)
     parts.push(`<span class="tl-pc" style="color:#1479b8">MS $${Number.isInteger(item.mv)?item.mv:item.mv.toFixed(2)}</span>`)
+  if(showChas && item.subsidyTotal)
+    parts.push(`<span class="tl-pc" style="color:#2f6010">CHAS $${Number.isInteger(item.subsidyTotal)?item.subsidyTotal:item.subsidyTotal.toFixed(2)}</span>`)
   if(showCash && item.cashBefore)
     parts.push(`<span class="tl-pc" style="color:#b06000">Cash $${Number.isInteger(item.cashBefore)?item.cashBefore:item.cashBefore.toFixed(2)}</span>`)
   return parts.length ? ' ' + parts.join(' ') : ''
 }
 
-function tlPill(id, ctx){
+function tlPill(id, ctx, accentCol){
   const item = tlItem(id)
   if(!item) return ''
   const cls = ctx==='unassigned' ? 'tl-out' : 'tl-in'
+  const printAccent = accentCol ? `data-accent="${accentCol}"` : ''
   return `<span class="tl-pill ${cls}" id="tlp_${id}"
     onmousedown="tlMouseDown(event,${id},'${ctx}')"
+    ${printAccent}
+    style="${accentCol?`--pill-accent:${accentCol}`:''}"
   >${item.label}${tlPillCost(item)}</span>`
 }
 
@@ -689,8 +730,8 @@ function tlZoneAt(x, y){
 
 function tlWaitRow(key){
   const wp = tlWaits[key]||{w:'',m:''}
-  const ms = TL_MO.map(o=>`<option value="${o}"${wp.m===o?' selected':''}>${o||'—'}</option>`).join('')
-  const ws = TL_WK.map(o=>`<option value="${o}"${wp.w===o?' selected':''}>${o||'—'}</option>`).join('')
+  const ms = TL_MO.map(o=>`<option value="${o}"${wp.m===o?' selected':''}>${o||''}</option>`).join('')
+  const ws = TL_WK.map(o=>`<option value="${o}"${wp.w===o?' selected':''}>${o||''}</option>`).join('')
   return `<div class="tl-wrow">
     <div class="tl-wvline"></div>
     <div style="display:flex;align-items:center;gap:5px">
@@ -700,10 +741,12 @@ function tlWaitRow(key){
         <select class="tl-ws" onchange="tlSetWait('${key}','w',this.value)">${ws}</select>
         <span style="font-size:12px;color:#888">Weeks</span>
       </span>
-      <span class="tl-wait-text" id="tlwt_${key}" style="display:none;font-size:12px;color:#666">${tlWaitText(wp)}</span>
+      <span class="tl-wait-text" id="tlwt_${key}" style="font-size:12px;color:#888;margin-left:8px">${tlWaitText(wp)}</span>
     </div>
   </div>`
 }
+
+const TL_PASTELS = ['#a8c8e8','#a8d5b5','#d5b8e0','#f0c9a0','#f0a8b8','#a8d8d8']
 
 function tlRender(){
   let html=''
@@ -711,24 +754,22 @@ function tlRender(){
     if(i>0){
       const k=tlVisits[i-1].id+'_'+v.id
       if(!tlWaits[k]) tlWaits[k]={w:'',m:''}
-      html+=tlWaitRow(k)
+      html+='<div style="margin:10px 0">'+tlWaitRow(k)+'</div>'
     }
     const empty=v.tIds.length===0
-    html+=`<div class="tl-vcard">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;flex-shrink:0">
-          <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0"></div>
-          ${v.label}
-        </div>
-        <select style="font-size:12px;padding:3px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;flex:1;min-width:100px;max-width:130px"
+    const borderCol  = TL_PASTELS[i % TL_PASTELS.length]
+    html+=`<div class="tl-vcard" style="border:2px solid ${borderCol};margin-bottom:4px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px 6px 12px;background:${borderCol}33;border-bottom:1px solid ${borderCol}66;margin:-11px -13px 10px -13px;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+        <select style="font-size:12px;font-weight:600;letter-spacing:.03em;padding:0;border:none;background:transparent;color:#444;cursor:pointer;min-width:90px;max-width:140px"
           onchange="tlSetVisitDate('${v.id}',this.value)">${tlDateOptions(v.date)}</select>
-        ${tlVisits.length>1?`<button class="no-print" style="font-size:11px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 5px;border-radius:4px;flex-shrink:0" onclick="tlRemoveVisit('${v.id}')" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#bbb'">✕ remove</button>`:''}
+        ${tlVisits.length>1?`<button class="no-print" style="font-size:10px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 4px;border-radius:4px;flex-shrink:0;line-height:1" onclick="tlRemoveVisit('${v.id}')" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#bbb'">✕</button>`:''}
       </div>
       <div class="tl-dzone${empty?' tl-empty':''}" id="tldz_${v.id}" data-tl-zone="${v.id}"
-      >${v.tIds.map(id=>tlPill(id,v.id)).join('')}</div>
+        style="--card-accent:${borderCol}"
+      >${v.tIds.map(id=>tlPill(id,v.id,borderCol)).join('')}</div>
     </div>`
   })
-  html+=`<button class="tl-add-btn no-print" onclick="tlAddVisit()">+ add visit</button>`
+  html+=`<button class="tl-add-btn no-print" onclick="tlAddVisit()" style="margin-top:8px">+ add visit</button>`
   document.getElementById('tl-main').innerHTML=html
 
   const uz=document.getElementById('tl-uzone')
@@ -782,22 +823,47 @@ document.addEventListener('mouseup', function(e){
   const zone = tlZoneAt(e.clientX, e.clientY)
   const { id, src } = tlDrag
 
-  // Clean up ghost and highlighting
   tlDrag.ghost.remove()
   tlDrag = null
   document.querySelectorAll('[data-tl-zone]').forEach(z => z.classList.remove('tl-over'))
 
-  if(!zone){ tlRender(); return }          // dropped outside — just re-render (restores picked state)
+  if(!zone){ tlRender(); return }
   const zid = zone.dataset.tlZone
-  if(src === zid){ tlRender(); return }    // same zone — no-op
+
+  // Find if cursor is hovering over an existing pill to insert before it
+  let insertBeforeId = null
+  if(zid !== 'unassigned'){
+    const tv = tlVisits.find(v => v.id === zid)
+    if(tv){
+      for(const tid of tv.tIds){
+        if(tid == id) continue
+        const el = document.getElementById('tlp_'+tid)
+        if(el){
+          const r = el.getBoundingClientRect()
+          if(e.clientY < r.top + r.height / 2){ insertBeforeId = tid; break }
+        }
+      }
+    }
+  }
 
   // Remove from source
-  if(src==='unassigned') tlUnassigned = tlUnassigned.filter(i => i !== id)
+  if(src === 'unassigned') tlUnassigned = tlUnassigned.filter(i => i !== id)
   else { const sv=tlVisits.find(v=>v.id===src); if(sv) sv.tIds=sv.tIds.filter(i=>i!==id) }
 
-  // Add to target
-  if(zid==='unassigned') tlUnassigned.push(id)
-  else { const tv=tlVisits.find(v=>v.id===zid); if(tv) tv.tIds.push(id) }
+  // Insert into target at correct position
+  if(zid === 'unassigned'){
+    tlUnassigned.push(id)
+  } else {
+    const tv = tlVisits.find(v => v.id === zid)
+    if(tv){
+      if(insertBeforeId !== null){
+        const idx = tv.tIds.findIndex(i => i == insertBeforeId)
+        tv.tIds.splice(idx, 0, id)
+      } else {
+        tv.tIds.push(id)
+      }
+    }
+  }
 
   tlRender()
 })
