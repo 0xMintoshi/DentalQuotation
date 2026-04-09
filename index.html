@@ -118,7 +118,10 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .metric{background:#f5f5f5}
   .info-box{background:#e8f4fd;color:#0a4a80}
   .divider{display:none!important}
-  #tl-print-section{page-break-before:always;break-before:always}
+  #reorder-wrap{display:flex;flex-direction:column}
+  #instalment-card{order:1;page-break-before:always;break-before:always}
+  #ack-block{order:2}
+  #tl-print-section{order:3;page-break-before:always;break-before:always}
   .print-only-tl-date{display:inline!important}
   #instalment-panel [style*="gap:16px"]{gap:8px!important;font-size:10px!important}
   #instalment-panel [style*="gap:16px"] label{font-size:10px!important;gap:3px!important}
@@ -367,8 +370,9 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
     Total cash payable = <span id="gn-cash-total" class="cv" style="font-weight:600"></span>
   </div>
 
+  <div id="reorder-wrap">
   <!-- Instalment panel -->
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
+  <div id="instalment-card" style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <input type="checkbox" id="instalment-toggle" onchange="updateInstalmentPanel()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
       <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Instalment Plan</label>
@@ -489,6 +493,7 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
       </div>
     </div>
   </div>
+  </div><!-- /reorder-wrap -->
 </div>
 
 <!-- Buttons -->
