@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Treatment Quotation</title>
+<style>
+:root {
+  --bg-page:#f5f5f2;--bg-card:#fff;--bg-surface:#f0ede6;--bg-info:#e6f1fb;--bg-success:#eaf3de;--bg-purple:#eeedfe;
+  --text-pri:#1a1a18;--text-sec:#5f5e5a;--text-ter:#8a8880;
+  --text-info:#185fa5;--text-success:#2f6010;--text-cash:#b06000;--text-mv:#1479b8;--text-purple:#534ab7;
+  --border-lt:rgba(0,0,0,.11);--border-md:rgba(0,0,0,.24);
+  --r-sm:6px;--r-md:8px;--r-lg:12px;
+}
+
+}
+*{box-sizing:border-box;margin:0;padding:0}
+select,button,input,textarea{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+input::placeholder{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text-ter)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg-page);color:var(--text-pri);padding:1.5rem 1rem;font-size:14px;line-height:1.5;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto}
+h1{font-size:21px;font-weight:600}
+h2{font-size:15px;font-weight:600;color:var(--text-pri)}
+.lbl{font-size:10px;color:var(--text-ter);text-transform:uppercase;letter-spacing:.1em}
+.card{background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:8px}
+.card.active{border-color:var(--border-md)}
+.badge{font-size:10px;font-family:ui-monospace,monospace;background:var(--bg-surface);padding:2px 7px;border-radius:5px;color:var(--text-sec);font-weight:600;white-space:nowrap}
+.tbadge{font-size:10px;background:var(--bg-surface);padding:1px 6px;border-radius:4px;color:var(--text-ter)}
+.pname{font-size:13px;font-weight:600}
+.pmeta{font-size:11px;color:var(--text-sec);margin-top:2px;line-height:1.6}
+.mv{color:var(--text-mv)} .cv{color:var(--text-cash)} .sv{color:var(--text-success)}
+input[type=checkbox]{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:#1479b8}
+input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:#1479b8}
+input[type=number]{width:70px;font-size:12px;text-align:center;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 5px;background:var(--bg-card);color:var(--text-pri)}
+input[type=text]{font-size:14px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);padding:6px 10px;background:var(--bg-card);color:var(--text-pri);flex:1}
+input.fee{width:80px;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 6px;background:var(--bg-card);color:var(--text-pri)}
+input[type=text]:focus,input[type=number]:focus,input.fee:focus{outline:2px solid #1479b8;outline-offset:1px}
+.sep{border-top:0.5px solid var(--border-lt);margin-top:10px;padding-top:10px}
+.row{display:flex;align-items:flex-start;gap:12px}
+.line-tot{display:flex;gap:18px;font-size:12px;flex-wrap:wrap}
+.sec-label{font-size:10px;color:var(--text-ter);text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{padding:8px 10px;text-align:right;font-weight:600;color:var(--text-sec);background:var(--bg-surface);border-bottom:0.5px solid var(--border-lt);font-size:11px}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 10px;text-align:right;border-top:0.5px solid var(--border-lt);vertical-align:top}
+tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font-weight:600}
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.25rem}
+.metric{background:var(--bg-surface);border-radius:var(--r-md);padding:13px}
+.mlabel{font-size:11px;color:var(--text-sec);margin-bottom:3px}
+.mval{font-size:20px;font-weight:600}
+.msub{font-size:10px;color:var(--text-ter);margin-top:2px}
+.btn{font-size:12px;padding:8px 16px;border:0.5px solid var(--border-md);background:var(--bg-card);color:var(--text-pri);border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:500}
+.btn:hover{background:var(--bg-surface)} .btn:disabled{opacity:.38;cursor:not-allowed}
+.btn-p{background:#1479b8;color:#fff;border-color:#1479b8}.btn-p:hover{background:#0f5f94}
+.info-box{font-size:11px;background:var(--bg-info);color:var(--text-info);padding:8px 11px;border-radius:var(--r-md);margin-top:8px;line-height:1.6}
+.ptrow{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);margin-bottom:10px}
+.ptlbl{font-size:12px;color:var(--text-sec);min-width:90px;flex-shrink:0;font-weight:500}
+.divider{border:none;border-top:1.5px solid var(--border-lt);margin:1.75rem 0 1.25rem}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;cursor:pointer;user-select:none}
+.section-header:hover .collapse-btn{border-color:var(--border-md)}
+.collapse-btn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:0.5px solid var(--border-lt);background:var(--bg-surface);color:var(--text-ter);font-size:11px;flex-shrink:0;margin-left:auto;transition:transform .2s}
+.collapse-btn.collapsed{transform:rotate(-90deg)}
+.collapsible{overflow:hidden;transition:opacity .2s}
+.collapsible.collapsed{display:none}
+.section-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+.tag-surgical{background:var(--bg-info);color:var(--text-info)}
+.tag-nonsurg{background:var(--bg-success);color:var(--text-success)}
+.chas-selector{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);margin-bottom:12px}
+.chas-btn{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border-md);background:var(--bg-surface);color:var(--text-sec);cursor:pointer;transition:all .12s;white-space:nowrap}
+.chas-btn.sel-none{border-color:var(--border-md);background:var(--bg-surface);color:var(--text-pri)}
+.chas-btn.sel-orange{border-color:#c07000;background:#fff7ed;color:#b06000}
+.chas-btn.sel-blue{border-color:#1479b8;background:#e6f1fb;color:#185fa5}
+.chas-btn.sel-mg{border-color:#7a5c0a;background:#fef9ec;color:#6b4d08}
+.chas-btn.sel-pg{border-color:#2f6010;background:#eaf3de;color:#2f6010}
+
+  .chas-btn.sel-blue{background:#0c2a44;color:#78bbf0}
+  .chas-btn.sel-mg{background:#2a1c00;color:#c9980a}
+  .chas-btn.sel-pg{background:#172d06;color:#7aba3a}
+}
+.rem-input{width:52px;font-size:11px;text-align:center;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:3px 4px;background:var(--bg-card);color:var(--text-pri)}
+.climit{font-size:10px;color:var(--text-ter);font-style:italic;margin-top:2px}
+/* ── Redesigned summary document ── */
+.doc-brand{height:4px;background:#0C447C;margin:-1.5rem -1rem 1.5rem;max-width:none}
+.doc-clinic{font-size:18px;font-weight:500;color:#1a1a18;letter-spacing:-.01em;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border-lt)}
+.pat-bar{display:flex;gap:28px;flex-wrap:wrap;padding:11px 16px;background:#f5f4f0;border-radius:var(--r-lg);margin-bottom:1.5rem}
+.pt-field{display:flex;flex-direction:column;gap:2px}
+.pt-lbl{font-size:10px;color:var(--text-ter);text-transform:uppercase;letter-spacing:.08em}
+.pt-val{font-size:14px;font-weight:500;color:var(--text-pri)}
+.sum-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sum-title{font-size:10px;font-weight:500;color:var(--text-ter);text-transform:uppercase;letter-spacing:.1em}
+.gst-badge{font-size:11px;color:var(--text-sec);background:var(--bg-surface);padding:3px 10px;border-radius:20px;border:0.5px solid var(--border-lt);white-space:nowrap}
+.tx-name{font-size:13px;font-weight:500;color:var(--text-pri)}
+.tx-sub{font-size:11px;color:var(--text-sec);margin-top:2px}
+.metric-hero{background:var(--bg-card)!important;border:1px solid var(--border-md)!important}
+.btn-ghost{font-size:12px;padding:8px 14px;background:transparent;color:var(--text-sec);border:0.5px solid var(--border-lt);border-radius:var(--r-md);cursor:pointer;font-family:inherit}
+@media print{
+  .doc-brand{display:block!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pat-bar{background:#f5f4f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#sum-nonsurg{display:none}
+#summary-section{display:none}
+@keyframes addFlash{
+  0%  {box-shadow:0 0 0 0 rgba(20,121,184,1),0 0 0 0 rgba(20,121,184,.6)}
+  60% {box-shadow:0 0 0 6px rgba(20,121,184,.3),0 0 0 12px rgba(20,121,184,0)}
+  100%{box-shadow:0 0 0 0 rgba(20,121,184,0),0 0 0 0 rgba(20,121,184,0)}
+}
+.btn-add-summary{
+  font-size:12px;padding:6px 18px;background:#1479b8;color:#fff;
+  border:1px solid #1479b8;border-radius:var(--r-md);cursor:pointer;
+  font-family:inherit;font-weight:600;transition:opacity .1s
+}
+.btn-add-summary.flashing{animation:addFlash .7s ease-out}
+@media print{
+  body{background:#fff;color:#000;padding:.5rem}
+  .no-print{display:none!important}
+  #summary-section,#sum-nonsurg{display:block!important}
+  .card{border:1px solid #ccc;break-inside:avoid}
+  .metric{background:#f5f5f5}
+  .info-box{background:#e8f4fd;color:#0a4a80}
+  .divider{display:none!important}
+  #tl-print-section{page-break-before:always;break-before:always}
+  .print-only-tl-date{display:inline!important}
+  #instalment-panel [style*="gap:16px"]{gap:8px!important;font-size:10px!important}
+  #instalment-panel [style*="gap:16px"] label{font-size:10px!important;gap:3px!important}
+  #instalment-panel [style*="gap:16px"] input[type=radio]{width:10px!important;height:10px!important}
+  .doc-brand{display:block!important;height:4px;background:#0C447C;margin-bottom:1rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-clinic{display:block!important}
+  #pat-bar-print{display:block!important}
+  .pat-bar{background:#f5f4f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .metric-hero{background:#fff!important;border:1px solid #ccc!important}
+  .metric-hero .mval{color:#854F0B!important}
+}
+.print-only-tl-date{display:none}
+/* ── Treatment Timeline ── */
+.tl-vcard{background:var(--bg-card);border-radius:var(--r-lg);padding:11px 13px}
+.tl-dzone{min-height:42px;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);padding:5px;display:flex;flex-direction:column;gap:4px;position:relative;transition:border-color .1s,background .1s;box-sizing:border-box;overflow:hidden}
+.tl-dzone.tl-empty::after{content:'drop here';font-size:11px;color:#bbb;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.tl-dzone.tl-over,.tl-uzone.tl-over{border:0.5px solid #1D9E75!important;background:#E1F5EE!important}
+.tl-pill{display:flex;align-items:center;gap:4px;font-size:11.5px;padding:5px 10px;border-radius:var(--r-md);cursor:grab;user-select:none;border:0.5px solid var(--border-lt);line-height:1.5;position:relative;box-sizing:border-box;width:100%}
+.tl-pill *{pointer-events:none}
+.tl-pill.tl-picked{opacity:.3;cursor:grabbing}
+.tl-pill.tl-in{background:var(--bg-card);color:var(--text-pri);border-color:var(--border-lt)}
+.tl-pill.tl-in:hover{border-color:var(--border-md);background:var(--bg-surface)}
+.tl-pill.tl-out{background:var(--bg-surface);color:var(--text-sec);border-color:var(--border-lt)}
+.tl-pill.tl-out:hover{border-color:var(--border-md)}
+.tl-pill .tl-pc{font-size:10.5px;opacity:.75}
+.tl-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:rotate(2deg);font-size:11.5px;padding:3px 9px;border-radius:20px;background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.tl-wrow{display:flex;align-items:center;gap:8px;padding:5px 0 5px 10px}
+.tl-wvline{width:1.5px;height:28px;background:var(--border-lt);flex-shrink:0}
+select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);border-radius:4px;background:var(--bg-surface);color:inherit;cursor:pointer;min-width:52px}
+.tl-add-btn{width:100%;margin-top:10px;padding:8px;font-size:12px;color:#999;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);background:none;cursor:pointer}
+.tl-add-btn:hover{background:var(--bg-surface)}
+@media(max-width:580px){.tl-layout{flex-direction:column!important}}
+@media print{
+  .tl-dzone{border:none!important;padding:0!important;min-height:0;gap:3px!important}
+  .tl-pill{cursor:default!important;border:none!important;border-left:3px solid var(--pill-accent,#ccc)!important;border-radius:0!important;padding:4px 8px!important;background:transparent!important;font-size:11px!important}
+  .tl-pill.tl-out{display:none!important}
+  .tl-wait-interactive{display:none!important}
+  .tl-wait-text{display:inline!important}
+  .tl-add-btn{display:none!important}
+  /* Make visit card header look like a proper title, not a form */
+  .tl-vcard select{-webkit-appearance:none;appearance:none;pointer-events:none;font-size:11px!important;font-weight:700!important;letter-spacing:.06em!important;text-transform:uppercase!important;color:#555!important}
+  /* Solid tinted header in print */
+  .tl-vcard > div:first-child{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Wait row: show as clean centred connector */
+  .tl-wrow{padding:3px 0 3px 14px!important}
+  .tl-wvline{height:20px!important}
+  .tl-wait-text{font-size:10px!important;color:#999!important;font-style:italic}
+  /* Cards: no shadow, keep border */
+  .tl-vcard{break-inside:avoid;margin-bottom:6px!important}
+}
+</style>
+</head>
+<body>
+<!-- ── SIGNING PAGE (shown when ?sign= param present) ── -->
+<div id="signing-page" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;box-sizing:border-box">
+  <div style="width:100%;max-width:480px;text-align:center;margin-bottom:1rem">
+    <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Dental Treatment Quotation</div>
+    <h2 style="font-size:18px;font-weight:600;color:#1a1a18;margin:0">Please sign below</h2>
+    <p style="font-size:12px;color:#666;margin-top:4px">Draw your signature in the box using your finger</p>
+  </div>
+  <canvas id="sig-canvas" style="width:100%;max-width:480px;height:200px;border:1.5px solid #ccc;border-radius:10px;background:#fafaf8;touch-action:none;cursor:crosshair;display:block"></canvas>
+  <div style="display:flex;gap:10px;margin-top:1rem;width:100%;max-width:480px">
+    <button id="sig-clear-btn" style="flex:1;padding:12px;font-size:14px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Clear</button>
+    <button id="sig-submit-btn" style="flex:2;padding:12px;font-size:14px;font-weight:600;border:none;border-radius:8px;background:#1479b8;color:#fff;cursor:pointer;font-family:inherit">Submit Signature</button>
+  </div>
+  <p id="sig-msg" style="text-align:center;font-size:12px;color:#666;margin-top:8px;min-height:18px"></p>
+</div>
+
+<!-- ── QR MODAL (shown on desktop while waiting) ── -->
+<div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:8888;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px;color:#1a1a18">Patient Signature</div>
+    <p style="font-size:12px;color:#666;margin-bottom:1.25rem">Ask the patient to scan this QR code with their phone to sign</p>
+    <div id="qr-code" style="display:inline-block;padding:10px;border:1px solid #eee;border-radius:8px;margin-bottom:1rem"></div>
+    <div id="qr-status" style="font-size:12px;color:#1479b8;margin-bottom:1.25rem;min-height:18px">Waiting for patient to sign…</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeQrModal()" style="flex:1;padding:9px;font-size:12px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- Brand bar + clinic name (print) -->
+<div class="doc-brand"></div>
+
+<div class="doc-clinic">Nofrills Dental</div>
+
+<!-- Patient fields -->
+<div id="pat-bar-screen" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.5rem" class="no-print">
+  <div class="ptrow" style="flex:1;min-width:200px;margin-bottom:0">
+    <span class="ptlbl">Patient name</span>
+    <input type="text" id="patient-name" placeholder="Enter patient name…">
+  </div>
+  <div class="ptrow" style="flex:1;min-width:200px;margin-bottom:0">
+    <span class="ptlbl">Doctor</span>
+    <input type="text" id="doctor-name" placeholder="Enter doctor name…">
+  </div>
+</div>
+
+<!-- ═══ SURGICAL SECTION ═══ -->
+<div class="section-header no-print" onclick="toggleSection('surg')">
+  <span class="section-tag tag-surgical">Surgical Procedures</span>
+  <span style="font-size:12px;color:var(--text-sec)">Medisave-claimable · CPF Apr 2025 limits</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('surg')">Clear all</button>
+    <button class="collapse-btn" id="surg-chevron" tabindex="-1">▾</button>
+  </div>
+</div>
+<div id="surg-collapsible" class="collapsible no-print">
+<div id="surg-list"></div>
+</div>
+
+<!-- Surgical summary removed — see combined Summary below -->
+
+<!-- ═══ NON-SURGICAL SECTION ═══ -->
+<hr class="divider">
+<div class="section-header no-print" onclick="toggleSection('nonsurg')">
+  <span class="section-tag tag-nonsurg">Non-Surgical Procedures</span>
+  <span style="font-size:12px;color:var(--text-sec)">CHAS-subsidised · Oct 2025 rates</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('nonsurg')">Clear all</button>
+    <button class="collapse-btn" id="nonsurg-chevron" tabindex="-1">▾</button>
+  </div>
+</div>
+<div id="nonsurg-collapsible" class="collapsible no-print">
+<!-- CHAS tier selector -->
+<div class="chas-selector no-print">
+  <button class="chas-btn sel-none" id="chas-none"  onclick="setChas('none')"  >No CHAS</button>
+  <button class="chas-btn"          id="chas-orange" onclick="setChas('orange')">🟠 Orange</button>
+  <button class="chas-btn"          id="chas-blue"   onclick="setChas('blue')"  >🔵 Blue</button>
+  <button class="chas-btn"          id="chas-mg"     onclick="setChas('mg')"    >⭐ Merdeka Gen</button>
+  <button class="chas-btn"          id="chas-pg"     onclick="setChas('pg')"    >🌟 Pioneer Gen</button>
+  <span style="font-size:10px;color:var(--text-ter);margin-left:4px">Applies to all selected procedures</span>
+</div>
+<div id="nonsurg-list"></div>
+</div>
+
+<!-- ═══ ORTHODONTICS SECTION ═══ -->
+<hr class="divider">
+<div class="section-header no-print" onclick="toggleSection('ortho')">
+  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Orthodontics</span>
+  <span style="font-size:12px;color:var(--text-sec)">Cash only · No CHAS · No Medisave</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('ortho')">Clear all</button>
+    <button class="collapse-btn" id="ortho-chevron" tabindex="-1">▾</button>
+  </div>
+</div>
+<div id="ortho-collapsible" class="collapsible no-print">
+  <div id="ortho-list"></div>
+</div>
+
+<!-- ═══ PROSTHODONTIC SECTION ═══ -->
+<hr class="divider">
+<div class="section-header no-print" onclick="toggleSection('prostho')">
+  <span class="section-tag" style="background:var(--bg-purple);color:var(--text-purple);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;letter-spacing:.04em">Miscellaneous Procedures</span>
+  <span style="font-size:12px;color:var(--text-sec)">Free-text · No CHAS · Cash only</span>
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0">
+    <button class="btn" style="font-size:10px;padding:3px 10px;color:var(--text-sec)" onclick="event.stopPropagation();clearSection('prostho')">Clear all</button>
+    <button class="collapse-btn" id="prostho-chevron" tabindex="-1">▾</button>
+  </div>
+</div>
+<div id="prostho-collapsible" class="collapsible no-print">
+  <div id="prostho-list"></div>
+</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<div id="combined-summary" style="display:none">
+  <hr class="divider">
+  <!-- Print-only patient bar -->
+  <div id="pat-bar-print" style="display:none;margin-bottom:1rem">
+    <div class="pat-bar">
+      <div class="pt-field"><span class="pt-lbl">Patient</span><span class="pt-val" id="pb-patient"></span></div>
+      <div class="pt-field"><span class="pt-lbl">Doctor</span><span class="pt-val" id="pb-doctor"></span></div>
+    </div>
+  </div>
+  <div class="sum-title-row">
+    <span class="sum-title">Treatment Summary</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="gst-badge-text" class="gst-badge" style="display:none">9% GST Applied</span>
+      <div class="no-print" style="display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="gst-toggle" onchange="render();updateGrandFromItems()" style="width:14px;height:14px;accent-color:#1479b8;cursor:pointer">
+        <label for="gst-toggle" style="font-size:12px;cursor:pointer;font-weight:500">Add 9% GST</label>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);overflow:hidden;margin-bottom:1.5rem">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:42%;text-align:left">Treatment</th>
+          <th style="width:5%">Qty</th>
+          <th style="width:13%">Total Fee</th>
+          <th style="width:13%">Medisave</th>
+          <th style="width:11%">CHAS</th>
+          <th style="width:14%">Cash Payable</th>
+          <th style="width:2%" class="no-print"></th>
+        </tr>
+      </thead>
+      <tbody id="combined-tbody"></tbody>
+      <tfoot>
+        <tr style="border-top:2px solid var(--border-md)">
+          <td colspan="2" style="font-size:13px"><strong>Grand Total</strong></td>
+          <td id="cs-fee-total" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-mv-total" class="mv" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-chas-total" class="sv" style="font-size:13px;font-weight:600"></td>
+          <td id="cs-cash-total" class="cv" style="font-size:13px;font-weight:600"></td>
+          <td class="no-print"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Grand metric cards -->
+  <div class="mgrid" style="margin-bottom:1.5rem">
+    <div class="metric"><div class="mlabel">Total Fee</div><div class="mval" id="gm-total">$0</div><div class="msub" id="gm-total-sub">Before subsidies</div></div>
+    <div class="metric metric-hero">
+      <div class="mlabel">Patient Cash Payable</div>
+      <div class="mval cv" style="font-size:26px;letter-spacing:-.02em" id="gm-cash">$0</div>
+      <div class="msub" id="gm-cash-sub">After Medisave + CHAS</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Subsidies Applied</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+        <div>
+          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#1479b8;margin-right:5px;vertical-align:middle"></span>
+          <span class="mv" style="font-size:15px;font-weight:600" id="gm-mv">$0</span>
+          <span style="font-size:11px;color:var(--text-sec);margin-left:4px">Medisave</span>
+        </div>
+        <div>
+          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#2f6010;margin-right:5px;vertical-align:middle"></span>
+          <span class="sv" style="font-size:15px;font-weight:600" id="gm-chas">$0</span>
+          <span style="font-size:11px;color:var(--text-sec);margin-left:4px">CHAS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GST breakdown note (only when GST on) -->
+  <div id="gst-mv-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:9px 14px;margin-bottom:1.5rem;line-height:1.7">
+    <span style="font-weight:600">GST breakdown: </span>
+    GST on Medisave (<span id="gn-mv-amt"></span>) = <span id="gn-mv-gst" class="cv"></span> ·
+    GST on CHAS subsidy (<span id="gn-chas-amt"></span>) = <span id="gn-chas-gst" class="cv"></span> ·
+    GST on cash top-up = <span id="gn-cash-gst" class="cv"></span> ·
+    Total cash payable = <span id="gn-cash-total" class="cv" style="font-weight:600"></span>
+  </div>
+
+  <!-- Instalment panel -->
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input type="checkbox" id="instalment-toggle" onchange="updateInstalmentPanel()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
+      <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Instalment Plan</label>
+      <span style="font-size:11px;color:var(--text-ter)">(cash top-up + GST on cash top-up only)</span>
+    </div>
+    <div id="instalment-panel" style="display:none">
+      <div id="inst-upfront-note" style="display:none;font-size:11px;color:var(--text-sec);background:var(--bg-surface);border-radius:var(--r-md);padding:8px 12px;margin-bottom:10px;line-height:1.6">
+        <span style="font-weight:600;color:var(--text-cash)">⚠ Pay upfront on day of appointment: </span>
+        GST on Medisave = <span class="cv" style="font-weight:600" id="inst-upfront-mv-amt"></span> · GST on CHAS subsidy = <span class="cv" style="font-weight:600" id="inst-upfront-chas-amt"></span><span id="inst-upfront-dep-amt"> · Orthodontics deposit = <span class="cv" style="font-weight:600" id="inst-upfront-dep-val"></span></span> · Total upfront = <span class="cv" style="font-weight:600" id="inst-upfront-amt"></span> — these are not eligible for instalment.
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500">Instalment Period</span>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="3"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 3 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="6"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8" checked> 6 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="9"  onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 9 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="12" onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 12 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="24" onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 24 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="36" onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 36 months
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+          <input type="radio" name="inst-months" value="48" onchange="updateInstalmentPanel()" style="accent-color:#1479b8"> 48 months
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="metric" style="flex:1;min-width:140px">
+          <div class="mlabel">Instalment-Eligible Amount</div>
+          <div class="mval cv" id="inst-total">$0</div>
+          <div class="msub">Cash Top-Up + GST On Cash Top-Up</div>
+        </div>
+        <div class="metric" style="flex:1;min-width:140px;background:var(--bg-info)">
+          <div class="mlabel" style="color:var(--text-info)">Monthly Instalment</div>
+          <div class="mval" style="color:var(--text-info)" id="inst-monthly">$0</div>
+          <div class="msub" id="inst-label">per month for 6 months</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Treatment Timeline — always new page when printed -->
+  <div id="tl-print-section">
+  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <input type="checkbox" id="tl-toggle" onchange="tlToggle()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
+      <label for="tl-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Treatment Timeline</label>
+    </div>
+    <div id="tl-panel" style="display:none">
+      <!-- Cost display toggles -->
+      <div class="no-print" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:11.5px;color:#888;font-weight:500">Fee Type:</span>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-fee" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Total Fee
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-mv" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Medisave
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-cash" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> Cash
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="tl-show-chas" onchange="tlRender()" checked style="accent-color:#1479b8;cursor:pointer"> CHAS
+        </label>
+      </div>
+      <div class="tl-layout" style="display:flex;gap:14px;align-items:flex-start">
+        <div id="tl-main" style="flex:1;min-width:0"></div>
+        <div class="no-print" style="width:210px;flex-shrink:0">
+          <div style="font-size:11.5px;font-weight:500;color:#888;margin-bottom:7px">Unassigned Treatments</div>
+          <div id="tl-uzone" class="tl-uzone" data-tl-zone="unassigned"
+            style="min-height:60px;background:var(--bg-surface);border:0.5px solid var(--border-lt);border-radius:var(--r-md);padding:8px;display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;margin-bottom:10px">
+          </div>
+          <!-- Generic treatments -->
+          <div style="font-size:11.5px;font-weight:500;color:#888;margin-bottom:6px">Add Generic Treatment</div>
+          <div style="display:flex;gap:5px;margin-bottom:6px">
+            <select id="tl-generic-sel" onchange="tlGenSelChange()" style="flex:1;font-size:11.5px;padding:4px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-pri);cursor:pointer;min-width:0">
+              <option value="Stitches Removal">Stitches Removal</option>
+              <option value="Implant Crown Issue">Implant Crown Issue</option>
+              <option value="Implant Denture Issue">Implant Denture Issue</option>
+              <option value="__custom__">Custom…</option>
+            </select>
+            <button onclick="tlAddGeneric()" style="font-size:11.5px;padding:4px 9px;background:#1479b8;color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500;flex-shrink:0">+ Add</button>
+          </div>
+          <input type="text" id="tl-generic-custom" placeholder="Type treatment name…" style="display:none;width:100%;font-size:11.5px;padding:4px 7px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-card);color:var(--text-pri);margin-bottom:4px">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Acknowledgement + Signature -->
+  <div id="ack-block" style="margin-top:1.5rem">
+    <p id="ack-text" style="font-size:13px;color:var(--text-sec);line-height:1.7;margin-bottom:16px;padding-top:4px">
+      I, <span id="ack-name" style="font-weight:600;border-bottom:1px solid var(--border-md);padding-bottom:1px;min-width:120px;display:inline-block">&nbsp;</span>, acknowledge that this quotation form has been explained clearly to me.
+    </p>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:4px">
+      <div style="width:220px">
+        <div id="sig-image-area" style="border-bottom:1px solid var(--text-pri);height:44px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:2px"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="sig-label" style="font-size:11px;color:var(--text-sec)">Patient's Signature</span>
+          <button id="get-sig-btn" onclick="generateSigningQR()" class="no-print" style="font-size:10px;padding:2px 9px;border:0.5px solid var(--border-md);background:var(--bg-info);color:var(--text-info);border-radius:20px;cursor:pointer;font-family:inherit;font-weight:500">Get Signature</button>
+          <button id="clear-sig-btn" onclick="clearSignature()" class="no-print" style="display:none;font-size:10px;padding:2px 9px;border:0.5px solid var(--border-md);background:var(--bg-surface);color:var(--text-sec);border-radius:20px;cursor:pointer;font-family:inherit">Clear</button>
+        </div>
+      </div>
+      <div style="width:140px">
+        <div style="border-bottom:1px solid var(--text-pri);height:44px;margin-bottom:6px;display:flex;align-items:flex-end;padding-bottom:4px">
+          <span id="sig-date" style="font-size:13px;color:var(--text-pri)"></span>
+        </div>
+        <div style="font-size:11px;color:var(--text-sec)">Date</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Buttons -->
+<div style="border-top:0.5px solid var(--border-lt);margin-top:1.5rem;padding-top:1.5rem;display:flex;gap:8px;max-width:376px" class="no-print">
+  <button style="font-size:12px;padding:8px 16px;background:#185FA5;color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-family:inherit;font-weight:500" id="btn-print" disabled onclick="printQuote()">Print / Save PDF</button>
+  <button class="btn" id="btn-excel" disabled onclick="exportExcel()">Download Excel</button>
+  <button class="btn-ghost" onclick="if(confirm('Clear all treatments from summary?')){summaryItems=[];updateGrandFromItems()}">Clear</button>
+</div>
+
+<div style="font-size:10px;color:var(--text-ter);line-height:1.7;border-top:0.5px solid var(--border-lt);padding-top:12px;margin-top:16px" class="no-print">
+  <strong>Medisave (CPF, Apr 2025):</strong> SB816M = $1,120 surgical + $830 misc per session (misc once per appointment) · SB803M = $1,950/unit · SB813M = $1,120/quadrant + $830 misc once per session · SB802M = $2,220/unit · SF812T = $420 surgical + $830 misc = $1,250/tooth · SF813T = $1,120 surgical + $830 misc = $1,950/tooth · Socket Preservation = not Medisave-claimable<br>
+  <strong>CHAS (MOH, Oct 2025):</strong> Subsidy applied to subsidised units = min(qty, remaining claims). Subsidy cannot exceed fee charged.<br>
+  <strong>GST (9%):</strong> Applied to the full fee including Medisave amount. GST on Medisave portion is added to patient's cash payable. GST on CHAS subsidy portion is not charged to patient.<br>
+  Subject to CPF/MOH approval. All amounts in SGD.
+</div>
+
+</div><!-- .wrap -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const SURG = [
+  { code:"SB816M", name:"Dental Implant + Crown", tosp:"Table 2C",
+    surgical:1120, misc:830, unit:"per implant", implantMode:true, implantOnly:false,
+    crowns:[{label:"PFM Crown",cash:0},{label:"Zirconia Crown",cash:550}] },
+  { code:"SB816M_IO", name:"Dental Implant ONLY", tosp:"Table 2C",
+    surgical:1120, misc:830, unit:"per implant", implantMode:true, implantOnly:true },
+  { code:"SB803M", name:"GBR", tosp:"Table 2C",
+    medisave:1950, breakdown:"$1,120+$830 misc", unit:"per procedure" },
+  { code:"SB802M", name:"Complex Sinus Lift", tosp:"Table 3A",
+    medisave:2220, breakdown:"$1,390+$830 misc", unit:"per procedure" },
+  { code:"SB813M", name:"Alveolectomy", tosp:"Table 2C",
+    surgical:1120, misc:830, miscOnce:true, unit:"per quadrant" },
+  { code:"SF812T", name:"Surgical Tooth Removal — bone removal, no tooth division", tosp:"Table 1B",
+    medisave:1250, breakdown:"$420 surgical + $830 misc", unit:"per tooth" },
+  { code:"SF813T", name:"Surgical Tooth Removal — bone removal + tooth division", tosp:"Table 2C",
+    medisave:1950, breakdown:"$1,120 surgical + $830 misc", unit:"per tooth" },
+  { code:"SOCKPRES", name:"Socket Preservation", tosp:"Non-Medisave",
+    feeOnly:true, unit:"per socket" },
+  { code:"SIMGRAFT", name:"Simultaneous Bone Graft", tosp:"Non-Medisave",
+    feeOnly:true, unit:"per procedure" },
+]
+
+// CHAS subsidy per tier: [Orange, Blue, MG, PG]
+const NS = [
+  { id:"ext_a",  name:"Extraction — Anterior",                unit:"per tooth",     maxClaims:4,  claimNote:"Up to 4/yr shared w/ posterior extractions",           subs:[19,28.50,33.50,38.50] },
+  { id:"ext_p",  name:"Extraction — Posterior",               unit:"per tooth",     maxClaims:4,  claimNote:"Up to 4/yr shared w/ anterior extractions",            subs:[45.50,68.50,73.50,78.50] },
+  { id:"rct_a",  name:"Root Canal Treatment — Anterior",      unit:"per tooth",     maxClaims:2,  claimNote:"Up to 2 RCTs/yr shared across all RCT types",          subs:[217.50,326,331,336] },
+  { id:"rct_pm", name:"Root Canal Treatment — Pre-molar",     unit:"per tooth",     maxClaims:2,  claimNote:"Up to 2 RCTs/yr shared across all RCT types",          subs:[308.50,462.50,467.50,472.50] },
+  { id:"rct_m",  name:"Root Canal Treatment — Molar",         unit:"per tooth",     maxClaims:2,  claimNote:"Up to 2 RCTs/yr shared across all RCT types",          subs:[389.50,584.50,589.50,594.50] },
+  { id:"crown",  name:"Permanent Crown",                      unit:"per crown",     maxClaims:4,  claimNote:"Up to 4/yr; natural teeth only, not implant-supported", subs:[410,615,620,625] },
+  { id:"pd_s",   name:"Partial Denture — Simple (< 6 teeth)", unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 per 3 calendar years",                           subs:[202.50,304,309,314],    hasMaterials:true },
+  { id:"pd_c",   name:"Partial Denture — Complex (≥ 6 teeth)",unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 per 3 calendar years",                           subs:[257,385.50,390.50,395.50], hasMaterials:true },
+  { id:"cd",     name:"Complete Denture (Upper or Lower)",    unit:"per denture",   maxClaims:1,  claimNote:"Up to 1 per 3 calendar years",                           subs:[272.50,408.50,413.50,418.50], hasMaterials:true },
+]
+
+const DENTURE_MATERIALS = ["Acrylic", "Flexible", "CoCr", "Implant Overdenture"]
+
+// Prosthodontic extras — no CHAS, no checkbox toggle (always rendered), fee + qty + remark
+// Miscellaneous procedures — dynamic list, no fixed items
+let miscItems = [ { id: 1, name:'', fee:0, qty:1, remark:'' } ]
+let _miscId = 1
+function nextMiscId(){ return ++_miscId }
+
+// Orthodontics — dynamic list with deposit
+let orthoItems = [ { id: 1, name:'', fee:0, qty:1, deposit:0, remark:'' } ]
+let _orthoId = 1
+function nextOrthoId(){ return ++_orthoId }
+
+const CHAS_TIERS = ["orange","blue","mg","pg"]
+const CHAS_IDX   = {none:-1,orange:0,blue:1,mg:2,pg:3}
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+const surgState = {}
+SURG.forEach(p => { surgState[p.code] = { on:false, qty:1, crown:0, apptMode:"same", cashTopup:0, remark:"", capOverflowToCash:false, extraMiscToCash:false } })
+
+const nsState = {}
+NS.forEach(p => { nsState[p.id] = { on:false, qty:1, fee:0, remaining:p.maxClaims, materials:[], remark:'' } })
+
+
+let chasMode = "none"
+
+// ── SUMMARY CART (manual snapshots) ─────────────────────────────────────────
+let summaryItems = []
+let _snapId = 0
+function nextId(){ return ++_snapId }
+
+// ── TREATMENT TIMELINE ───────────────────────────────────────────────────────
+const TL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const _tlNow    = new Date()
+const _tlCurM   = _tlNow.getMonth()   // 0-indexed
+const _tlCurY   = _tlNow.getFullYear()
+
+function tlDateKey(m, y){ return y * 12 + m }  // monotonic for comparison
+function tlAddMonths(date, n){
+  let m = date.m + n, y = date.y
+  while(m > 11){ m -= 12; y++ }
+  while(m < 0) { m += 12; y-- }
+  return {m, y}
+}
+function tlDateLabel(date){ return TL_MONTHS[date.m] + ' ' + date.y }
+
+// Generate option list: current month → 36 months forward
+function tlDateOptions(selected){
+  let opts = ''
+  for(let delta = 0; delta <= 36; delta++){
+    let m = _tlCurM + delta, y = _tlCurY
+    while(m > 11){ m -= 12; y++ }
+    while(m < 0) { m += 12; y-- }
+    const sel = (selected && selected.m === m && selected.y === y) ? ' selected' : ''
+    opts += `<option value="${m}_${y}"${sel}>${TL_MONTHS[m]} ${y}</option>`
+  }
+  return opts
+}
+
+let tlVisits     = [{id:'v1', label:'Visit 1', tIds:[], date:{m:_tlCurM, y:_tlCurY}}]
+let tlWaits      = {}
+let tlUnassigned = []
+const TL_WK = ['','2','4','6','8']
+const TL_MO = ['','3','4','5','6','7','8']
+
+// Mouse-drag state
+let tlDrag = null  // { id, src, ghost }
+
+// Generic treatment items (no cost, draggable into visits)
+let tlGenericItems = []
+let _tlGenId = -1  // negative IDs avoid collision with summaryItems
+
+function tlGenSelChange(){
+  const sel    = document.getElementById('tl-generic-sel')
+  const custom = document.getElementById('tl-generic-custom')
+  if(!sel || !custom) return
+  custom.style.display = sel.value === '__custom__' ? 'block' : 'none'
+}
+
+function tlAddGeneric(){
+  const sel    = document.getElementById('tl-generic-sel')
+  const custom = document.getElementById('tl-generic-custom')
+  if(!sel) return
+  const name = sel.value === '__custom__'
+    ? (custom?.value.trim() || '')
+    : sel.value
+  if(!name) return
+  const id = _tlGenId--
+  tlGenericItems.push({ _id: id, label: name, mv: 0, cashBefore: 0, subsidyTotal: 0 })
+  tlUnassigned.push(id)
+  if(custom) custom.value = ''
+  tlRender()
+}
+
+function tlItem(id){
+  return summaryItems.find(i => i._id == id) || tlGenericItems.find(i => i._id == id)
+}
+
+function tlSync(){
+  const allIds   = summaryItems.map(i => i._id)
+  const genIds   = tlGenericItems.map(i => i._id)
+  const validIds = [...allIds, ...genIds]
+  const assigned = tlVisits.flatMap(v => v.tIds)
+  tlUnassigned   = tlUnassigned.filter(id => validIds.some(v => v == id))
+  tlVisits.forEach(v => { v.tIds = v.tIds.filter(id => validIds.some(v => v == id)) })
+  allIds.forEach(id => {
+    if(!assigned.some(a => a == id) && !tlUnassigned.some(u => u == id)) tlUnassigned.push(id)
+  })
+}
+
+function tlPillCost(item){
+  const showFee  = document.getElementById('tl-show-fee')?.checked
+  const showMv   = document.getElementById('tl-show-mv')?.checked
+  const showChas = document.getElementById('tl-show-chas')?.checked
+  const showCash = document.getElementById('tl-show-cash')?.checked
+  const parts = []
+  if(showFee){
+    const fee = (item.cashBefore||0) + (item.mv||0) + (item.subsidyTotal||0)
+    if(fee) parts.push(`<span class="tl-pc">$${Number.isInteger(fee)?fee:fee.toFixed(2)}</span>`)
+  }
+  if(showMv && item.mv)
+    parts.push(`<span class="tl-pc" style="color:#1479b8">MS $${Number.isInteger(item.mv)?item.mv:item.mv.toFixed(2)}</span>`)
+  if(showChas && item.subsidyTotal)
+    parts.push(`<span class="tl-pc" style="color:#2f6010">CHAS $${Number.isInteger(item.subsidyTotal)?item.subsidyTotal:item.subsidyTotal.toFixed(2)}</span>`)
+  if(showCash && item.cashBefore)
+    parts.push(`<span class="tl-pc" style="color:#b06000">Cash $${Number.isInteger(item.cashBefore)?item.cashBefore:item.cashBefore.toFixed(2)}</span>`)
+  return parts.length ? ' ' + parts.join(' ') : ''
+}
+
+function tlPill(id, ctx, accentCol){
+  const item = tlItem(id)
+  if(!item) return ''
+  const cls = ctx==='unassigned' ? 'tl-out' : 'tl-in'
+  const printAccent = accentCol ? `data-accent="${accentCol}"` : ''
+  return `<span class="tl-pill ${cls}" id="tlp_${id}"
+    onmousedown="tlMouseDown(event,${id},'${ctx}')"
+    ${printAccent}
+    style="${accentCol?`--pill-accent:${accentCol}`:''}"
+  >${item.label}${tlPillCost(item)}</span>`
+}
+
+function tlToggle(){
+  const tog   = document.getElementById('tl-toggle')
+  const panel = document.getElementById('tl-panel')
+  if(!tog || !panel) return
+  if(tog.checked){ tlSync(); panel.style.display='block'; tlRender() }
+  else panel.style.display='none'
+}
+
+function tlAddVisit(){
+  const nid  = 'v' + Date.now()
+  const prev = tlVisits[tlVisits.length-1]
+  tlWaits[prev.id+'_'+nid] = {w:'',m:''}
+  // Default date = same as previous visit (no wait selected yet)
+  tlVisits.push({id:nid, label:'Visit '+(tlVisits.length+1), tIds:[], date:{...prev.date}})
+  tlRender()
+}
+
+function tlSetVisitDate(vid, val){
+  const v = tlVisits.find(v => v.id === vid)
+  if(!v) return
+  const [m, y] = val.split('_').map(Number)
+  v.date = {m, y}
+  // Propagate forward from this visit
+  const idx = tlVisits.indexOf(v)
+  tlPropagateFrom(idx)
+  tlRender()
+}
+
+function tlPropagateFrom(fromIdx){
+  for(let i = fromIdx + 1; i < tlVisits.length; i++){
+    const prev = tlVisits[i-1]
+    const k    = prev.id + '_' + tlVisits[i].id
+    const wp   = tlWaits[k] || {w:'',m:''}
+    const addM = Math.round((parseInt(wp.w)||0) / 4) + (parseInt(wp.m)||0)
+    if(addM > 0) tlVisits[i].date = tlAddMonths(prev.date, addM)
+  }
+}
+
+function tlRemoveVisit(vid){
+  if(tlVisits.length <= 1) return
+  const idx = tlVisits.findIndex(v => v.id === vid)
+  tlUnassigned.push(...tlVisits[idx].tIds)
+  Object.keys(tlWaits).filter(k => k.split('_').includes(vid)).forEach(k => delete tlWaits[k])
+  if(idx > 0 && idx < tlVisits.length-1)
+    tlWaits[tlVisits[idx-1].id+'_'+tlVisits[idx+1].id] = {w:'',m:''}
+  tlVisits.splice(idx,1)
+  tlVisits.forEach((v,i) => v.label = 'Visit '+(i+1))
+  tlRender()
+}
+
+function tlSetWait(key, field, val){
+  if(!tlWaits[key]) tlWaits[key]={w:'',m:''}
+  tlWaits[key][field] = val
+  // Propagate date from the "from" visit
+  const fromId = key.split('_')[0]
+  const fromIdx = tlVisits.findIndex(v => v.id === fromId)
+  if(fromIdx >= 0) tlPropagateFrom(fromIdx)
+  tlRender()
+}
+
+function tlWaitText(wp){
+  const parts=[]
+  if(wp.w) parts.push(wp.w+' Weeks')
+  if(wp.m) parts.push(wp.m+' Months')
+  return parts.length ? parts.join(' + ') : '—'
+}
+
+function tlZoneAt(x, y){
+  // Temporarily hide ghost so elementFromPoint sees what's underneath
+  if(tlDrag && tlDrag.ghost) tlDrag.ghost.style.display='none'
+  const el = document.elementFromPoint(x, y)
+  if(tlDrag && tlDrag.ghost) tlDrag.ghost.style.display=''
+  if(!el) return null
+  return el.closest('[data-tl-zone]')
+}
+
+function tlWaitRow(key){
+  const wp = tlWaits[key]||{w:'',m:''}
+  const ms = TL_MO.map(o=>`<option value="${o}"${wp.m===o?' selected':''}>${o||''}</option>`).join('')
+  const ws = TL_WK.map(o=>`<option value="${o}"${wp.w===o?' selected':''}>${o||''}</option>`).join('')
+  return `<div class="tl-wrow">
+    <div class="tl-wvline"></div>
+    <div style="display:flex;align-items:center;gap:5px">
+      <span class="tl-wait-interactive" style="display:flex;align-items:center;gap:5px">
+        <select class="tl-ws" onchange="tlSetWait('${key}','m',this.value)">${ms}</select>
+        <span style="font-size:12px;color:#888">Months</span>
+        <select class="tl-ws" onchange="tlSetWait('${key}','w',this.value)">${ws}</select>
+        <span style="font-size:12px;color:#888">Weeks</span>
+      </span>
+      <span class="tl-wait-text" id="tlwt_${key}" style="font-size:12px;color:#888;margin-left:8px">${tlWaitText(wp)}</span>
+    </div>
+  </div>`
+}
+
+const TL_PASTELS = ['#a8c8e8','#a8d5b5','#d5b8e0','#f0c9a0','#f0a8b8','#a8d8d8']
+
+function tlRender(){
+  let html=''
+  tlVisits.forEach((v,i) => {
+    if(i>0){
+      const k=tlVisits[i-1].id+'_'+v.id
+      if(!tlWaits[k]) tlWaits[k]={w:'',m:''}
+      html+='<div style="margin:10px 0">'+tlWaitRow(k)+'</div>'
+    }
+    const empty=v.tIds.length===0
+    const borderCol  = TL_PASTELS[i % TL_PASTELS.length]
+    html+=`<div class="tl-vcard" style="border:2px solid ${borderCol};margin-bottom:4px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px 6px 12px;background:${borderCol}33;border-bottom:1px solid ${borderCol}66;margin:-11px -13px 10px -13px;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+        <select class="no-print" style="font-size:12px;font-weight:600;letter-spacing:.03em;padding:0;border:none;background:transparent;color:#444;cursor:pointer;min-width:90px;max-width:140px"
+          onchange="tlSetVisitDate('${v.id}',this.value)">${tlDateOptions(v.date)}</select>
+        <span class="print-only-tl-date" style="font-size:12px;font-weight:600;letter-spacing:.03em;color:#444">${tlDateLabel(v.date)}</span>
+        ${tlVisits.length>1?`<button class="no-print" style="font-size:10px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 4px;border-radius:4px;flex-shrink:0;line-height:1" onclick="tlRemoveVisit('${v.id}')" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#bbb'">✕</button>`:''}
+      </div>
+      <div class="tl-dzone${empty?' tl-empty':''}" id="tldz_${v.id}" data-tl-zone="${v.id}"
+        style="--card-accent:${borderCol}"
+      >${v.tIds.map(id=>tlPill(id,v.id,borderCol)).join('')}</div>
+    </div>`
+  })
+  html+=`<button class="tl-add-btn no-print" onclick="tlAddVisit()" style="margin-top:8px">+ add visit</button>`
+  document.getElementById('tl-main').innerHTML=html
+
+  const uz=document.getElementById('tl-uzone')
+  uz.innerHTML=tlUnassigned.length
+    ? tlUnassigned.map(id=>tlPill(id,'unassigned')).join('')
+    : '<span style="font-size:11px;color:#bbb">All treatments assigned ✓</span>'
+}
+
+// ── Mouse-based drag ──────────────────────────────────────────────────────────
+function tlMouseDown(e, id, src){
+  if(e.button !== 0) return
+  e.preventDefault()
+
+  const item = tlItem(id)
+  if(!item) return
+
+  // Ghost element that follows cursor
+  const ghost = document.createElement('span')
+  ghost.className = 'tl-ghost'
+  const cost = (item.cashBefore||0) + (item.mv||0)
+  ghost.textContent = item.label + (cost ? '  $'+(Number.isInteger(cost)?cost:cost.toFixed(2)) : '')
+  ghost.style.left = (e.clientX + 10) + 'px'
+  ghost.style.top  = (e.clientY + 10) + 'px'
+  document.body.appendChild(ghost)
+
+  // Dim the source pill
+  const pill = document.getElementById('tlp_'+id)
+  if(pill) pill.classList.add('tl-picked')
+
+  tlDrag = { id, src, ghost }
+
+  // Prevent text selection during drag
+  document.body.style.userSelect = 'none'
+}
+
+document.addEventListener('mousemove', function(e){
+  if(!tlDrag) return
+  tlDrag.ghost.style.left = (e.clientX + 10) + 'px'
+  tlDrag.ghost.style.top  = (e.clientY + 10) + 'px'
+
+  // Highlight drop zone under cursor
+  const zone = tlZoneAt(e.clientX, e.clientY)
+  document.querySelectorAll('[data-tl-zone]').forEach(z => z.classList.remove('tl-over'))
+  if(zone) zone.classList.add('tl-over')
+})
+
+document.addEventListener('mouseup', function(e){
+  if(!tlDrag) return
+  document.body.style.userSelect = ''
+
+  const zone = tlZoneAt(e.clientX, e.clientY)
+  const { id, src } = tlDrag
+
+  tlDrag.ghost.remove()
+  tlDrag = null
+  document.querySelectorAll('[data-tl-zone]').forEach(z => z.classList.remove('tl-over'))
+
+  if(!zone){ tlRender(); return }
+  const zid = zone.dataset.tlZone
+
+  // Find if cursor is hovering over an existing pill to insert before it
+  let insertBeforeId = null
+  if(zid !== 'unassigned'){
+    const tv = tlVisits.find(v => v.id === zid)
+    if(tv){
+      for(const tid of tv.tIds){
+        if(tid == id) continue
+        const el = document.getElementById('tlp_'+tid)
+        if(el){
+          const r = el.getBoundingClientRect()
+          if(e.clientY < r.top + r.height / 2){ insertBeforeId = tid; break }
+        }
+      }
+    }
+  }
+
+  // Remove from source
+  if(src === 'unassigned') tlUnassigned = tlUnassigned.filter(i => i !== id)
+  else { const sv=tlVisits.find(v=>v.id===src); if(sv) sv.tIds=sv.tIds.filter(i=>i!==id) }
+
+  // Insert into target at correct position
+  if(zid === 'unassigned'){
+    tlUnassigned.push(id)
+  } else {
+    const tv = tlVisits.find(v => v.id === zid)
+    if(tv){
+      if(insertBeforeId !== null){
+        const idx = tv.tIds.findIndex(i => i == insertBeforeId)
+        tv.tIds.splice(idx, 0, id)
+      } else {
+        tv.tIds.push(id)
+      }
+    }
+  }
+
+  tlRender()
+})
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+
+function fmt(n){ return "$"+Math.round(n*100)/100 === Math.round(n) ? "$"+Math.round(n).toLocaleString() : "$"+(Math.round(n*100)/100).toFixed(2) }
+function fmtD(n){ return "$"+(Math.round(n*100)/100).toLocaleString("en-SG",{minimumFractionDigits:2,maximumFractionDigits:2}) }
+function gst(){ return document.getElementById("gst-toggle").checked }
+function getToday(){ return new Date().toLocaleDateString("en-SG",{day:"2-digit",month:"short",year:"numeric"}) }
+document.getElementById("today-date") && (document.getElementById("today-date").textContent = getToday())
+const sigDate = document.getElementById("sig-date")
+if(sigDate) sigDate.textContent = getToday()
+
+// Keep acknowledgement name in sync with patient name input
+function syncPatientBar(){
+  const patient = document.getElementById("patient-name").value || "\u00a0"
+  const doctor  = document.getElementById("doctor-name").value || ""
+  const ackEl   = document.getElementById("ack-name")
+  if(ackEl) ackEl.textContent = patient
+  const pb = document.getElementById("pb-patient")
+  const pd = document.getElementById("pb-doctor")
+  if(pb) pb.textContent = document.getElementById("patient-name").value || ""
+  if(pd) pd.textContent = doctor
+}
+document.getElementById("patient-name").addEventListener("input", syncPatientBar)
+document.getElementById("doctor-name").addEventListener("input", syncPatientBar)
+
+const MV_SESSION_CAP = 5290  // CPF Medisave max per session (1 Apr 2025)
+
+function getChasSubsidy(p){
+  const idx = CHAS_IDX[chasMode]
+  if(idx < 0) return 0
+  return p.subs[idx]
+}
+
+function getSurgLine(p){
+  const s = surgState[p.code], qty = s.qty, hasGst = gst()
+  if(p.feeOnly){
+    const cb = (parseFloat(s.cashTopup)||0) * qty
+    const cashTotal = hasGst ? cb * 1.09 : cb
+    // No Medisave, so entire cash (incl. GST) is instalment-eligible
+    return { qty, mv:0, gstOnMv:0, cashBefore:cb, cashTotal, total:cashTotal, extraMisc:0, instEligible:cashTotal }
+  }
+  if(p.implantMode){
+    if(p.implantOnly){
+      const costPer = parseFloat(s.cashTopup)||0   // cashTopup field reused as costPerImplant
+      const totalFee = costPer * qty
+      // Medisave is always same-session logic (no appt toggle): 1120×qty + 830 once
+      const surgicalRaw = p.surgical * qty
+      const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+      const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+      const mv = surgicalCapped + p.misc   // misc ($830) not subject to cap
+      if(costPer === 0){
+        // No cost entered — show Medisave only, $0 cash
+        const gstOnMv = hasGst ? mv * 0.09 : 0
+        return { qty, mv, gstOnMv, cashBefore:0, cashTotal:gstOnMv, total:mv+gstOnMv, extraMisc:0, instEligible:0, capOverflow }
+      }
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const effectiveFee = Math.max(0, totalFee - mv + overflowCash)
+      const totalFeeWithGst = hasGst ? totalFee * 1.09 : totalFee
+      const cashTotal = Math.max(0, totalFeeWithGst - mv)
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const instEligible = Math.max(0, cashTotal - gstOnMv)
+      return { qty, mv, gstOnMv, cashBefore:Math.max(0,totalFee-mv), cashTotal, total:hasGst?totalFeeWithGst:totalFee, extraMisc:0, instEligible, capOverflow }
+    }
+    const ccp = p.crowns[s.crown].cash
+    const extraCash = parseFloat(s.cashTopup)||0  // additional cash top-up per implant
+    if(s.apptMode === "same"){
+      const surgicalRaw = p.surgical * qty
+      const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+      const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+      const mv = surgicalCapped + p.misc   // misc ($830) is separate, not subject to cap
+      const extraMisc = p.misc*(qty-1)
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const cashBefore = extraMisc + (ccp + extraCash)*qty + overflowCash
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst, capOverflow }
+    } else {
+      const mv = (p.surgical+p.misc)*qty
+      const cashBefore = (ccp + extraCash)*qty
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst, capOverflow:0 }
+    }
+  } else if(p.miscOnce) {
+    // Procedures where misc ($830) is claimable only once per session regardless of qty
+    const surgicalRaw = p.surgical * qty
+    const capOverflow = Math.max(0, surgicalRaw - MV_SESSION_CAP)
+    const surgicalCapped = Math.min(surgicalRaw, MV_SESSION_CAP)
+    if(s.apptMode === "same"){
+      const mv = surgicalCapped + p.misc  // misc once per session
+      const extraMisc = p.misc * (qty - 1) // extra misc units — optional cash
+      const overflowCash = s.capOverflowToCash ? capOverflow : 0
+      const extraMiscCash = (qty > 1 && s.extraMiscToCash) ? extraMisc : 0
+      const cashBefore = extraMiscCash + (parseFloat(s.cashTopup)||0)*qty + overflowCash
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc, instEligible:cashTopupWithGst, capOverflow }
+    } else {
+      // Different appointments: each unit claims full surgical + misc
+      const mv = (p.surgical + p.misc) * qty
+      const cashBefore = (parseFloat(s.cashTopup)||0) * qty
+      const gstOnMv = hasGst ? mv * 0.09 : 0
+      const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+      const cashTotal = cashTopupWithGst + gstOnMv
+      return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst, capOverflow:0 }
+    }
+  } else {
+    const mv = p.medisave*qty
+    const cashBefore = (parseFloat(surgState[p.code].cashTopup)||0)*qty
+    const gstOnMv = hasGst ? mv * 0.09 : 0
+    const cashTopupWithGst = hasGst ? cashBefore * 1.09 : cashBefore
+    const cashTotal = cashTopupWithGst + gstOnMv
+    return { qty, mv, gstOnMv, cashBefore, cashTotal, total:mv+cashTotal, extraMisc:0, instEligible:cashTopupWithGst }
+  }
+}
+
+function getNsLine(p){
+  const s = nsState[p.id], qty = s.qty, feePerUnit = parseFloat(s.fee)||0
+  const totalFee = feePerUnit * qty
+  const subsPerUnit = getChasSubsidy(p)
+  // Clamp subsidy per unit to fee per unit
+  const effectiveSub = Math.min(subsPerUnit, feePerUnit)
+  // How many units get subsidy
+  const subsidisedQty = Math.min(qty, Math.max(0, parseInt(s.remaining)||0))
+  const subsidyTotal = effectiveSub * subsidisedQty
+  const cashBefore = totalFee - subsidyTotal
+  const g = gst() ? 1.09 : 1.0
+  return { qty, totalFee, subsidyTotal, cashTotal:cashBefore*g, cashBefore, total:subsidyTotal+cashBefore*g, subsidisedQty, effectiveSub }
+}
+
+// ── CHAS TIER UI ─────────────────────────────────────────────────────────────
+
+function toggleMaterial(id, mat){
+  const mats = nsState[id].materials
+  const idx = mats.indexOf(mat)
+  if(idx === -1) mats.push(mat)
+  else mats.splice(idx, 1)
+  renderNonSurg()
+}
+
+function updateInstalmentPanel(){
+  const tog   = document.getElementById("instalment-toggle")
+  const panel = document.getElementById("instalment-panel")
+  if(!tog || !panel) return
+  if(!tog.checked){ panel.style.display="none"; return }
+  panel.style.display = "block"
+  const months   = parseInt(document.querySelector('input[name="inst-months"]:checked')?.value || 6)
+  const eligible = window._instEligible   || 0
+  const upfront  = window._upfrontGstOnMv || 0
+  const monthly  = eligible / months
+  document.getElementById("inst-total").textContent   = fmtD(eligible)
+  document.getElementById("inst-monthly").textContent = fmtD(monthly)
+  document.getElementById("inst-label").textContent   = `per month for ${months} months`
+  const upfrontChas    = window._upfrontGstOnChas || 0
+  const orthoDeposit   = window._orthoDeposit     || 0
+  const totalUpfront   = upfront + upfrontChas + orthoDeposit
+  const note = document.getElementById("inst-upfront-note")
+  if(note){
+    if(totalUpfront > 0){
+      note.style.display = "block"
+      const mvEl = document.getElementById("inst-upfront-mv-amt")
+      const chasEl = document.getElementById("inst-upfront-chas-amt")
+      const depEl = document.getElementById("inst-upfront-dep-amt")
+      if(mvEl) mvEl.textContent = fmtD(upfront)
+      if(chasEl) chasEl.textContent = fmtD(upfrontChas)
+      if(depEl) depEl.style.display = orthoDeposit > 0 ? 'inline' : 'none'
+      if(depEl) depEl.previousSibling && (depEl.previousSibling.style && (depEl.previousSibling.style.display = orthoDeposit > 0 ? 'inline' : 'none'))
+      const depSpan = document.getElementById("inst-upfront-dep-val")
+      if(depSpan) depSpan.textContent = fmtD(orthoDeposit)
+      document.getElementById("inst-upfront-amt").textContent = fmtD(totalUpfront)
+    } else {
+      note.style.display = "none"
+    }
+  }
+}
+
+function setChas(mode){
+  chasMode = mode
+  CHAS_TIERS.concat(["none"]).forEach(t => {
+    const btn = document.getElementById("chas-"+t)
+    if(!btn) return
+    btn.className = "chas-btn"+(t===mode?" sel-"+t:"")
+  })
+  render()
+}
+setChas("none")
+
+// ── COLLAPSE ─────────────────────────────────────────────────────────────────
+
+const collapseState = { surg: false, nonsurg: false, ortho: false, prostho: false }
+
+function toggleSection(sec) {
+  collapseState[sec] = !collapseState[sec]
+  const idMap = { surg:'surg-collapsible', nonsurg:'nonsurg-collapsible', ortho:'ortho-collapsible', prostho:'prostho-collapsible' }
+  const col = document.getElementById(idMap[sec])
+  const btn = document.getElementById(sec + '-chevron')
+  if (collapseState[sec]) {
+    col.classList.add('collapsed')
+    btn.classList.add('collapsed')
+  } else {
+    col.classList.remove('collapsed')
+    btn.classList.remove('collapsed')
+  }
+}
+
+function clearSection(sec) {
+  if (sec === 'surg') {
+    SURG.forEach(p => {
+      surgState[p.code].on = false
+      surgState[p.code].qty = 1
+      surgState[p.code].crown = 0
+      surgState[p.code].apptMode = "same"
+      surgState[p.code].cashTopup = 0
+    })
+  } else if (sec === 'nonsurg') {
+    NS.forEach(p => {
+      nsState[p.id].on = false
+      nsState[p.id].qty = 1
+      nsState[p.id].fee = 0
+      nsState[p.id].remaining = p.maxClaims
+      nsState[p.id].materials = []
+    })
+  } else if (sec === 'ortho') {
+    orthoItems = [ { id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' } ]
+  } else if (sec === 'prostho') {
+    miscItems = [ { id: nextMiscId(), name:'', fee:0, qty:1, remark:'' } ]
+  }
+  render()
+}
+
+// ── RENDER SURGICAL ──────────────────────────────────────────────────────────
+
+function renderSurg(){
+  const list = document.getElementById("surg-list") || document.querySelector("#surg-collapsible #surg-list")
+  list.innerHTML = ""
+  SURG.forEach(p => {
+    const s = surgState[p.code], l = getSurgLine(p)
+    const div = document.createElement("div")
+    div.className = "card"+(s.on?" active":"")
+
+    let meta = p.feeOnly
+      ? `<span style="color:var(--text-ter)">No Medisave · Cash only · ${p.unit}</span>`
+      : p.implantMode
+      ? `Medisave: <span class="mv">$1,950</span> per implant`
+      : p.miscOnce
+      ? `Medisave: <span class="mv">$${p.surgical}</span> surgical + <span class="mv">$${p.misc}</span> misc once per session · ${p.unit}`
+      : `Medisave: <span class="mv">${fmt(p.medisave)}</span> ${p.unit}`
+        + ((parseFloat(surgState[p.code].cashTopup)||0) > 0
+          ? ` &nbsp;·&nbsp; <span class="cv">Cash top-up: ${fmt(parseFloat(surgState[p.code].cashTopup))}/unit</span>`
+          : `` )
+
+    let apptHtml = ""
+    if(s.on && p.implantMode && !p.implantOnly){
+      const capOverflow = l.capOverflow || 0
+      let info = s.apptMode==="same"
+        ? s.qty===1
+          ? `Single implant: Medisave covers full $1,120 + $830 misc = <strong>$1,950</strong>.`
+          : `${s.qty} implants in one session: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>.${l.extraMisc>0?` Extra misc ($830 × ${s.qty-1} = <strong>${fmt(l.extraMisc)}</strong>) → cash.`:""}`
+        : `${s.qty} implant${s.qty>1?"s":""} across separate appointments: Medisave = $1,950 × ${s.qty} = <strong>${fmt(l.mv)}</strong>. No extra misc cash.`
+
+      const capWarning = capOverflow > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflow)}</strong> is not claimable from Medisave in this session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflow)} overflow to patient's cash
+            </label>
+          </div>` : ""
+
+      apptHtml = `
+        <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Appointment</span>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="same"?"checked":""} onchange="surgState['${p.code}'].apptMode='same';render()"> Same appointment
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="diff"?"checked":""} onchange="surgState['${p.code}'].apptMode='diff';render()"> Different appointments
+          </label>
+        </div>
+        <div class="info-box">${info}${capWarning}</div>`
+    } else if(s.on && p.implantOnly){
+      const costPer = parseFloat(s.cashTopup)||0
+      let info = ""
+      if(costPer === 0){
+        info = s.qty===1
+          ? `Single implant: Medisave = $1,120 + $830 misc = <strong>$1,950</strong>. Enter cost/implant below to calculate cash payable.`
+          : `${s.qty} implants: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>. Enter cost/implant to calculate cash payable.`
+      } else {
+        const totalFee = costPer * s.qty
+        info = s.qty===1
+          ? `Cost: ${fmt(costPer)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
+          : `Cost: ${fmt(costPer)} × ${s.qty} = ${fmt(totalFee)} · Medisave: ${fmt(l.mv)} · Cash payable: <strong>${fmtD(l.cashTotal)}</strong>${gst()?" (incl. 9% GST on total fee)":""}`
+      }
+      const capOverflowIO = l.capOverflow || 0
+      const capWarningIO = capOverflowIO > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflowIO)}</strong> is not claimable from Medisave in this session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflowIO)} overflow to patient's cash
+            </label>
+          </div>` : ""
+      apptHtml = `<div class="info-box" style="margin-top:8px">${info}</div>${capWarningIO}`
+    }
+
+    // ── miscOnce (e.g. Alveolectomy) appointment toggle + cap warning ──
+    if(s.on && p.miscOnce){
+      const capOverflowMO = l.capOverflow || 0
+      const extraMiscAmt = p.misc * (s.qty - 1)
+      const infoMO = s.apptMode==="same"
+        ? s.qty===1
+          ? `Single quadrant: Medisave = $1,120 + $830 misc = <strong>$1,950</strong>.`
+          : `${s.qty} quadrants same session: Medisave = $1,120 × ${s.qty} + $830 misc once = <strong>${fmt(l.mv)}</strong>.`
+        : `${s.qty} quadrant${s.qty>1?"s":""} separate appointments: Medisave = $1,950 × ${s.qty} = <strong>${fmt(l.mv)}</strong>.`
+      const extraMiscWarning = s.apptMode==="same" && s.qty > 1
+        ? `<div style="margin-top:8px;padding:7px 10px;background:var(--bg-surface);border-radius:var(--r-sm);border:0.5px solid var(--border-md);font-size:11px;color:var(--text-sec);line-height:1.6">
+            Extra misc ($830 × ${s.qty-1} = <strong>${fmt(extraMiscAmt)}</strong>) not claimable — only one $830 per session.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.extraMiscToCash?"checked":""} onchange="surgState['${p.code}'].extraMiscToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(extraMiscAmt)} to patient's cash
+            </label>
+          </div>` : ""
+      const capWarnMO = capOverflowMO > 0
+        ? `<div style="margin-top:8px;padding:7px 10px;background:#fff7ed;border-radius:var(--r-sm);border:1px solid #f59e0b;font-size:11px;color:#b45309;line-height:1.6">
+            <strong>⚠ Medisave session cap ($5,290) exceeded.</strong>
+            Overflow of <strong>${fmt(capOverflowMO)}</strong> is not claimable.
+            <label style="display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer;font-weight:500">
+              <input type="checkbox" ${s.capOverflowToCash?"checked":""} onchange="surgState['${p.code}'].capOverflowToCash=this.checked;render()" style="accent-color:#1479b8">
+              Add ${fmt(capOverflowMO)} overflow to patient's cash
+            </label>
+          </div>` : ""
+      apptHtml = `
+        <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Appointment</span>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="same"?"checked":""} onchange="surgState['${p.code}'].apptMode='same';render()"> Same appointment
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+            <input type="radio" name="appt-${p.code}" ${s.apptMode==="diff"?"checked":""} onchange="surgState['${p.code}'].apptMode='diff';render()"> Different appointments
+          </label>
+        </div>
+        <div class="info-box">${infoMO}</div>${extraMiscWarning}${capWarnMO}`
+    }
+
+    let crownHtml = ""
+    if(s.on && p.implantMode && !p.implantOnly){
+      crownHtml = `
+        <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--text-sec);font-weight:500">Crown type</span>
+          ${p.crowns.map((c,i)=>`
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+              <input type="radio" name="crown-${p.code}" ${s.crown===i?"checked":""} onchange="surgState['${p.code}'].crown=${i};render()">
+              ${c.label} ${c.cash===0
+                ?`<span class="sv" style="font-size:10px">— no cash</span>`
+                :`<span class="cv" style="font-size:10px">+${fmt(c.cash)}/implant</span>`}
+            </label>`).join("")}
+        </div>`
+    }
+
+    let lineTot = ""
+    if(s.on){
+      const gn = gst()?" (incl. GST)":""
+      lineTot = `<div class="sep line-tot">
+        <span><span style="color:var(--text-sec)">Medisave: </span><span class="mv" style="font-weight:600">${fmt(l.mv)}</span></span>
+        <span><span style="color:var(--text-sec)">Cash: </span>${l.cashTotal>0?`<span class="cv">${fmtD(l.cashTotal)}${gn}</span>`:`<span style="color:var(--text-ter)">—</span>`}</span>
+        <span><span style="color:var(--text-sec)">Line total: </span><span style="font-weight:600">${fmtD(l.total)}</span></span>
+      </div>`
+    }
+
+    div.innerHTML = `
+      <div class="row">
+        <input type="checkbox" ${s.on?"checked":""} onchange="surgState['${p.code}'].on=!surgState['${p.code}'].on;render()">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span class="badge">${p.code === "SB816M_IO" ? "SB816M" : p.code}</span>
+            <span class="pname">${p.name}</span>
+            <span class="tbadge">${p.tosp}</span>
+          </div>
+          <div class="pmeta">${meta}</div>
+        </div>
+        ${s.on?`<div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
+          <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+          <input type="number" min="1" max="20" value="${s.qty}" onchange="surgState['${p.code}'].qty=Math.max(1,parseInt(this.value)||1);render()">
+        </div>`:""}
+      </div>${apptHtml}${crownHtml}
+      ${s.on && p.implantMode && !p.implantOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cash top-up ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">per implant · enter 0 if none</span>
+      </div>` : ""}
+      ${s.on && p.feeOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Fee ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">per unit</span>
+      </div>` : ""}
+      ${s.on && p.implantOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cost / implant ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||""}" placeholder="optional" style="width:110px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">cash = (cost × qty) − Medisave</span>
+      </div>` : ""}
+      ${s.on && !p.implantMode && !p.feeOnly ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Cash top-up ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${s.cashTopup||0}" placeholder="0" style="width:90px" onchange="surgState['${p.code}'].cashTopup=this.value;render()">
+        <span style="font-size:11px;color:var(--text-ter)">per unit · enter 0 if none</span>
+      </div>` : ""}
+      ${s.on ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${s.remark||''}" placeholder="e.g. tooth 16, upper right…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="surgState['${p.code}'].remark=this.value">
+      </div>
+      <div class="sep" style="display:flex;justify-content:flex-end">
+        <button onmousedown="addToSummary('surg','${p.code}',event)" class="btn-add-summary">+ Add to Summary</button>
+      </div>` : ""}
+      ${lineTot}`
+    list.appendChild(div)
+  })
+}
+
+// ── RENDER NON-SURGICAL ───────────────────────────────────────────────────────
+
+function renderNonSurg(){
+  const list = document.getElementById("nonsurg-list") || document.querySelector("#nonsurg-collapsible #nonsurg-list")
+  list.innerHTML = ""
+  NS.forEach(p => {
+    const s = nsState[p.id], l = getNsLine(p)
+    const subAmt = getChasSubsidy(p)
+    const div = document.createElement("div")
+    div.className = "card"+(s.on?" active":"")
+
+    const subDisplay = chasMode==="none"
+      ? `<span style="color:var(--text-ter)">Select CHAS tier above to see subsidy</span>`
+      : `<span class="sv">CHAS subsidy: ${fmt(subAmt)}/unit</span>`
+
+    let lineTot = ""
+    if(s.on){
+      const gn = gst()?" (incl. GST)":""
+      const subsStr = l.subsidyTotal>0 ? `<span class="sv">${fmtD(l.subsidyTotal)}</span>` : `<span style="color:var(--text-ter)">—</span>`
+      const cashStr = l.cashTotal>0 ? `<span class="cv">${fmtD(l.cashTotal)}${gn}</span>` : `<span style="color:var(--text-ter)">—</span>`
+      lineTot = `<div class="sep line-tot">
+        <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(l.totalFee)}</span></span>
+        <span><span style="color:var(--text-sec)">CHAS subsidy: </span>${subsStr}</span>
+        <span><span style="color:var(--text-sec)">Cash: </span>${cashStr}</span>
+        <span><span style="color:var(--text-sec)">Line total: </span><span style="font-weight:600">${fmtD(l.total)}</span></span>
+      </div>`
+    }
+
+    // Material tickboxes for denture items
+    let materialHtml = ""
+    if(s.on && p.hasMaterials){
+      materialHtml = `
+        <div class="sep" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--text-sec);font-weight:500">Material</span>
+          ${DENTURE_MATERIALS.map(m=>`
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px">
+              <input type="checkbox" ${s.materials.includes(m)?"checked":""} onchange="toggleMaterial('${p.id}','${m}')">
+              ${m}
+            </label>`).join("")}
+        </div>`
+    }
+
+    div.innerHTML = `
+      <div class="row">
+        <input type="checkbox" ${s.on?"checked":""} onchange="nsState['${p.id}'].on=!nsState['${p.id}'].on;render()">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <span class="pname">${p.name}</span>
+            <span class="tbadge">${p.unit}</span>
+          </div>
+          <div class="pmeta">${subDisplay}</div>
+          <div class="climit">${p.claimNote}</div>
+        </div>
+        ${s.on?`
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
+            <input class="fee" type="number" min="0" step="0.5" value="${s.fee}" placeholder="0" onchange="nsState['${p.id}'].fee=this.value;render()">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+            <input type="number" min="1" max="30" value="${s.qty}" onchange="nsState['${p.id}'].qty=Math.max(1,parseInt(this.value)||1);render()">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px" title="Remaining CHAS claims available for this procedure this year">
+            <span style="font-size:11px;color:var(--text-sec)">Remaining claims</span>
+            <input class="rem-input" type="number" min="0" max="99" value="${s.remaining}" onchange="nsState['${p.id}'].remaining=this.value;render()">
+          </div>
+        </div>`:""}
+      </div>${materialHtml}
+      ${s.on ? `
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${s.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="nsState['${p.id}'].remark=this.value">
+      </div>
+      <div class="sep" style="display:flex;justify-content:flex-end">
+        <button onmousedown="addToSummary('ns','${p.id}',event)" class="btn-add-summary">+ Add to Summary</button>
+      </div>` : ""}
+      ${lineTot}`
+    list.appendChild(div)
+  })
+}
+
+// ── UPDATE SUMMARIES ─────────────────────────────────────────────────────────
+
+function updateSurgSummary(){
+  const active = SURG.filter(p=>surgState[p.code].on)
+  if(!active.length){ return null }
+  let gMv=0, gCash=0, gTotal=0, gGstOnMv=0, gInstEligible=0
+  active.forEach(p=>{
+    const l=getSurgLine(p)
+    gMv+=l.mv; gCash+=l.cashTotal; gTotal+=l.total; gGstOnMv+=(l.gstOnMv||0); gInstEligible+=(l.instEligible||0)
+  })
+  return {mv:gMv, cash:gCash, total:gTotal, gstOnMv:gGstOnMv, instEligible:gInstEligible}
+}
+
+function updateNsSummary(){
+  const active = NS.filter(p=>nsState[p.id].on)
+  if(!active.length){ return null }
+  let gFee=0, gSub=0, gCash=0, gTotal=0
+  active.forEach(p=>{
+    const l=getNsLine(p)
+    gFee+=l.totalFee; gSub+=l.subsidyTotal; gCash+=l.cashTotal; gTotal+=l.total
+  })
+  return {fee:gFee, sub:gSub, cash:gCash, total:gTotal}
+}
+
+function updateGrandFromItems(){
+  const sec      = document.getElementById("combined-summary")
+  const btnExcel = document.getElementById("btn-excel")
+  const btnPrint = document.getElementById("btn-print")
+  const any = summaryItems.length > 0
+  btnExcel.disabled = !any; btnPrint.disabled = !any
+  if(!any){ sec.style.display="none"; return }
+  sec.style.display="block"
+
+  const tbody  = document.getElementById("combined-tbody")
+  tbody.innerHTML = ""
+  const hasGst = gst()
+  const gn     = hasGst ? "*" : ""
+
+  const sectionStyles = {
+    surg:   "background:var(--bg-info);color:var(--text-info)",
+    ns:     "background:var(--bg-success);color:var(--text-success)",
+    ortho:  "background:var(--bg-purple);color:var(--text-purple)",
+    prostho:"background:var(--bg-purple);color:var(--text-purple)",
+  }
+  const sectionLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", ortho:"Orthodontics", prostho:"Miscellaneous Procedures" }
+
+  let lastSec = null
+  let gMv=0, gChas=0, gCash=0, gTotal=0, gGstOnMv=0, gGstOnChas=0, gInstEligible=0, gOrthoDeposit=0
+
+  summaryItems.forEach(item => {
+    // Section header row when section changes
+    if(item._sec !== lastSec){
+      const hdr = document.createElement("tr")
+      hdr.innerHTML = `<td colspan="7" style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;${sectionStyles[item._sec]};padding:6px 10px">${sectionLabels[item._sec]}</td>`
+      tbody.appendChild(hdr)
+      lastSec = item._sec
+    }
+
+    // ── Recalculate GST live from raw values ──
+    const mv         = item.mv || 0
+    const subsidyAmt = item.subsidyTotal || 0
+    const cashBefore = item.cashBefore || 0
+    const gstOnMv    = (item._sec === 'surg' && !item.feeOnly && hasGst) ? mv * 0.09 : 0
+    const gstOnChas  = (item._sec === 'ns' && hasGst) ? subsidyAmt * 0.09 : 0
+    const cashTotal  = hasGst ? cashBefore * 1.09 + gstOnMv + gstOnChas : cashBefore
+    const displayTotal = item._sec === 'surg' && !item.feeOnly
+      ? mv + cashTotal
+      : subsidyAmt + cashTotal
+
+    const instEligible = hasGst
+      ? cashBefore * 1.09   // cash top-up incl its GST, but NOT gstOnMv or gstOnChas
+      : cashBefore
+
+    // Orthodontics: deposit upfront, balance instalment-eligible
+    const deposit        = item.deposit || 0
+    const balance        = Math.max(0, cashTotal - deposit)
+    const orthoEligible  = item._sec === 'ortho' ? balance : instEligible
+    const orthoDeposit   = item._sec === 'ortho' ? deposit : 0
+
+    // Accumulate totals
+    gMv          += mv
+    gChas        += subsidyAmt
+    gCash        += cashTotal
+    gTotal       += displayTotal
+    gGstOnMv     += gstOnMv
+    gGstOnChas   += gstOnChas
+    gInstEligible+= item._sec === 'ortho' ? orthoEligible : instEligible
+    gOrthoDeposit+= orthoDeposit
+
+    // Build row
+    const mvStr   = (item._sec==='surg' && !item.feeOnly)
+      ? `<span class="mv" style="font-weight:500">${fmt(mv)}</span>`
+      : `<span style="color:var(--text-ter)">—</span>`
+    const chasStr = (item.subsidyTotal||0) > 0
+      ? `<span class="sv">${fmtD(item.subsidyTotal)}</span>`
+      : `<span style="color:var(--text-ter)">—</span>`
+    const cashStr = cashTotal > 0
+      ? `<span class="cv">${fmtD(cashTotal)}${gn}</span>`
+      : `<span style="color:var(--text-ter)">—</span>`
+
+    const tr = document.createElement("tr")
+    tr.innerHTML = `
+      <td>
+        <div class="tx-name">${item.label}</div>
+        ${item.remark ? `<div class="tx-sub" style="font-style:italic">${item.remark}</div>` : ""}
+        ${item._chasTier ? `<div class="tx-sub">CHAS ${item._chasTier.charAt(0).toUpperCase()+item._chasTier.slice(1)}</div>` : ""}
+      </td>
+      <td>${item.qty}</td>
+      <td>${fmtD(displayTotal)}</td>
+      <td>${mvStr}</td>
+      <td>${chasStr}</td>
+      <td>${cashStr}</td>
+      <td style="text-align:center">
+        <button onclick="removeFromSummary(${item._id})" title="Remove" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--text-ter);padding:2px 6px" class="no-print">✕</button>
+      </td>`
+    tbody.appendChild(tr)
+  })
+
+  // Grand totals
+  document.getElementById("cs-fee-total").textContent  = fmtD(gTotal)
+  document.getElementById("cs-mv-total").textContent   = gMv   > 0 ? fmt(gMv)    : "—"
+  document.getElementById("cs-chas-total").textContent = gChas > 0 ? fmtD(gChas) : "—"
+  document.getElementById("cs-cash-total").innerHTML   = `${fmtD(gCash)}${hasGst?' <span style="font-size:10px">(incl. GST)</span>':""}`
+
+  document.getElementById("gm-total").textContent    = fmtD(gTotal)
+  document.getElementById("gm-cash").textContent     = fmtD(gCash)
+  document.getElementById("gm-mv").textContent       = fmt(gMv)
+  document.getElementById("gm-chas").textContent     = fmtD(gChas)
+  document.getElementById("gm-total-sub").textContent = hasGst ? "Incl. GST" : "Before subsidies"
+  document.getElementById("gm-cash-sub").textContent  = hasGst ? "Incl. 9% GST" : "After Medisave + CHAS"
+
+  // GST badge visibility
+  const gstBadge = document.getElementById("gst-badge-text")
+  if(gstBadge) gstBadge.style.display = hasGst ? "inline" : "none"
+
+  // Sync print patient bar
+  const pbPatient = document.getElementById("pb-patient")
+  const pbDoctor  = document.getElementById("pb-doctor")
+  if(pbPatient) pbPatient.textContent = document.getElementById("patient-name").value || ""
+  if(pbDoctor)  pbDoctor.textContent  = document.getElementById("doctor-name").value || ""
+
+  // GST on Medisave note
+  const gstNote = document.getElementById("gst-mv-note")
+  if(hasGst && gMv > 0){
+    gstNote.style.display = "block"
+    document.getElementById("gn-mv-amt").textContent    = fmt(gMv)
+    document.getElementById("gn-mv-gst").textContent    = fmtD(gGstOnMv)
+    document.getElementById("gn-chas-amt").textContent  = fmtD(gChas)
+    document.getElementById("gn-chas-gst").textContent  = fmtD(gGstOnChas)
+    document.getElementById("gn-cash-gst").textContent  = fmtD(Math.max(0, gCash - gGstOnMv - gGstOnChas - (gCash - gGstOnMv - gGstOnChas)/1.09))
+    document.getElementById("gn-cash-total").textContent= fmtD(gCash)
+  } else {
+    gstNote.style.display = "none"
+  }
+
+  window._instEligible    = gInstEligible
+  window._upfrontGstOnMv  = gGstOnMv
+  window._upfrontGstOnChas = gGstOnChas
+  window._orthoDeposit     = gOrthoDeposit
+  updateInstalmentPanel()
+
+  // Ack name
+  const ackEl = document.getElementById("ack-name")
+  if(ackEl) ackEl.textContent = document.getElementById("patient-name").value || "\u00a0"
+}
+// ── ADD TO SUMMARY (store raw pre-GST values; GST recalculated live) ─────────
+
+function addToSummary(sec, id, event){
+  if(sec === 'surg'){
+    const p = SURG.find(x => x.code === id)
+    if(!p) return
+    const s = surgState[id]
+    // Get raw values with GST off
+    const origGst = document.getElementById('gst-toggle').checked
+    document.getElementById('gst-toggle').checked = false
+    const lRaw = getSurgLine(p)
+    document.getElementById('gst-toggle').checked = origGst
+    let label = p.name
+    if(p.implantMode && !p.implantOnly) label += ` — ${p.crowns[s.crown].label}${s.apptMode==='diff'?' (diff. appts)':''}`
+    if(p.implantOnly) label += ` — implant only${s.apptMode==='diff'?' (diff. appts)':''}`
+    summaryItems.push({
+      _id: nextId(), _sec: 'surg',
+      label, remark: s.remark||'', qty: s.qty, unit: p.unit,
+      mv: lRaw.mv,
+      cashBefore: lRaw.cashBefore,
+      extraMisc: lRaw.extraMisc||0,
+      feeOnly: !!p.feeOnly,
+      subsidyTotal: 0
+    })
+  }
+
+  if(sec === 'ns'){
+    const p = NS.find(x => x.id === id)
+    if(!p) return
+    const s = nsState[id]
+    const origGst = document.getElementById('gst-toggle').checked
+    document.getElementById('gst-toggle').checked = false
+    const lRaw = getNsLine(p)
+    document.getElementById('gst-toggle').checked = origGst
+    const mats = p.hasMaterials && s.materials.length ? ` · ${s.materials.join('/')}` : ''
+    summaryItems.push({
+      _id: nextId(), _sec: 'ns',
+      label: p.name + mats, remark: s.remark||'', qty: s.qty, unit: p.unit,
+      mv: 0,
+      cashBefore: lRaw.cashBefore,
+      subsidyTotal: lRaw.subsidyTotal,
+      feeOnly: false,
+      _chasTier: lRaw.subsidyTotal > 0 ? chasMode : ''
+    })
+  }
+
+  if(sec === 'ortho'){
+    const item = orthoItems.find(x => x.id === id)
+    if(!item) return
+    const fee = parseFloat(item.fee)||0
+    if(!fee){ alert('Please enter a fee before adding to summary.'); return }
+    const deposit = parseFloat(item.deposit)||0
+    const totalRaw = fee * item.qty
+    const cashRaw  = totalRaw * (gst() ? 1.09 : 1.0)
+    summaryItems.push({
+      _id: nextId(), _sec: 'ortho',
+      label: item.name || 'Orthodontics', remark: item.remark||'',
+      qty: item.qty, unit: 'per treatment',
+      mv: 0, subsidyTotal: 0,
+      cashBefore: totalRaw,
+      deposit: deposit,
+      feeOnly: true
+    })
+    updateGrandFromItems()
+    if(event){
+      const btn = event.target.closest('.btn-add-summary') || event.target
+      btn.classList.remove('flashing'); void btn.offsetWidth; btn.classList.add('flashing')
+      btn.addEventListener('animationend', () => btn.classList.remove('flashing'), {once:true})
+    }
+    return
+  }
+
+  if(sec === 'prostho'){
+    const item = miscItems.find(x => x.id === id)
+    if(!item) return
+    const fee = parseFloat(item.fee)||0
+    if(!fee){ alert('Please enter a fee before adding to summary.'); return }
+    summaryItems.push({
+      _id: nextId(), _sec: 'prostho',
+      label: item.name || 'Miscellaneous', remark: item.remark||'',
+      qty: item.qty, unit: 'per unit',
+      mv: 0, subsidyTotal: 0,
+      cashBefore: fee * item.qty,
+      feeOnly: true
+    })
+  }
+
+  updateGrandFromItems()
+
+  // Glow flash on button
+  if(event){
+    const btn = event.target.closest('.btn-add-summary') || event.target
+    btn.classList.remove('flashing')
+    void btn.offsetWidth  // force reflow to restart animation
+    btn.classList.add('flashing')
+    btn.addEventListener('animationend', () => btn.classList.remove('flashing'), {once:true})
+  }
+}
+
+function removeFromSummary(id){
+  summaryItems = summaryItems.filter(i => i._id !== id)
+  updateGrandFromItems()
+}
+
+
+
+// ── RENDER MISCELLANEOUS ─────────────────────────────────────────────────────
+
+
+// ── RENDER ORTHODONTICS ───────────────────────────────────────────────────────
+
+function renderOrtho(){
+  const list = document.getElementById("ortho-list")
+  if(!list) return
+  list.innerHTML = ""
+
+  orthoItems.forEach((item, idx) => {
+    const div = document.createElement("div")
+    div.className = "card"
+    const totalRaw  = (item.fee||0) * item.qty
+    const totalCash = totalRaw * (gst() ? 1.09 : 1.0)
+    const deposit   = parseFloat(item.deposit)||0
+    const balance   = Math.max(0, totalCash - deposit)
+    const gn = gst() ? " (incl. GST)" : ""
+
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:160px">
+          <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Treatment</span>
+          <input type="text" value="${item.name||''}" placeholder="e.g. Metal Braces, Invisalign…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="orthoItems[${idx}].name=this.value" onblur="renderOrtho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
+          <input class="fee" type="number" min="0" step="0.5" value="${item.fee||''}" placeholder="0" onchange="orthoItems[${idx}].fee=parseFloat(this.value)||0;renderOrtho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+          <input type="number" min="1" max="99" value="${item.qty}" onchange="orthoItems[${idx}].qty=Math.max(1,parseInt(this.value)||1);renderOrtho()">
+        </div>
+        ${orthoItems.length > 1 ? `<button onclick="removeOrthoItem(${item.id})" style="font-size:13px;background:none;border:none;cursor:pointer;color:var(--text-ter);padding:2px 6px;flex-shrink:0" title="Remove">✕</button>` : ''}
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Deposit ($)</span>
+        <input class="fee" type="number" min="0" step="0.5" value="${item.deposit||''}" placeholder="0" style="width:100px" onchange="orthoItems[${idx}].deposit=parseFloat(this.value)||0;renderOrtho()">
+        <span style="font-size:11px;color:var(--text-ter)">paid upfront · not eligible for instalment</span>
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${item.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="orthoItems[${idx}].remark=this.value">
+      </div>
+      ${totalRaw > 0 ? `<div class="sep" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="line-tot" style="display:flex;gap:18px;font-size:12px;flex-wrap:wrap">
+          <span><span style="color:var(--text-sec)">Total: </span><span style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
+          ${deposit > 0 ? `<span><span style="color:var(--text-sec)">Deposit (upfront): </span><span class="cv" style="font-weight:600">${fmtD(deposit)}</span></span>
+          <span><span style="color:var(--text-sec)">Balance (instalment-eligible): </span><span style="font-weight:600">${fmtD(balance)}</span></span>` : ''}
+        </span>
+        <button onmousedown="addToSummary('ortho',${item.id},event)" class="btn-add-summary">+ Add to Summary</button>
+      </div>` : ''}
+    `
+    list.appendChild(div)
+  })
+
+  const addBtn = document.createElement("button")
+  addBtn.className = "btn"
+  addBtn.style.cssText = "font-size:12px;margin-top:4px;padding:6px 16px;border-style:dashed"
+  addBtn.textContent = "+ Add another treatment"
+  addBtn.onclick = () => {
+    orthoItems.push({ id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' })
+    renderOrtho()
+  }
+  list.appendChild(addBtn)
+}
+
+function removeOrthoItem(id){
+  orthoItems = orthoItems.filter(i => i.id !== id)
+  if(!orthoItems.length) orthoItems = [{ id: nextOrthoId(), name:'', fee:0, qty:1, deposit:0, remark:'' }]
+  renderOrtho()
+}
+
+function renderProstho(){
+  const list = document.getElementById("prostho-list")
+  if(!list) return
+  list.innerHTML = ""
+
+  miscItems.forEach((item, idx) => {
+    const div = document.createElement("div")
+    div.className = "card"
+    const totalRaw = (item.fee||0) * item.qty
+    const totalCash = totalRaw * (gst() ? 1.09 : 1.0)
+    const gn = gst() ? " (incl. GST)" : ""
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:160px">
+          <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Treatment</span>
+          <input type="text" value="${item.name||''}" placeholder="e.g. Teeth whitening, Fluoride…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="miscItems[${idx}].name=this.value" onblur="renderProstho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Fee ($)</span>
+          <input class="fee" type="number" min="0" step="0.5" value="${item.fee||''}" placeholder="0" onchange="miscItems[${idx}].fee=parseFloat(this.value)||0;renderProstho()">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--text-sec)">Qty</span>
+          <input type="number" min="1" max="99" value="${item.qty}" onchange="miscItems[${idx}].qty=Math.max(1,parseInt(this.value)||1);renderProstho()">
+        </div>
+        ${miscItems.length > 1 ? `<button onclick="removeMiscItem(${item.id})" style="font-size:13px;background:none;border:none;cursor:pointer;color:var(--text-ter);padding:2px 6px;flex-shrink:0" title="Remove">✕</button>` : ''}
+      </div>
+      <div class="sep" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-sec);font-weight:500;flex-shrink:0">Remark</span>
+        <input type="text" value="${item.remark||''}" placeholder="optional remark…" style="flex:1;font-size:12px;border:0.5px solid var(--border-md);border-radius:var(--r-sm);padding:4px 8px;background:var(--bg-card);color:var(--text-pri)" oninput="miscItems[${idx}].remark=this.value">
+      </div>
+      ${totalRaw > 0 ? `<div class="sep" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="line-tot" style="display:flex;gap:18px;font-size:12px">
+          <span><span style="color:var(--text-sec)">Total fee: </span><span style="font-weight:600">${fmtD(totalRaw)}</span></span>
+          <span><span style="color:var(--text-sec)">Cash: </span><span class="cv" style="font-weight:600">${fmtD(totalCash)}${gn}</span></span>
+        </span>
+        <button onmousedown="addToSummary('prostho',${item.id},event)" class="btn-add-summary">+ Add to Summary</button>
+      </div>` : ''}
+    `
+    list.appendChild(div)
+  })
+
+  // "+" Add new line button
+  const addBtn = document.createElement("button")
+  addBtn.className = "btn"
+  addBtn.style.cssText = "font-size:12px;margin-top:4px;padding:6px 16px;border-style:dashed"
+  addBtn.textContent = "+ Add another treatment"
+  addBtn.onclick = () => {
+    miscItems.push({ id: nextMiscId(), name:'', fee:0, qty:1, remark:'' })
+    renderProstho()
+  }
+  list.appendChild(addBtn)
+}
+
+function removeMiscItem(id){
+  miscItems = miscItems.filter(i => i.id !== id)
+  if(!miscItems.length) miscItems = [{ id: nextMiscId(), name:'', fee:0, qty:1, remark:'' }]
+  renderProstho()
+}
+
+function render(){
+  renderSurg()
+  renderNonSurg()
+  renderOrtho()
+  renderProstho()
+  updateGrandFromItems()
+}
+
+// ── PRINT ────────────────────────────────────────────────────────────────────
+
+function printQuote(){ window.print() }
+
+// ── EXCEL EXPORT ─────────────────────────────────────────────────────────────
+
+function exportExcel(){
+  if(!window.XLSX){ alert("XLSX library not loaded, try again in a moment."); return }
+  const patient = document.getElementById("patient-name").value || "(Not specified)"
+  const doctor  = document.getElementById("doctor-name").value || ""
+  const today   = getToday()
+  const g       = gst()
+  const chasLabel= {none:"None",orange:"CHAS Orange",blue:"CHAS Blue",mg:"Merdeka Generation",pg:"Pioneer Generation"}[chasMode]
+
+  const rows = [
+    ["DENTAL TREATMENT QUOTATION"],
+    [],
+    ["Patient Name:", patient],
+    ["Doctor:", doctor],
+    ["Date:", today],
+    ["CHAS Tier:", chasLabel],
+    ["GST:", g ? "9% applied to cash component only" : "Not applied"],
+    ["Note:", "Medisave amounts are maximum claimable, subject to CPF/MOH approval."],
+    [],
+    ["Treatment","Remark","Qty","Unit","Total Fee","Medisave","CHAS Subsidy","Cash"+(g?" (w/GST)":"")],
+  ]
+  const secLabels = { surg:"Surgical Procedures", ns:"Non-Surgical Procedures", prostho:"Miscellaneous Procedures" }
+  let lastSec = null
+  let gMv=0, gChas=0, gCash=0, gTotal=0
+  summaryItems.forEach(item => {
+    if(item._sec !== lastSec){
+      rows.push(["── "+secLabels[item._sec]+" ──"])
+      lastSec = item._sec
+    }
+    rows.push([
+      item.label, item.remark||"", item.qty, item.unit,
+      item.total, item.mv||0, item.subsidyTotal||0, item.cashTotal
+    ])
+    gMv+=item.mv||0; gChas+=item.subsidyTotal||0; gCash+=item.cashTotal; gTotal+=item.total
+  })
+  rows.push([])
+  rows.push(["GRAND TOTAL","","","",gTotal,gMv,gChas,gCash+(g?" (incl. GST)":"")])
+  if(g) rows.push(["* Cash column includes 9% GST. Medisave and CHAS columns are GST-exclusive."])
+
+  const ws = XLSX.utils.aoa_to_sheet(rows)
+  ws["!cols"]=[{wch:44},{wch:14},{wch:20},{wch:22},{wch:11},{wch:6},{wch:18},{wch:14},{wch:20},{wch:14},{wch:18},{wch:22},{wch:14}]
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, "Quotation")
+  const safe=(patient==="(Not specified)"?"Patient":patient).replace(/\s+/g,"_")
+  XLSX.writeFile(wb, `Dental_Quote_${safe}_${new Date().toISOString().slice(0,10)}.xlsx`)
+}
+
+
+// ── SIGNATURE VIA QR (Firebase Realtime Database relay) ──────────────────────
+//
+// SETUP — one-time, takes ~5 minutes:
+//  1. Go to console.firebase.google.com → Add project (any name)
+//  2. Left sidebar: Build → Realtime Database → Create Database → Start in test mode
+//  3. Copy your database URL (looks like https://your-app-default-rtdb.firebaseio.com)
+//  4. Paste it below, replacing the placeholder:
+
+const FIREBASE_DB = 'https://dental-quotation-default-rtdb.asia-southeast1.firebasedatabase.app'
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function _fbUrl(sessionId){ return `${FIREBASE_DB}/sigs/${sessionId}.json` }
+
+function _randId(){
+  return Math.random().toString(36).slice(2,10) + Date.now().toString(36)
+}
+
+const _urlParams   = new URLSearchParams(window.location.search)
+const _signSession = _urlParams.get('sign')
+
+if(_signSession){
+  // ── PATIENT SIGNING PAGE ──────────────────────────────────────────────────
+  document.querySelector('.wrap').style.display = 'none'
+  const sp = document.getElementById('signing-page')
+  sp.style.display = 'flex'
+  const canvas = document.getElementById('sig-canvas')
+
+  setTimeout(() => {
+    canvas.width  = canvas.offsetWidth
+    canvas.height = 200
+  }, 60)
+
+  const ctx = () => canvas.getContext('2d')
+  let drawing = false, lx = 0, ly = 0
+
+  function _pos(e){
+    const r = canvas.getBoundingClientRect()
+    const s = e.touches ? e.touches[0] : e
+    return { x:(s.clientX-r.left)*(canvas.width/r.width), y:(s.clientY-r.top)*(canvas.height/r.height) }
+  }
+  function _start(e){ drawing=true; const p=_pos(e); lx=p.x; ly=p.y }
+  function _draw(e){
+    if(!drawing) return; e.preventDefault()
+    const p=_pos(e), c=ctx()
+    c.beginPath(); c.moveTo(lx,ly); c.lineTo(p.x,p.y)
+    c.strokeStyle='#1a1a18'; c.lineWidth=2.5; c.lineCap='round'; c.lineJoin='round'; c.stroke()
+    lx=p.x; ly=p.y
+  }
+  function _end(){ drawing=false }
+
+  canvas.addEventListener('mousedown',  _start)
+  canvas.addEventListener('mousemove',  _draw)
+  canvas.addEventListener('mouseup',    _end)
+  canvas.addEventListener('mouseleave', _end)
+  canvas.addEventListener('touchstart', e=>{e.preventDefault();_start(e)}, {passive:false})
+  canvas.addEventListener('touchmove',  _draw, {passive:false})
+  canvas.addEventListener('touchend',   _end)
+
+  document.getElementById('sig-clear-btn').onclick = () =>
+    ctx().clearRect(0, 0, canvas.width, canvas.height)
+
+  document.getElementById('sig-submit-btn').onclick = async () => {
+    const btn = document.getElementById('sig-submit-btn')
+    const msg = document.getElementById('sig-msg')
+    btn.disabled = true; btn.textContent = 'Submitting…'
+    try {
+      const dataUrl = canvas.toDataURL('image/png')
+      const resp = await fetch(_fbUrl(_signSession), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'signed', signature: dataUrl })
+      })
+      if(!resp.ok) throw new Error('Firebase write failed: ' + resp.status)
+      document.getElementById('signing-page').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    height:100%;text-align:center;padding:2rem;font-family:system-ui">
+          <div style="font-size:56px;margin-bottom:1rem">✓</div>
+          <h2 style="font-size:20px;font-weight:600;color:#1479b8;margin:0 0 8px">Signature submitted!</h2>
+          <p style="font-size:14px;color:#666">You may now close this page.</p>
+        </div>`
+    } catch(err){
+      msg.textContent = 'Failed to submit — ' + err.message
+      btn.disabled = false; btn.textContent = 'Submit Signature'
+    }
+  }
+}
+
+// ── DESKTOP: generate QR and poll ────────────────────────────────────────────
+
+async function generateSigningQR(){
+  if(FIREBASE_DB.includes('YOUR_PROJECT_ID')){
+    alert('Firebase is not configured yet.\n\nPlease follow the setup instructions in the code (search for FIREBASE_DB) and replace YOUR_PROJECT_ID with your actual Firebase project ID.')
+    return
+  }
+
+  const btn = document.getElementById('get-sig-btn')
+  btn.textContent = 'Creating…'; btn.disabled = true
+
+  const sessionId = _randId()
+  try {
+    const resp = await fetch(_fbUrl(sessionId), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'waiting', signature: null })
+    })
+    if(!resp.ok) throw new Error('HTTP ' + resp.status)
+  } catch(err){
+    alert('Could not create signing session.\n\nError: ' + err.message + '\n\nMake sure your Firebase Realtime Database URL is correct and the database is in test mode (open read/write).')
+    btn.textContent = 'Get signature'; btn.disabled = false
+    return
+  }
+
+  btn.textContent = 'Get signature'; btn.disabled = false
+
+  const sigUrl = window.location.origin + window.location.pathname + '?sign=' + sessionId
+  const modal  = document.getElementById('qr-modal')
+  modal.style.display = 'flex'
+
+  const qrDiv = document.getElementById('qr-code')
+  qrDiv.innerHTML = ''
+  if(window.QRCode){
+    new QRCode(qrDiv, { text:sigUrl, width:200, height:200, colorDark:'#1a1a18', colorLight:'#ffffff' })
+  } else {
+    qrDiv.innerHTML = `<p style="font-size:10px;color:#666;word-break:break-all;max-width:200px">${sigUrl}</p>`
+  }
+  document.getElementById('qr-status').textContent = 'Waiting for patient to sign…'
+
+  window._sigPoll = setInterval(async () => {
+    try {
+      const r = await fetch(_fbUrl(sessionId))
+      if(!r.ok) return
+      const data = await r.json()
+      if(data && data.status === 'signed' && data.signature){
+        clearInterval(window._sigPoll); window._sigPoll = null
+        document.getElementById('qr-status').textContent = '✓ Signature received!'
+        setTimeout(() => { placeSignature(data.signature); closeQrModal() }, 700)
+      }
+    } catch(e){ /* keep polling */ }
+  }, 2000)
+}
+
+function closeQrModal(){
+  document.getElementById('qr-modal').style.display = 'none'
+  if(window._sigPoll){ clearInterval(window._sigPoll); window._sigPoll = null }
+}
+
+function placeSignature(dataUrl){
+  const area = document.getElementById('sig-image-area')
+  area.innerHTML = `<img src="${dataUrl}" style="width:100%;height:44px;object-fit:contain;object-position:left bottom">`
+  document.getElementById('sig-label').textContent = 'Signed digitally'
+  document.getElementById('get-sig-btn').style.display  = 'none'
+  document.getElementById('clear-sig-btn').style.display = 'inline-block'
+}
+
+function clearSignature(){
+  document.getElementById('sig-image-area').innerHTML = ''
+  document.getElementById('sig-label').textContent     = "Patient\'s signature"
+  document.getElementById('get-sig-btn').style.display  = 'inline-block'
+  document.getElementById('clear-sig-btn').style.display = 'none'
+}
+
+render()
+</script>
+</body>
+</html>
