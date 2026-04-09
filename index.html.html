@@ -118,7 +118,11 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .metric{background:#f5f5f5}
   .info-box{background:#e8f4fd;color:#0a4a80}
   .divider{display:none!important}
-  #tl-print-section{page-break-before:always;break-before:always}
+  #reorder-wrap{display:flex;flex-direction:column}
+  #instalment-card{order:1;page-break-before:always;break-before:always}
+  #ack-block{order:2}
+  #tl-print-section{order:3;page-break-before:always;break-before:always}
+  .print-only-tl-date{display:inline!important}
   #instalment-panel [style*="gap:16px"]{gap:8px!important;font-size:10px!important}
   #instalment-panel [style*="gap:16px"] label{font-size:10px!important;gap:3px!important}
   #instalment-panel [style*="gap:16px"] input[type=radio]{width:10px!important;height:10px!important}
@@ -129,6 +133,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .metric-hero{background:#fff!important;border:1px solid #ccc!important}
   .metric-hero .mval{color:#854F0B!important}
 }
+.print-only-tl-date{display:none}
 /* ── Treatment Timeline ── */
 .tl-vcard{background:var(--bg-card);border-radius:var(--r-lg);padding:11px 13px}
 .tl-dzone{min-height:42px;border:0.5px dashed var(--border-lt);border-radius:var(--r-md);padding:5px;display:flex;flex-direction:column;gap:4px;position:relative;transition:border-color .1s,background .1s;box-sizing:border-box;overflow:hidden}
@@ -365,8 +370,9 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
     Total cash payable = <span id="gn-cash-total" class="cv" style="font-weight:600"></span>
   </div>
 
+  <div id="reorder-wrap">
   <!-- Instalment panel -->
-  <div style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
+  <div id="instalment-card" style="background:var(--bg-card);border:0.5px solid var(--border-lt);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:1.5rem">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <input type="checkbox" id="instalment-toggle" onchange="updateInstalmentPanel()" style="width:15px;height:15px;accent-color:#1479b8;cursor:pointer">
       <label for="instalment-toggle" style="font-size:13px;font-weight:500;cursor:pointer">Show Instalment Plan</label>
@@ -452,8 +458,8 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
           <div style="display:flex;gap:5px;margin-bottom:6px">
             <select id="tl-generic-sel" onchange="tlGenSelChange()" style="flex:1;font-size:11.5px;padding:4px 6px;border:0.5px solid var(--border-lt);border-radius:var(--r-sm);background:var(--bg-surface);color:var(--text-pri);cursor:pointer;min-width:0">
               <option value="Stitches Removal">Stitches Removal</option>
-              <option value="Implant Crown Fabrication">Implant Crown Fabrication</option>
-              <option value="Implant Denture Fabrication">Implant Denture Fabrication</option>
+              <option value="Implant Crown Issue">Implant Crown Issue</option>
+              <option value="Implant Denture Issue">Implant Denture Issue</option>
               <option value="__custom__">Custom…</option>
             </select>
             <button onclick="tlAddGeneric()" style="font-size:11.5px;padding:4px 9px;background:#1479b8;color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500;flex-shrink:0">+ Add</button>
@@ -487,6 +493,7 @@ select.tl-ws{font-size:12px;padding:3px 5px;border:0.5px solid var(--border-lt);
       </div>
     </div>
   </div>
+  </div><!-- /reorder-wrap -->
 </div>
 
 <!-- Buttons -->
@@ -795,8 +802,9 @@ function tlRender(){
     const borderCol  = TL_PASTELS[i % TL_PASTELS.length]
     html+=`<div class="tl-vcard" style="border:2px solid ${borderCol};margin-bottom:4px;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px 6px 12px;background:${borderCol}33;border-bottom:1px solid ${borderCol}66;margin:-11px -13px 10px -13px;-webkit-print-color-adjust:exact;print-color-adjust:exact">
-        <select style="font-size:12px;font-weight:600;letter-spacing:.03em;padding:0;border:none;background:transparent;color:#444;cursor:pointer;min-width:90px;max-width:140px"
+        <select class="no-print" style="font-size:12px;font-weight:600;letter-spacing:.03em;padding:0;border:none;background:transparent;color:#444;cursor:pointer;min-width:90px;max-width:140px"
           onchange="tlSetVisitDate('${v.id}',this.value)">${tlDateOptions(v.date)}</select>
+        <span class="print-only-tl-date" style="font-size:12px;font-weight:600;letter-spacing:.03em;color:#444">${tlDateLabel(v.date)}</span>
         ${tlVisits.length>1?`<button class="no-print" style="font-size:10px;color:#bbb;border:none;background:none;cursor:pointer;padding:2px 4px;border-radius:4px;flex-shrink:0;line-height:1" onclick="tlRemoveVisit('${v.id}')" onmouseover="this.style.color='#e24b4a'" onmouseout="this.style.color='#bbb'">✕</button>`:''}
       </div>
       <div class="tl-dzone${empty?' tl-empty':''}" id="tldz_${v.id}" data-tl-zone="${v.id}"
