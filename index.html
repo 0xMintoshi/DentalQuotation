@@ -118,7 +118,7 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
 .btn-add-summary.flashing{animation:addFlash .7s ease-out}
 @page{margin:0}
 @media print{
-  body{background:#fff;color:#000;padding:1.25rem 1.5rem}
+  body{background:#fff;color:#000;padding:2rem 1.5rem}
   .no-print{display:none!important}
   #summary-section,#sum-nonsurg{display:block!important}
   .card{border:1px solid #ccc;break-inside:avoid}
@@ -126,9 +126,9 @@ tfoot td{background:var(--bg-surface);border-top:1px solid var(--border-md);font
   .info-box{background:#e8f4fd;color:#0a4a80}
   .divider{display:none!important}
   #reorder-wrap{display:flex;flex-direction:column}
-  #instalment-card{order:1;page-break-before:always;break-before:always}
+  #instalment-card{order:1;page-break-before:always;break-before:always;padding-top:2rem!important}
   #ack-block{order:2}
-  #tl-print-section{order:3;page-break-before:always;break-before:always}
+  #tl-print-section{order:3;page-break-before:always;break-before:always;padding-top:2rem!important}
   .print-only-tl-date{display:inline!important}
   #instalment-panel [style*="gap:16px"]{gap:8px!important;font-size:10px!important}
   #instalment-panel [style*="gap:16px"] label{font-size:10px!important;gap:3px!important}
