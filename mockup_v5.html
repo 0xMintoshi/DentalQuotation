@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Mockup — Apple Style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page: #F5F5F7;
+  --bg-card: #FFFFFF;
+  --bg-surface: #F2F2F7;
+  --bg-info: #EBF4FF;
+  --bg-success: #EDFAF2;
+  --bg-purple: #F3F0FF;
+
+  --text-pri: #1D1D1F;
+  --text-sec: #6E6E73;
+  --text-ter: #98989D;
+
+  --blue: #0071E3;
+  --blue-dark: #0062C4;
+  --green: #28A745;
+  --amber: #B06000;
+  --purple: #5856D6;
+
+  --border: rgba(0,0,0,0.08);
+  --border-md: rgba(0,0,0,0.14);
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.06);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-pri);
+  padding: 2rem 1.25rem;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+
+/* ── Brand bar ── */
+.doc-brand {
+  height: 3px;
+  background: linear-gradient(90deg, #0C447C, #1479b8);
+  margin: -2rem -1.25rem 2rem;
+  border-radius: 0;
+}
+
+/* ── Clinic name ── */
+.doc-clinic {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-pri);
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 0.5px solid var(--border);
+}
+
+/* ── Patient bar ── */
+.pat-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.ptrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+}
+.ptlbl {
+  font-size: 12px;
+  color: var(--text-ter);
+  font-weight: 500;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+input[type=text] {
+  font-family: inherit;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-pri);
+  flex: 1;
+}
+input[type=text]::placeholder { color: var(--text-ter); }
+
+/* ── Section divider ── */
+hr.divider { border: none; border-top: 0.5px solid var(--border); margin: 1.75rem 0; }
+
+/* ── Section headers ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+.section-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+.tag-surgical  { background: var(--bg-info);    color: var(--blue); }
+.tag-nonsurg   { background: var(--bg-success);  color: var(--green); }
+.tag-ortho     { background: var(--bg-purple);   color: var(--purple); }
+.section-meta  { font-size: 12px; color: var(--text-ter); }
+.collapse-btn {
+  margin-left: auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 0.5px solid var(--border-md);
+  background: var(--bg-surface);
+  color: var(--text-ter);
+  font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.btn-clear {
+  font-size: 11px;
+  padding: 3px 10px;
+  background: transparent;
+  color: var(--text-ter);
+  border: 0.5px solid var(--border-md);
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── CHAS selector ── */
+.chas-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+.chas-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-md);
+  background: var(--bg-surface);
+  color: var(--text-sec);
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.chas-btn.active-blue { border-color: var(--blue); background: var(--bg-info); color: var(--blue); }
+
+/* ── Summary table ── */
+.table-wrap {
+  background: var(--bg-card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+th {
+  padding: 10px 12px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--text-ter);
+  background: var(--bg-surface);
+  border-bottom: 0.5px solid var(--border);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+th:first-child, td:first-child { text-align: left; }
+td { padding: 11px 12px; text-align: right; border-top: 0.5px solid var(--border); vertical-align: top; }
+tfoot td { background: var(--bg-surface); border-top: 1px solid var(--border-md); font-weight: 600; font-size: 13px; }
+.tx-name { font-size: 13px; font-weight: 500; color: var(--text-pri); }
+.tx-sub  { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+.mv   { color: var(--blue); }
+.cv   { color: var(--amber); }
+.sv   { color: var(--green); }
+
+/* ── Metric cards ── */
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+.metric {
+  background: var(--bg-card);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.metric-hero {
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0,113,227,0.15);
+}
+.mlabel { font-size: 11px; color: var(--text-ter); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; }
+.mval   { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: var(--text-pri); }
+.mval-hero { font-size: 30px; color: var(--amber); }
+.msub   { font-size: 11px; color: var(--text-ter); margin-top: 3px; }
+.subsidy-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Sum title row ── */
+.sum-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sum-title { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: 0.08em; }
+.gst-toggle-row { display: flex; align-items: center; gap: 7px; }
+.gst-badge {
+  font-size: 11px;
+  background: var(--bg-surface);
+  color: var(--text-sec);
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border-md);
+}
+
+/* ── Buttons ── */
+.btn-row { display: flex; gap: 8px; margin-top: 2rem; }
+.btn {
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: var(--r-md);
+  border: 0.5px solid var(--border-md);
+  background: var(--bg-card);
+  color: var(--text-pri);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.12s;
+}
+.btn:hover { background: var(--bg-surface); }
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.btn-primary:hover { background: var(--blue-dark); }
+
+/* ── Instalment card ── */
+.inst-card {
+  background: var(--bg-card);
+  border-radius: var(--r-lg);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+.inst-header { display: flex; align-items: center; gap: 8px; }
+input[type=checkbox] {
+  width: 16px; height: 16px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.inst-label { font-size: 13px; font-weight: 500; }
+.inst-meta  { font-size: 11px; color: var(--text-ter); margin-left: 4px; }
+
+/* ── Section label ── */
+.note { font-size: 11px; color: var(--text-ter); background: var(--bg-surface); border-radius: var(--r-sm); padding: 6px 12px; margin-top: 1.5rem; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Brand bar -->
+  <div class="doc-brand"></div>
+
+  <!-- Clinic name -->
+  <div class="doc-clinic">Nofrills Dental</div>
+
+  <!-- Patient bar -->
+  <div class="pat-bar">
+    <div class="ptrow">
+      <span class="ptlbl">Patient name</span>
+      <input type="text" placeholder="Enter patient name…">
+    </div>
+    <div class="ptrow">
+      <span class="ptlbl">Doctor</span>
+      <input type="text" placeholder="Enter doctor name…">
+    </div>
+  </div>
+
+  <!-- Section: Surgical -->
+  <div class="section-header">
+    <span class="section-tag tag-surgical">Surgical Procedures</span>
+    <span class="section-meta">Medisave-claimable · CPF Apr 2025 limits</span>
+    <button class="btn-clear" style="margin-left:auto">Clear all</button>
+    <button class="collapse-btn">▾</button>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Section: Non-Surgical -->
+  <div class="section-header">
+    <span class="section-tag tag-nonsurg">Non-Surgical Procedures</span>
+    <span class="section-meta">CHAS-subsidised · Oct 2025 rates</span>
+    <button class="btn-clear" style="margin-left:auto">Clear all</button>
+    <button class="collapse-btn">▾</button>
+  </div>
+
+  <!-- CHAS selector -->
+  <div class="chas-selector">
+    <button class="chas-btn">No CHAS</button>
+    <button class="chas-btn">🟠 Orange</button>
+    <button class="chas-btn active-blue">🔵 Blue</button>
+    <button class="chas-btn">⭐ Merdeka Gen</button>
+    <button class="chas-btn">🌟 Pioneer Gen</button>
+    <span style="font-size:11px;color:var(--text-ter);margin-left:4px">Applies to all selected procedures</span>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Section: Ortho -->
+  <div class="section-header">
+    <span class="section-tag tag-ortho">Orthodontics</span>
+    <span class="section-meta">Cash only · No CHAS · No Medisave</span>
+    <button class="btn-clear" style="margin-left:auto">Clear all</button>
+    <button class="collapse-btn">▾</button>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Summary title -->
+  <div class="sum-title-row">
+    <span class="sum-title">Treatment Summary</span>
+    <div class="gst-toggle-row">
+      <span class="gst-badge">9% GST Applied</span>
+      <input type="checkbox" id="gst-toggle" checked>
+      <label for="gst-toggle" style="font-size:12px;cursor:pointer;font-weight:500">Add 9% GST</label>
+    </div>
+  </div>
+
+  <!-- Summary table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:42%">Treatment</th>
+          <th style="width:5%">Qty</th>
+          <th style="width:13%">Total Fee</th>
+          <th style="width:13%">Medisave</th>
+          <th style="width:11%">CHAS</th>
+          <th style="width:16%">Cash Payable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="tx-name">Surgical Extraction (Wisdom Tooth)</div>
+            <div class="tx-sub">Lower left · Same appointment</div>
+          </td>
+          <td>1</td>
+          <td>$1,200.00</td>
+          <td class="mv">$950.00</td>
+          <td>—</td>
+          <td class="cv">$250.00</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="tx-name">Scaling & Polishing</div>
+            <div class="tx-sub">CHAS Blue subsidised</div>
+          </td>
+          <td>1</td>
+          <td>$75.00</td>
+          <td>—</td>
+          <td class="sv">$42.50</td>
+          <td class="cv">$32.50</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="tx-name">Composite Filling</div>
+            <div class="tx-sub">Tooth 36 · Class II</div>
+          </td>
+          <td>1</td>
+          <td>$180.00</td>
+          <td>—</td>
+          <td class="sv">$80.00</td>
+          <td class="cv">$100.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Grand Total</td>
+          <td>$1,455.00</td>
+          <td class="mv">$950.00</td>
+          <td class="sv">$122.50</td>
+          <td class="cv">$382.50</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Metric cards -->
+  <div class="mgrid">
+    <div class="metric">
+      <div class="mlabel">Total Fee</div>
+      <div class="mval">$1,455</div>
+      <div class="msub">Before subsidies</div>
+    </div>
+    <div class="metric metric-hero">
+      <div class="mlabel">Patient Cash Payable</div>
+      <div class="mval mval-hero">$382.50</div>
+      <div class="msub">After Medisave + CHAS</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Subsidies Applied</div>
+      <div class="subsidy-row">
+        <span class="dot" style="background:var(--blue)"></span>
+        <span class="mv" style="font-size:16px;font-weight:700">$950.00</span>
+        <span style="font-size:11px;color:var(--text-ter)">Medisave</span>
+      </div>
+      <div class="subsidy-row">
+        <span class="dot" style="background:var(--green)"></span>
+        <span class="sv" style="font-size:16px;font-weight:700">$122.50</span>
+        <span style="font-size:11px;color:var(--text-ter)">CHAS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instalment card -->
+  <div class="inst-card">
+    <div class="inst-header">
+      <input type="checkbox" id="inst-toggle">
+      <label for="inst-toggle" class="inst-label">Show Instalment Plan</label>
+      <span class="inst-meta">(cash top-up + GST on cash top-up only)</span>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="btn-row">
+    <button class="btn btn-primary">🖨 Print / Save PDF</button>
+    <button class="btn">⬇ Download Excel</button>
+    <button class="btn" style="margin-left:auto;color:#c0392b;border-color:rgba(192,57,43,0.3)">Clear All</button>
+  </div>
+
+  <div class="note">This is a visual mockup only — no logic is wired up. Open dental_quotation_tool_v4.html for the live app.</div>
+</div>
+</body>
+</html>
